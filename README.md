@@ -38,9 +38,9 @@ Firebase
 
 Flask 
 
-Github
+Github, Bitbucket
 
-BitBucket
+MySQL
 
 
 ## Features

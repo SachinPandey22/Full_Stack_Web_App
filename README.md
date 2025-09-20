@@ -92,6 +92,13 @@ Who uses it: Users tracking progress.
 
 User Story: As a user, I want to visualize my progress so I stay motivated and accountable.
 
+7. Sleep & Recovery Tracking
+
+What it does: Allows users to log sleep duration and quality (manual input or synced from smartwatch). Provides insights on recovery, suggests optimal sleep hours, and correlates sleep patterns with workout performance and calorie intake.
+
+Who uses it: Users who want to optimize recovery and overall health.
+
+User Story: As a user, I want to track my sleep so I can understand how rest impacts my energy, workouts, and progress.
 
 ## Screenshots
 ![Alt text](images/ai_fitness.png)

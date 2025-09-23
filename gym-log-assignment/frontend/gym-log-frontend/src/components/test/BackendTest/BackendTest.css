@@ -1,0 +1,13 @@
+.backend-test {
+  background-color: #1e1e1e;
+  padding: 25px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 1px solid #333;
+}
+
+.backend-test h2 {
+  color: #61dafb;
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+}

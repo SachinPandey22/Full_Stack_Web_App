@@ -27,20 +27,33 @@ Why we’re doing this: As a team, we are passionate about health and fitness. W
 
 
 ## Technologies Used
-Python
- – backend logic and AI models
 
-React
+Django REST Framework (Python)
+ – backend API and authentication
+
+React (JavaScript, Create React App)
  – frontend interface
 
-Firebase
- or alternative – authentication & database (TBD)
+SQLite (development) / PostgreSQL (future)
+ – database for storing users, workouts, exercises
 
-Flask 
+JWT (djangorestframework-simplejwt)
+ – secure authentication and session handling
 
-Github, Bitbucket
+Axios
+ – frontend-backend communication
 
-MySQL
+React Router
+ – navigation and protected routes
+
+React Hook Form + Zod
+ – client-side form handling and validation
+
+React Hot Toast
+ – user notifications (success/error)
+
+GitHub / Bitbucket
+ – version control and collaboration
 
 
 ## Features
@@ -107,7 +120,10 @@ User Story: As a user, I want to track my sleep so I can understand how rest imp
 
 
 ## Setup
-Requirements will be listed in a requirements.txt (Python dependencies) and package.json (React dependencies)..
+Requirements are listed in:
+- backend/requirements.txt (Python/Django dependencies)
+- frontend/gym-log-frontend/package.json (React dependencies)
+
 
 Steps:
 
@@ -120,17 +136,14 @@ Install frontend dependencies: npm install
 Run development server
 
 ## Usage
-Sign up or log in.
+1. Sign up or log in (JWT authentication).
+2. Access the protected dashboard after login.
+3. Future features:
+   - Input personal details and fitness goals.
+   - Log meals and workouts.
+   - View AI-based suggestions for diet and workouts.
+   - Track progress with charts and dashboards.
 
-Input personal details and goals.
-
-Log meals and workouts daily.
-
-View AI suggestions for nutrition and fitness.
-
-Track progress in the dashboard.
-
-`write-your-code-here`
 
 
 ## Project Status
@@ -157,7 +170,7 @@ Give credit here.
 
 
 ## Contact
-Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
+
 
 
 <!-- Optional -->
@@ -165,3 +178,4 @@ Created by [@flynerdpl](https://www.flynerd.pl/) - feel free to contact me!
 <!-- This project is open source and available under the [... License](). -->
 
 <!-- You don't have to include all sections - just the one's relevant to your project -->
+//test

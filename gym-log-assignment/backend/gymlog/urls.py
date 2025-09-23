@@ -16,12 +16,29 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
+from users.views import RegisterView, LoginView, RefreshView, MeView
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
 
+def api_hello_view(request):
+    return JsonResponse({
+        'message': 'Hello from Django API!',
+        'status': 'Backend is working',
+        'frontend_connected': True,
+    })
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_view, name='hello'),
+    path('api/hello/', api_hello_view, name='api_hello'),
+
+    # 🔐 Auth
+    path('api/auth/register/', RegisterView.as_view(), name='register'),
+    path('api/auth/login/', LoginView.as_view(), name='login'),
+    path('api/auth/refresh/', RefreshView.as_view(), name='refresh'),
+
+    # 🔒 Protected example
+    path('api/me/', MeView.as_view(), name='me'),
 ]

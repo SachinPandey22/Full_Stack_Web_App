@@ -34,3 +34,13 @@ Here is the new model/roadmap that involve an app that connects to user's health
     Before writing any mobile code, prove the flow works: POST a pairing code to get a JWT, then POST a mock steps payload with that JWT. Seeing rows appear in SQLite confirms your backend handshake is solid.
 
 After securing that the backend works, next phase would be to pass real data into the code and test it.
+
+<B>Documentation</B>
+
+1. Mobile/models.py
+
+   PairingCode: short-lived code to pair a phone with a web user
+
+   MobileDevice: records the linked device (android/ios, device_id)
+
+   StepSample: stores time-bucketed step data (with a unique ext_id to dedupe)

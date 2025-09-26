@@ -123,6 +123,7 @@ User Story: As a user, I want to track my sleep so I can understand how rest imp
 Requirements are listed in:
 - backend/requirements.txt (Python/Django dependencies)
 - frontend/gym-log-frontend/package.json (React dependencies)
+- install npm
 
 
 Steps:
@@ -138,6 +139,7 @@ Run development server
 ## Usage
 1. Sign up or log in (JWT authentication).
 2. Access the protected dashboard after login.
+3. Use the same email password after Register to Login.
 3. Future features:
    - Input personal details and fitness goals.
    - Log meals and workouts.

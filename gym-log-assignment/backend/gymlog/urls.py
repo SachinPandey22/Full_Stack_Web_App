@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponse, JsonResponse
-from users.views import RegisterView, LoginView, RefreshView, MeView
+from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -41,4 +41,7 @@ urlpatterns = [
 
     # 🔒 Protected example
     path('api/me/', MeView.as_view(), name='me'),
+    
+    #EXITING
+    path('api/auth/logout/', LogoutView.as_view(), name='logout')
 ]

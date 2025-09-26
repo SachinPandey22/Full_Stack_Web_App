@@ -86,3 +86,12 @@ class MeView(APIView):
     def get(self, request):
         # If Authorization: Bearer <access> is valid, you'll reach here
         return Response({'user': UserOutSerializer(request.user).data})
+    
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        # Clear the httpOnly refresh cookie (basic server-side logout)
+        resp = Response({"detail": "Logged out."})
+        resp.delete_cookie("refresh")
+        return resp

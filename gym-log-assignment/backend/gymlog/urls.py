@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponse
+from mobile import views as m
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -24,4 +25,6 @@ def hello_view(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_view, name='hello'),
+    path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
+    path("api/mobile/ingest", m.ingest_data),    # post data with JWT
 ]

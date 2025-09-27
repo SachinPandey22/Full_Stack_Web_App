@@ -44,3 +44,7 @@ After securing that the backend works, next phase would be to pass real data int
    MobileDevice: records the linked device (android/ios, device_id)
 
    StepSample: stores time-bucketed step data (with a unique ext_id to dedupe)
+
+2. api/mobile/link and ingest in urls.py
+
+   Exchange a short-lived pairing code (shown on your web app/QR) for a mobile auth token (JWT) tied to the user + device.

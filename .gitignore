@@ -3,6 +3,12 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 
+#Virtual environments
+venv/
+.venv/
+*/venv/
+*/.venv/
+
 # Node artifact files
 node_modules/
 dist/
@@ -11,6 +17,7 @@ dist/
 *.class
 
 # Compiled Python bytecode
+__pycache__/
 *.py[cod]
 
 # Log files
@@ -47,4 +54,6 @@ Thumbs.db
 *.flv
 *.mov
 *.wmv
+
+db.sqlite3
 

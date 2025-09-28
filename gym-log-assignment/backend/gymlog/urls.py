@@ -16,13 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-<<<<<<< HEAD
-from django.http import HttpResponse
-from mobile import views as m
-=======
 from django.http import HttpResponse, JsonResponse
 from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
->>>>>>> SPRINT_1_DEV_BRANCH
+from mobile import views as m
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -37,12 +33,11 @@ def api_hello_view(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_view, name='hello'),
-<<<<<<< HEAD
+    path('api/hello/', api_hello_view, name='api_hello'),
+
+    # Mobile
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
     path("api/mobile/ingest", m.ingest_data),    # post data with JWT
-]
-=======
-    path('api/hello/', api_hello_view, name='api_hello'),
 
     # 🔐 Auth
     path('api/auth/register/', RegisterView.as_view(), name='register'),
@@ -55,4 +50,3 @@ urlpatterns = [
     #EXITING
     path('api/auth/logout/', LogoutView.as_view(), name='logout')
 ]
->>>>>>> SPRINT_1_DEV_BRANCH

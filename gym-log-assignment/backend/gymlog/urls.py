@@ -16,15 +16,43 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+<<<<<<< HEAD
 from django.http import HttpResponse
 from mobile import views as m
+=======
+from django.http import HttpResponse, JsonResponse
+from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
+>>>>>>> SPRINT_1_DEV_BRANCH
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
 
+def api_hello_view(request):
+    return JsonResponse({
+        'message': 'Hello from Django API!',
+        'status': 'Backend is working',
+        'frontend_connected': True,
+    })
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_view, name='hello'),
+<<<<<<< HEAD
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
     path("api/mobile/ingest", m.ingest_data),    # post data with JWT
 ]
+=======
+    path('api/hello/', api_hello_view, name='api_hello'),
+
+    # 🔐 Auth
+    path('api/auth/register/', RegisterView.as_view(), name='register'),
+    path('api/auth/login/', LoginView.as_view(), name='login'),
+    path('api/auth/refresh/', RefreshView.as_view(), name='refresh'),
+
+    # 🔒 Protected example
+    path('api/me/', MeView.as_view(), name='me'),
+    
+    #EXITING
+    path('api/auth/logout/', LogoutView.as_view(), name='logout')
+]
+>>>>>>> SPRINT_1_DEV_BRANCH

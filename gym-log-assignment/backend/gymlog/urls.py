@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from django.http import HttpResponse, JsonResponse
 from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
+from mobile import views as m
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -33,6 +34,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_view, name='hello'),
     path('api/hello/', api_hello_view, name='api_hello'),
+
+    # Mobile
+    path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
+    path("api/mobile/ingest", m.ingest_data),    # post data with JWT
 
     # 🔐 Auth
     path('api/auth/register/', RegisterView.as_view(), name='register'),

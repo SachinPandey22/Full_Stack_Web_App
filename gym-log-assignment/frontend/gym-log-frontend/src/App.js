@@ -4,10 +4,14 @@ import ProtectedRoute from './routes/ProtectedRoute';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+<<<<<<< HEAD
 import LandingPage from './pages/LandingPage'; // import the landing page
 import ProfileForm from './components/ProfileForm';
 import GymRidePage from './pages/GymRidePage';
 
+=======
+import GymRidePage from './pages/GymRidePage';
+>>>>>>> origin/feature/SCRUM-14-exercise-library-ui-frontend-de
 
 function App() {
   return (

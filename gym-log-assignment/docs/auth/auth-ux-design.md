@@ -1,7 +1,7 @@
 # Auth UX & Error States — Register, Login, Logout
 
 **Project:** Shakti (AI Fitness Tracker)
-**Scope:** Register/Login screens, post-login/logout redirects, validation rules, error copy, and flow.
+**Scope:** Register/Login screens,Profile Setup Scren post-login/logout redirects, validation rules, error copy, and flow.
 
 ## 1) Low-Fidelity Wireframes (text)
 
@@ -29,6 +29,38 @@
 |  - error:   "Email already in use."    |
 +----------------------------------------+
 ```
+
+### /Profile
++----------------------------------------+
+|  Set up your Profile                   |
+|                                        |
+|  [Label] Name                          |
+|  [_______________________________]     |
+|     error: "Name is required."         |
+|                                        |
+|  [Label] Sex (dropdown)                |
+|     [ Male | Female | Other ]          |
+|     error: "Please select sex."        |
+|                                        |
+|  [Label] Height (cm)                   |
+|  [_______________________________]     |
+|     error: "Height must be at least 50"|
+|                                        |
+|  [Label] Weight (kg)                   |
+|  [_______________________________]     |
+|     error: "Weight must be > 0"        |
+|                                        |
+|  [Label] Goal (dropdown)               |
+|     [ Lose | Gain | Maintain ]         |
+|     error: "Please select a goal."     |
+|                                        |
+|  ( Save )   ( Skip )                   |
+|----------------------------------------|
+| Toasts:                                |
+|  - success: "Profile saved!"           |
+|  - info: "Skipped profile setup."      |
++----------------------------------------+
+
 
 ### /login
 
@@ -71,8 +103,6 @@
 ---
 
 ## 2) Simple Flow Diagram
-
-```
 [Unauthenticated]
       |
       v
@@ -80,21 +110,23 @@
 |   /register    |<-----> |   /login      |
 +----------------+        +---------------+
       |  success                   | success
-      |                            |
-      +-------------+--------------+
-                    v
-             [Authenticated]
-                    |
-                    v
-             +--------------+
-             |  /dashboard  |
-             +--------------+
-                    |
-                 (Logout)
-                    |
-                    v
-             [Unauthenticated] -> /login
-```
+      v                            v
++----------------+
+|   /profile     |
++----------------+
+   | save/skip
+   v
+[Authenticated]
+      |
+      v
++--------------+
+| /dashboard   |
++--------------+
+      |
+   (Logout)
+      |
+      v
+[Unauthenticated] -> /login
 
 ---
 

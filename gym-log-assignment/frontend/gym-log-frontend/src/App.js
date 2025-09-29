@@ -5,6 +5,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import LandingPage from './pages/LandingPage'; // import the landing page
+import ProfileForm from './components/ProfileForm';
+
 
 function App() {
   return (
@@ -17,6 +19,7 @@ function App() {
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/profile" element={<ProfileForm />} />
         {/* add more protected pages later */}
       </Route>
 

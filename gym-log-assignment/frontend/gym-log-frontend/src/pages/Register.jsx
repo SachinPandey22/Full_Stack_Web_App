@@ -35,7 +35,7 @@ export default function Register() {
       const data = await registerUser(values);
       setSession({ access: data?.access, user: data?.user });
       toast.success('Account created!');
-      navigate('/dashboard', { replace: true });
+      navigate('/profile', { replace: true });
     } catch (err) {
       const msg = err?.response?.data?.detail || 'Email already in use. Try another.';
       toast.error(msg);

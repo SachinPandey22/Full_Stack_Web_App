@@ -23,7 +23,7 @@ export default function ProfileForm() {
 
   const { register, handleSubmit, formState, setFocus } = useForm({
     resolver: zodResolver(schema),
-    mode: 'onSubmit',
+    mode: 'onChange',// validate live as user types
   });
 
   useEffect(() => {
@@ -48,6 +48,7 @@ export default function ProfileForm() {
   };
 
   const isLoading = formState.isSubmitting;
+  const isValid = formState.isValid; // track if form passes validation
 
   return (
     <div className="auth-card">
@@ -89,10 +90,19 @@ export default function ProfileForm() {
         {formState.errors.goal && <p className="error">{formState.errors.goal.message}</p>}
 
         {/* Buttons */}
-        <div style={{ marginTop: 20, display: 'flex', gap: '10px' }}>
-          <Button loading={isLoading} disabled={isLoading} type="submit">Save</Button>
-          <Button type="button" onClick={skip}>Skip</Button>
-        </div>
+<div style={{ marginTop: 20, display: 'flex', gap: '10px' }}>
+  <Button
+    loading={isLoading}
+    disabled={!isValid || isLoading}  // disable if form invalid or submitting
+    type="submit"
+  >
+    Save
+  </Button>
+  <Button type="button" onClick={skip}>
+    Skip
+  </Button>
+</div>
+
       </form>
 
       <StatusIndicator

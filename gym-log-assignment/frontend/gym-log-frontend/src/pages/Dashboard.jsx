@@ -16,6 +16,9 @@ import QuickActions from '../components/QuickActions/QuickActions';
 export default function Dashboard() {
   const { user, clearSession } = useAuth();
 
+// Reading profile info from localStorage
+  const profile = JSON.parse(localStorage.getItem('userProfile'));
+
   const onLogout = () => {
     clearSession();
     toast.success('Signed out');
@@ -26,7 +29,13 @@ export default function Dashboard() {
     <div style={{ padding: '20px' }}>
       {/* Header with user info + logout */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h2>Welcome {user?.email || 'athlete'}!</h2>
+        <h2>Welcome {profile?.name ||user?.email || 'athlete'}!</h2>
+        {profile?.goal && (
+          <p style={{ marginLeft: '20px', color: '#555' }}>
+            Goal: {profile.goal}
+          </p>
+        )}
+
         <Button onClick={onLogout}>Logout</Button>
       </div>
 

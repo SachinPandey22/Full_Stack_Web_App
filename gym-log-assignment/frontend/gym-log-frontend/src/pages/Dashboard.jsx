@@ -38,8 +38,8 @@ export default function Dashboard() {
           "meals workout aipan"
           "progress progress progress"
         `,
-        gap: '20px',
-        padding: '30px',
+        gap: '5px',
+        padding: '10px',
         background: '#f7f9fa',
         minHeight: '100vh'
       }}>
@@ -49,7 +49,7 @@ export default function Dashboard() {
         <div style={{ gridArea: 'meals', background: '#fff7e6', borderRadius: '10px', padding: '20px' }}>
           <MealLogging />
         </div>
-        <div style={{ gridArea: 'workout', background: '#eeeafc', borderRadius: '10px', padding: '20px' }}>
+        <div style={{ gridArea: 'workout', background: '#eeeafc', borderRadius: '20px', padding: '20px' }}>
           <WorkoutActivity />
         </div>
         <div style={{ gridArea: 'aipan', background: '#d0f5ea', borderRadius: '10px', padding: '20px' }}>

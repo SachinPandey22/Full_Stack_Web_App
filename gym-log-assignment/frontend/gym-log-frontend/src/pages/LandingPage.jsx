@@ -3,14 +3,23 @@ import { Link } from 'react-router-dom';
 
 export default function LandingPage() {
   return (
-    <div>
+    <div
+      style={{
+        backgroundImage: `url("/ai_fitness.png")`, 
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        minHeight: "100vh", // full page height
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {/* Navbar */}
       <nav style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         padding: '12px 20px',
-        background: '#f0f2f5',
+        background: "rgba(240, 242, 245, 0.8)",
         borderBottom: '1px solid #ccc'
       }}>
         {/* Left links */}
@@ -29,7 +38,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Landing content */}
-      <div style={{ padding: '40px', textAlign: 'center' }}>
+      <div style={{ flex: 1, padding: '40px', textAlign: 'center', color: "blue", textShadow: "1px 1px 1px rgba(0,0,0,0.6)" }}>
         <h1>Welcome to Your Fitness Tracker</h1>
         <p>Track workouts, meals, and progress with AI insights.</p>
         <Link to="/register">
@@ -38,8 +47,9 @@ export default function LandingPage() {
             padding: '10px 20px',
             borderRadius: '6px',
             background: '#007bff',
-            color: '#fff',
-            border: 'none'
+            color: '#f3ebebff',
+            border: 'none',
+            cursor: 'pointer',
           }}>
             Get Started
           </button>

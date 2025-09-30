@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .auth-card {
   max-width: 420px;
   margin: 60px auto;
@@ -12,4 +16,6 @@
   padding: 10px; border: 1px solid #ddd; border-radius: 8px;
 }
 .auth-card button[disabled] { opacity: 0.6; cursor: not-allowed; }
-.error { color: #b00020; font-size: 0.9rem; margin-top: -6px; }
+.error { color: #b00020; font-size: 0.9rem; margin-top: -6px; }  
+
+

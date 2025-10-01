@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'users',
     'workouts',
     'exercises',
+    'gymlog',
 ]
 
 MIDDLEWARE = [

@@ -14,14 +14,7 @@ print("📝 Adding new exercises...")
 
 # Add new exercises
 exercises_created = Exercise.objects.bulk_create([
-    # CHEST EXERCISES
-    Exercise(name='Barbell Bench Press', category='strength', muscle_group='chest', description='Lie on bench, lower bar to chest, press up', equipment='Barbell', difficulty='intermediate'),
-    Exercise(name='Dumbbell Flyes', category='strength', muscle_group='chest', description='Arc dumbbells out and bring together', equipment='Dumbbells', difficulty='beginner'),
-    Exercise(name='Push-ups', category='strength', muscle_group='chest', description='Classic bodyweight chest exercise', equipment='Bodyweight', difficulty='beginner'),
-    Exercise(name='Incline Bench Press', category='strength', muscle_group='chest', description='Press on incline bench for upper chest', equipment='Barbell', difficulty='intermediate'),
-    Exercise(name='Cable Crossover', category='strength', muscle_group='chest', description='Cross cables in front of body', equipment='Cables', difficulty='intermediate'),
-    Exercise(name='Decline Bench Press', category='strength', muscle_group='chest', description='Press on decline bench for lower chest', equipment='Barbell', difficulty='intermediate'),
-    
+    #
     # BACK EXERCISES
     Exercise(name='Pull-ups', category='strength', muscle_group='back', description='Pull body up until chin over bar', equipment='Bodyweight', difficulty='intermediate'),
     Exercise(name='Barbell Rows', category='strength', muscle_group='back', description='Pull barbell to lower chest', equipment='Barbell', difficulty='intermediate'),

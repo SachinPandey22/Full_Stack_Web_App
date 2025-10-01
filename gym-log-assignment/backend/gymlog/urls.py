@@ -15,7 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
 from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
 from mobile import views as m
@@ -34,6 +34,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', hello_view, name='hello'),
     path('api/hello/', api_hello_view, name='api_hello'),
+
+    path('api/', include('exercises.urls')),
 
     # Mobile
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT

@@ -15,10 +15,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
 from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
 from mobile import views as m
+
+from rest_framework.routers import DefaultRouter
+from .view import MealViewSet
+
+router = DefaultRouter()
+router.register(r'meals', MealViewSet, basename='meal')
+
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -48,5 +55,7 @@ urlpatterns = [
     path('api/me/', MeView.as_view(), name='me'),
     
     #EXITING
-    path('api/auth/logout/', LogoutView.as_view(), name='logout')
+    path('api/auth/logout/', LogoutView.as_view(), name='logout'),
+
+    path('api/gymlog/', include(router.urls)),
 ]

@@ -40,3 +40,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = ["name", "sex", "height", "weight", "goal"]
+
+    def validate_height(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Height must be greater than 0.")
+        return value
+
+    def validate_weight(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Weight must be greater than 0.")
+        return value    
+
+    

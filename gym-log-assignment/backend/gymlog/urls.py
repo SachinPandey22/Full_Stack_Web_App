@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
-from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
 from mobile import views as m
 
 def hello_view(request):
@@ -51,6 +50,6 @@ urlpatterns = [
     #EXITING
     #path('api/auth/logout/', LogoutView.as_view(), name='logout')
 
-    # 👇 Include everything from users/urls.py
+    #  Include everything from users/urls.py
     path("api/", include("users.urls")),
 ]

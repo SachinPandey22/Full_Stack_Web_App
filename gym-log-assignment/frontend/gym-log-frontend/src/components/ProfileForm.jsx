@@ -24,7 +24,7 @@ const schema = z.object({
 
 export default function ProfileForm() {
   const navigate = useNavigate();
-  const { session } = useAuth(); //  contains { access, user }
+  const { getAccessToken, user } = useAuth();
 
   const { register, handleSubmit, formState, setFocus, setValue } = useForm({
     resolver: zodResolver(schema),
@@ -37,9 +37,10 @@ export default function ProfileForm() {
 
     // 👇 Fetch profile data to prefill form if it exists
     async function fetchProfile() {
-      if (!session?.access) return;
+      const token = getAccessToken();
+      if (!token) return;
       try {
-        const data = await getProfile(session.access);
+        const data = await getProfile(token);
         Object.keys(data).forEach((key) => {
           if (data[key] !== null && data[key] !== "") {
             setValue(key, data[key]);  // ✅ prefill form fields
@@ -52,19 +53,26 @@ export default function ProfileForm() {
     fetchProfile();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState.errors, setFocus, session?.access]);
+  }, [formState.errors, setFocus, getAccessToken,setValue]);
 
   const onSubmit = async (values) => {
-    try {
-      // 👇 send profile data to backend (PostgreSQL)
-      await updateProfile(values, session.access);
-      toast.success('Profile saved to database!');
-      navigate('/dashboard', { replace: true });
-    } catch (err) {
-      console.error(err.response || err);
-      toast.error('Failed to save profile. Try again.');
-    }
-  };
+  try {
+    const token = getAccessToken();
+    console.log('Submitting profile:', values);
+    console.log('Access token:', token);
+    
+    await updateProfile(values, token);
+    toast.success('Profile saved to database!');
+    navigate('/dashboard', { replace: true });
+  } catch (err) {
+    console.error('Full error:', err); // See full error
+    console.error('Error response:', err.response?.data); // See backend response
+    console.error('Error status:', err.response?.status); // See status code
+    
+    const errorMsg = err.response?.data?.detail || 'Failed to save profile. Try again.';
+    toast.error(errorMsg);
+  }
+};
 
   /*
       // Save to localStorage for now (replace with API call later)

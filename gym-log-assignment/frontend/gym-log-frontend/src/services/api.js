@@ -30,16 +30,16 @@ export const apiService = {
 
 // 🔐 Minimal auth API (adjust URLs to match your DRF when ready)
 export async function registerUser({ email, password }) {
-  const res = await apiClient.post('/api/auth/register/', { email, password });
+  const res = await apiClient.post('/api/register/', { email, password });
   return res.data; // e.g. { access: '...', user: { email } }
 }
 export async function loginUser({ email, password }) {
-  const res = await apiClient.post('/api/auth/login/', { email, password });
+  const res = await apiClient.post('/api/login/', { email, password });
   return res.data; // e.g. { access: '...', user: { email } }
 }
 export async function refreshAccess() {
   // optional if you implement httpOnly cookie refresh
-  const res = await apiClient.post('/api/auth/refresh/');
+  const res = await apiClient.post('/api/refresh/');
   return res.data; // e.g. { access: '...' }
 }
 // 📝 Profile API (⬇️ NEWLY ADDED)

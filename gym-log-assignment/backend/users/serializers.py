@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Profile  #importing profile model
+from django.db import transaction
 
 class RegisterSerializer(serializers.ModelSerializer):
     # username will be email; enforce password min length
@@ -14,7 +15,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         email = (value or '').lower().strip()
         if not email:
             raise serializers.ValidationError('Email is required.')
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             # frontend expects a friendly duplicate error
             raise serializers.ValidationError('Email already in use.')
         return email

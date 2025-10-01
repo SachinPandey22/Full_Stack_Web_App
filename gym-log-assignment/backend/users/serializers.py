@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Profile  #importing profile model
 
 class RegisterSerializer(serializers.ModelSerializer):
     # username will be email; enforce password min length
@@ -25,6 +26,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=email,
             password=validated_data['password'],
         )
+        #  Creating an empty profile for this user right away
+        Profile.objects.create(user=user)
         return user
 
 
@@ -32,3 +35,8 @@ class UserOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email']
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["name", "sex", "height", "weight", "goal"]

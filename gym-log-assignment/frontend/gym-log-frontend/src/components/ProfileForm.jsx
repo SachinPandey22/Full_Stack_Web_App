@@ -4,6 +4,10 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
+//import axios from 'axios';  // for future API calls
+
+import { useAuth } from '../context/AuthContext'; // to get user info if needed/JWT token
+import { getProfile, updateProfile } from '../services/api';  // ✅ use API helpers
 import Button from '../components/common/Button/Button';
 import StatusIndicator from '../components/common/StatusIndicator/StatusIndicator';
 
@@ -20,19 +24,49 @@ const schema = z.object({
 
 export default function ProfileForm() {
   const navigate = useNavigate();
+  const { session } = useAuth(); //  contains { access, user }
 
-  const { register, handleSubmit, formState, setFocus } = useForm({
+  const { register, handleSubmit, formState, setFocus, setValue } = useForm({
     resolver: zodResolver(schema),
-    mode: 'onChange',// validate live as user types
+    mode: 'onChange', // validate live as user types
   });
 
   useEffect(() => {
     const firstError = Object.keys(formState.errors)[0];
     if (firstError) setFocus(firstError);
-  }, [formState.errors, setFocus]);
 
-  const onSubmit = (values) => {
+    // 👇 Fetch profile data to prefill form if it exists
+    async function fetchProfile() {
+      if (!session?.access) return;
+      try {
+        const data = await getProfile(session.access);
+        Object.keys(data).forEach((key) => {
+          if (data[key] !== null && data[key] !== "") {
+            setValue(key, data[key]);  // ✅ prefill form fields
+          }
+        });
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      }
+    }
+    fetchProfile();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formState.errors, setFocus, session?.access]);
+
+  const onSubmit = async (values) => {
     try {
+      // 👇 send profile data to backend (PostgreSQL)
+      await updateProfile(values, session.access);
+      toast.success('Profile saved to database!');
+      navigate('/dashboard', { replace: true });
+    } catch (err) {
+      console.error(err.response || err);
+      toast.error('Failed to save profile. Try again.');
+    }
+  };
+
+  /*
       // Save to localStorage for now (replace with API call later)
       localStorage.setItem('userProfile', JSON.stringify(values));
       toast.success('Profile saved!');
@@ -41,6 +75,7 @@ export default function ProfileForm() {
       toast.error('Something went wrong. Try again.');
     }
   };
+  */
 
   const skip = () => {
     toast('Skipped profile setup.');
@@ -90,19 +125,18 @@ export default function ProfileForm() {
         {formState.errors.goal && <p className="error">{formState.errors.goal.message}</p>}
 
         {/* Buttons */}
-<div style={{ marginTop: 20, display: 'flex', gap: '10px' }}>
-  <Button
-    loading={isLoading}
-    disabled={!isValid || isLoading}  // disable if form invalid or submitting
-    type="submit"
-  >
-    Save
-  </Button>
-  <Button type="button" onClick={skip}>
-    Skip
-  </Button>
-</div>
-
+        <div style={{ marginTop: 20, display: 'flex', gap: '10px' }}>
+          <Button
+            loading={isLoading}
+            disabled={!isValid || isLoading}  // disable if form invalid or submitting
+            type="submit"
+          >
+            Save
+          </Button>
+          <Button type="button" onClick={skip}>
+            Skip
+          </Button>
+        </div>
       </form>
 
       <StatusIndicator

@@ -42,3 +42,23 @@ export async function refreshAccess() {
   const res = await apiClient.post('/api/auth/refresh/');
   return res.data; // e.g. { access: '...' }
 }
+// 📝 Profile API (⬇️ NEWLY ADDED)
+export async function getProfile(token) {
+  // GET -> fetch the logged-in user's profile from Django
+  const res = await apiClient.get('/api/profile/', {
+    headers: {
+      Authorization: `Bearer ${token}`, // ✅ include JWT access token
+    },
+  });
+  return res.data; // { name, sex, height, weight, goal }
+}
+
+export async function updateProfile(values, token) {
+  // PUT -> update logged-in user's profile in PostgreSQL
+  const res = await apiClient.put('/api/profile/', values, {
+    headers: {
+      Authorization: `Bearer ${token}`, // ✅ include JWT access token
+    },
+  });
+  return res.data; // returns updated profile object
+}

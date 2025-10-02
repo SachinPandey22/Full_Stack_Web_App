@@ -14,7 +14,7 @@ function WorkoutLibrary() {
     { id: 'shoulders', name: 'Shoulders', color: '#eab308', emoji: '💪' },
     { id: 'legs', name: 'Legs', color: '#22c55e', emoji: '🦵' },
     { id: 'arms', name: 'Arms', color: '#a855f7', emoji: '💪' },
-    { id: 'fullbody', name: 'Full Body', color: '#f97316', emoji: '🏋️' }
+    { id: 'core', name: 'Core', color: '#f97316', emoji: '🏋️' }
   ];
 
   const fetchExercises = async (muscleGroup) => {

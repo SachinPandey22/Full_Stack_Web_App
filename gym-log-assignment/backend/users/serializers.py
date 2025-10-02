@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from .models import Profile  #importing profile model
+from django.db import transaction
 
 class RegisterSerializer(serializers.ModelSerializer):
     # username will be email; enforce password min length
@@ -13,7 +15,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         email = (value or '').lower().strip()
         if not email:
             raise serializers.ValidationError('Email is required.')
-        if User.objects.filter(email=email).exists():
+        if User.objects.filter(username=email).exists() or User.objects.filter(email=email).exists():
             # frontend expects a friendly duplicate error
             raise serializers.ValidationError('Email already in use.')
         return email
@@ -25,6 +27,8 @@ class RegisterSerializer(serializers.ModelSerializer):
             email=email,
             password=validated_data['password'],
         )
+        #  Creating an empty profile for this user right away
+        Profile.objects.create(user=user)
         return user
 
 
@@ -32,3 +36,20 @@ class UserOutSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email']
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = ["name", "sex", "height", "weight", "goal"]
+
+    def validate_height(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Height must be greater than 0.")
+        return value
+
+    def validate_weight(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Weight must be greater than 0.")
+        return value    
+
+    

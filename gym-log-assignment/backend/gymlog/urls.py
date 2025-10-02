@@ -17,7 +17,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
-from users.views import RegisterView, LoginView, RefreshView, MeView, LogoutView
 from mobile import views as m
 
 def hello_view(request):
@@ -40,15 +39,19 @@ urlpatterns = [
     # Mobile
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
     path("api/mobile/ingest", m.ingest_data),    # post data with JWT
-
+    
     # 🔐 Auth
-    path('api/auth/register/', RegisterView.as_view(), name='register'),
-    path('api/auth/login/', LoginView.as_view(), name='login'),
-    path('api/auth/refresh/', RefreshView.as_view(), name='refresh'),
+    #path('api/auth/register/', RegisterView.as_view(), name='register'),
+    #path('api/auth/login/', LoginView.as_view(), name='login'),
+    #path('api/auth/refresh/', RefreshView.as_view(), name='refresh'),
+    
 
     # 🔒 Protected example
-    path('api/me/', MeView.as_view(), name='me'),
+    #path('api/me/', MeView.as_view(), name='me'),
     
     #EXITING
-    path('api/auth/logout/', LogoutView.as_view(), name='logout')
+    #path('api/auth/logout/', LogoutView.as_view(), name='logout')
+
+    #  Include everything from users/urls.py
+    path("api/", include("users.urls")),
 ]

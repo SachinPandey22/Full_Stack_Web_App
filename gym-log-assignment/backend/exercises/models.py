@@ -31,7 +31,8 @@ class Exercise(models.Model):
 
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default="beginner")
     
-    image = models.ImageField(upload_to="exercises/", blank=True, null=True)
+    image = models.CharField(max_length=500, blank=True, null=True)
+
     video = models.FileField(upload_to="exercise_videos/", blank=True, null=True)
 
     def __str__(self):

@@ -284,7 +284,7 @@ function WorkoutLibrary() {
                       e.currentTarget.style.borderColor = '#374151';
                     }}
                   >
-                    <div style={{
+                    {/* <div style={{
                       width: '100%',
                       height: '160px',
                       background: '#374151',
@@ -308,7 +308,41 @@ function WorkoutLibrary() {
                       ) : (
                         <span style={{ fontSize: '48px' }}>💪</span>
                       )}
-                    </div>
+                    </div> */
+                    
+                    <div style={{
+  width: '100%',
+  height: '200px',
+  background: '#374151',
+  borderRadius: '8px',
+  marginBottom: '16px',
+  overflow: 'hidden',
+  position: 'relative'
+}}>
+  {exercise.image ? (
+    <img 
+      src={exercise.image} 
+      alt={exercise.name} 
+      style={{
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover'
+      }}
+    />
+  ) : (
+    <div style={{
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      background: 'linear-gradient(135deg, #374151, #1f2937)'
+    }}>
+      <span style={{ fontSize: '48px' }}>💪</span>
+    </div>
+  )}
+</div>
+}
                     <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
                       {exercise.name}
                     </h3>

@@ -3,11 +3,14 @@ import pytest
 from datetime import timedelta
 from django.test import override_settings
 
-REGISTER_URL = "/api/auth/register/"
-LOGIN_URL    = "/api/auth/login/"
-REFRESH_URL  = "/api/auth/refresh/"
-LOGOUT_URL   = "/api/auth/logout/"
+# backend/tests/test_integration_auth.py
+
+REGISTER_URL = "/api/register/"
+LOGIN_URL    = "/api/login/"
+REFRESH_URL  = "/api/refresh/"
+LOGOUT_URL   = "/api/logout/"
 ME_URL       = "/api/me/"
+
 
 @pytest.mark.django_db
 def test_register_success_and_duplicate(api_client, user_data):

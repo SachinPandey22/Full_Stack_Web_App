@@ -8,14 +8,52 @@ function WorkoutLibrary() {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  
   const muscleGroups = [
-    { id: 'chest', name: 'Chest', color: '#ef4444', emoji: '💪' },
-    { id: 'back', name: 'Back', color: '#3b82f6', emoji: '🦾' },
-    { id: 'shoulders', name: 'Shoulders', color: '#eab308', emoji: '💪' },
-    { id: 'legs', name: 'Legs', color: '#22c55e', emoji: '🦵' },
-    { id: 'arms', name: 'Arms', color: '#a855f7', emoji: '💪' },
-    { id: 'core', name: 'Core', color: '#f97316', emoji: '🏋️' }
-  ];
+    { 
+      id: 'chest', 
+      name: 'Chest', 
+      color: '#ef4444', 
+      emoji: '💪',
+      image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400'
+    },
+    { 
+      id: 'back', 
+      name: 'Back', 
+      color: '#3b82f6', 
+      emoji: '🦾',
+      image: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=400'
+    },
+    { 
+      id: 'shoulders', 
+      name: 'Shoulders', 
+      color: '#eab308', 
+      emoji: '💪',
+      image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=400'
+    },
+    { 
+      id: 'legs', 
+      name: 'Legs', 
+      color: '#22c55e', 
+      emoji: '🦵',
+      image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400'
+    },
+    { 
+      id: 'arms', 
+      name: 'Arms', 
+      color: '#a855f7', 
+      emoji: '💪',
+      image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=400'
+    },
+    { 
+      id: 'core', 
+      name: 'Core', 
+      color: '#f97316', 
+      emoji: '🏋️',
+      image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400'
+    }
+];
+
 
   const fetchExercises = async (muscleGroup) => {
     setLoading(true);
@@ -78,7 +116,7 @@ function WorkoutLibrary() {
               WebkitTextFillColor: 'transparent',
               marginBottom: '8px'
             }}>
-              AI Fitness Tracker - Workout Library
+              SHAKTIMAN - Workout Library
             </h1>
             <p style={{ color: '#9ca3af' }}>Select a muscle group to view exercises</p>
           </div>
@@ -111,39 +149,79 @@ function WorkoutLibrary() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             gap: '24px'
           }}>
+            
+
             {muscleGroups.map((muscle) => (
-              <button
-                key={muscle.id}
-                onClick={() => handleMuscleClick(muscle.id)}
-                style={{
-                  background: muscle.color,
-                  border: 'none',
-                  borderRadius: '16px',
-                  padding: '32px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.opacity = '0.9';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.opacity = '1';
-                }}
-              >
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>{muscle.emoji}</div>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                  {muscle.name}
-                </h3>
-                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.9)' }}>
-                  View Exercises →
-                </p>
-              </button>
-            ))}
+  <button
+    key={muscle.id}
+    onClick={() => handleMuscleClick(muscle.id)}
+    style={{
+      background: `linear-gradient(135deg, ${muscle.color}dd, ${muscle.color}aa)`,
+      border: 'none',
+      borderRadius: '16px',
+      padding: '0',
+      cursor: 'pointer',
+      transition: 'all 0.3s',
+      boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+      position: 'relative',
+      overflow: 'hidden',
+      height: '280px'
+    }}
+    onMouseOver={(e) => {
+      e.currentTarget.style.transform = 'scale(1.05)';
+      e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.4)';
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.transform = 'scale(1)';
+      e.currentTarget.style.boxShadow = '0 10px 25px rgba(0,0,0,0.3)';
+    }}
+  >
+    {/* Background Image */}
+    <div style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundImage: `url(${muscle.image})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      opacity: 0.3,
+      zIndex: 0
+    }} />
+    
+    {/* Content Overlay */}
+    <div style={{
+      position: 'relative',
+      zIndex: 1,
+      padding: '32px',
+      height: '100%',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'flex-end',
+      textAlign: 'left'
+    }}>
+      <div style={{ fontSize: '48px', marginBottom: '16px' }}>{muscle.emoji}</div>
+      <h3 style={{ 
+        fontSize: '28px', 
+        fontWeight: 'bold', 
+        color: 'white', 
+        marginBottom: '8px',
+        textShadow: '2px 2px 4px rgba(0,0,0,0.5)'
+      }}>
+        {muscle.name}
+      </h3>
+      <p style={{ 
+        fontSize: '14px', 
+        color: 'rgba(255,255,255,0.95)',
+        textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
+      }}>
+        View Exercises →
+      </p>
+    </div>
+  </button>
+))}
+
           </div>
         ) : (
           /* Exercise List View */

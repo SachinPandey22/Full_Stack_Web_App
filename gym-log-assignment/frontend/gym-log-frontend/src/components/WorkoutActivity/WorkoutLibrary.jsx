@@ -8,15 +8,7 @@ function WorkoutLibrary() {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // const muscleGroups = [
-  //   { id: 'chest', name: 'Chest', color: '#ef4444', emoji: '💪' },
-  //   { id: 'back', name: 'Back', color: '#3b82f6', emoji: '🦾' },
-  //   { id: 'shoulders', name: 'Shoulders', color: '#eab308', emoji: '💪' },
-  //   { id: 'legs', name: 'Legs', color: '#22c55e', emoji: '🦵' },
-  //   { id: 'arms', name: 'Arms', color: '#a855f7', emoji: '💪' },
-  //   { id: 'core', name: 'Core', color: '#f97316', emoji: '🏋️' }
-  // ];
-
+  
   const muscleGroups = [
     { 
       id: 'chest', 

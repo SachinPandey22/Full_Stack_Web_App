@@ -149,39 +149,7 @@ function WorkoutLibrary() {
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
             gap: '24px'
           }}>
-            {/* {muscleGroups.map((muscle) => (
-              <button
-                key={muscle.id}
-                onClick={() => handleMuscleClick(muscle.id)}
-                style={{
-                  background: muscle.color,
-                  border: 'none',
-                  borderRadius: '16px',
-                  padding: '32px',
-                  cursor: 'pointer',
-                  transition: 'all 0.3s',
-                  boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.05)';
-                  e.currentTarget.style.opacity = '0.9';
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.opacity = '1';
-                }}
-              >
-                <div style={{ fontSize: '48px', marginBottom: '16px' }}>{muscle.emoji}</div>
-                <h3 style={{ fontSize: '24px', fontWeight: 'bold', color: 'white', marginBottom: '8px' }}>
-                  {muscle.name}
-                </h3>
-                <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.9)' }}>
-                  View Exercises →
-                </p>
-              </button>
-            ))} */}
+            
 
             {muscleGroups.map((muscle) => (
   <button

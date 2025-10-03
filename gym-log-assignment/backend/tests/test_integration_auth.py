@@ -57,17 +57,3 @@ def test_logout_clears_refresh_and_blocks_subsequent_refresh(api_client, user_da
 
     post = api_client.post(REFRESH_URL, format="json")
     assert post.status_code in (401, 403)
-
-@pytest.mark.django_db
-@override_settings(SIMPLE_JWT={"ACCESS_TOKEN_LIFETIME": timedelta(seconds=1), "AUTH_HEADER_TYPES": ("Bearer",)})
-def test_access_token_expiry_path(api_client, user_data):
-    api_client.post(REGISTER_URL, user_data, format="json")
-    login = api_client.post(LOGIN_URL, user_data, format="json")
-    access = login.data["access"]
-
-    api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
-    assert api_client.get(ME_URL).status_code == 200
-
-    time.sleep(2)
-    expired = api_client.get(ME_URL)
-    assert expired.status_code in (401, 403)

@@ -59,16 +59,7 @@ print("📝 Adding new exercises...")
 #     Exercise(name='Upright Rows', category='strength', muscle_group='shoulders', description='Pull barbell up along body to chin', equipment='Barbell', difficulty='intermediate'),
 #     Exercise(name='Pike Push-ups', category='strength', muscle_group='shoulders', description='Bodyweight shoulder exercise', equipment='Bodyweight', difficulty='intermediate'),
     
-#     # CORE EXERCISES
-#     Exercise(name='Planks', category='strength', muscle_group='core', description='Hold body straight', equipment='Bodyweight', difficulty='beginner'),
-#     Exercise(name='Crunches', category='strength', muscle_group='core', description='Classic ab exercise', equipment='Bodyweight', difficulty='beginner'),
-#     Exercise(name='Russian Twists', category='strength', muscle_group='core', description='Rotate torso side to side', equipment='Dumbbells', difficulty='beginner'),
-#     Exercise(name='Hanging Leg Raises', category='strength', muscle_group='core', description='Hang and raise legs', equipment='Bodyweight', difficulty='advanced'),
-#     Exercise(name='Bicycle Crunches', category='strength', muscle_group='core', description='Alternating elbow to knee', equipment='Bodyweight', difficulty='beginner'),
-#     Exercise(name='Ab Wheel Rollouts', category='strength', muscle_group='core', description='Roll ab wheel forward and back', equipment='Bodyweight', difficulty='advanced'),
-#     Exercise(name='Side Planks', category='strength', muscle_group='core', description='Hold body sideways on one arm', equipment='Bodyweight', difficulty='beginner'),
-#     Exercise(name='Cable Woodchops', category='strength', muscle_group='core', description='Rotational movement with cable', equipment='Cables', difficulty='intermediate'),
-# ])
+
 
 # Add new exercises with images
 exercises_created = Exercise.objects.bulk_create([

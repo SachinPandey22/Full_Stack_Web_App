@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'mobile',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'corsheaders',
     'users',

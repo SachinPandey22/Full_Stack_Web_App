@@ -12,3 +12,5 @@ pytest
 pytest-django
 pytest-cov
 freezegun
+
+django-filter

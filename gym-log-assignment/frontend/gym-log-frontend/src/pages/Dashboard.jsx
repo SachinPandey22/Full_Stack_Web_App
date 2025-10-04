@@ -11,6 +11,8 @@ import WorkoutActivity from '../components/WorkoutActivity/WorkoutActivity';
 import AIPanel from '../components/AIPanel/AIPanel';
 import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivation';
 import QuickActions from '../components/QuickActions/QuickActions';
+import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
+
 
 // for authenticated users
 export default function Dashboard() {
@@ -45,8 +47,9 @@ export default function Dashboard() {
         gridTemplateAreas: `
           "overview overview actions"
           "meals workout aipan"
-          "progress progress progress"
+          "progress progress connect"
         `,
+        gridTemplateColumns: '1fr 1fr 1fr',
         gap: '5px',
         padding: '10px',
         background: '#f7f9fa',
@@ -69,6 +72,9 @@ export default function Dashboard() {
         </div>
         <div style={{ gridArea: 'actions', background: '#e8e6ff', borderRadius: '10px', padding: '20px' }}>
           <QuickActions />
+        </div>
+        <div style={{ gridArea: 'connect', background: '#eef5ff', borderRadius: '10px', padding: '20px' }}>
+          <ConnectDevicePanel />
         </div>
       </div>
     </div>

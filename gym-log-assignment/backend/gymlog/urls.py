@@ -34,6 +34,8 @@ urlpatterns = [
     path('', hello_view, name='hello'),
     path('api/hello/', api_hello_view, name='api_hello'),
 
+    path('api/', include('exercises.urls')),
+
     # Mobile
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
     path("api/mobile/ingest", m.ingest_data),    # post data with JWT

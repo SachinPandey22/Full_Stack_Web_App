@@ -1,4 +1,4 @@
-import { apiclient } from './apijs';
+import { apiClient } from './api';
 
 /** Read CSRF token from cookie (only matters if your backend enforces CSRF) */
 function getCsrfToken(name = 'csrftoken') {
@@ -17,7 +17,7 @@ function withCsrf(headers = {}) {
  * If backend uses trailing slashes, change to '/api/pairing-codes/'.
  */
 export async function createPairingCode() {
-  const res = await apiclient.post(
+  const res = await apiClient.post(
     '/api/pairing-codes',
     {},
     { headers: withCsrf() }
@@ -31,7 +31,7 @@ export async function createPairingCode() {
  * If your backend uses trailing slashes, change to '/api/mobile/devices/'.
  */
 export async function fetchDevices() {
-  const res = await apiclient.get('/api/mobile/devices');
+  const res = await apiClient.get('/api/mobile/devices');
   return Array.isArray(res.data) ? res.data : [];
 }
 
@@ -41,7 +41,7 @@ export async function fetchDevices() {
  * If your backend uses trailing slashes, change to `/api/mobile/devices/${id}/`.
  */
 export async function revokeDevice(id) {
-  const res = await apiclient.delete(
+  const res = await apiClient.delete(
     `/api/mobile/devices/${id}`,
     { headers: withCsrf() }
   );

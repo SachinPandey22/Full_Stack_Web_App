@@ -6,6 +6,8 @@ from django.db.models import Sum
 from datetime import date, datetime
 from .models import Meal, MealTarget
 from .serializers import MealSerializer, MealTargetSerializer
+from .services import MealCalculatorService
+
 
 class MealViewSet(viewsets.ModelViewSet):
     """
@@ -44,11 +46,6 @@ class MealViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])
     def day_summary(self, request):
-        """
-        GET /api/meals/day_summary/?date=2025-10-05
-        Returns: meals, totals, targets, remaining for a specific day
-        """
-        # Get date from query params, default to today
         date_str = request.query_params.get('date')
         if date_str:
             try:
@@ -61,55 +58,15 @@ class MealViewSet(viewsets.ModelViewSet):
         else:
             target_date = date.today()
         
-        # Get user's meals for the day
-        meals = Meal.objects.filter(
-            user=request.user,
-            date=target_date
-        )
-        
-        # Calculate totals
-        totals = meals.aggregate(
-            calories=Sum('calories'),
-            protein=Sum('protein'),
-            carbs=Sum('carbs'),
-            fat=Sum('fat')
-        )
-        
-        # Convert None to 0
-        totals = {k: (v or 0) for k, v in totals.items()}
-        
-        # Get user targets
-        try:
-            targets = MealTarget.objects.get(user=request.user)
-            targets_data = {
-                'calories': targets.daily_calories,
-                'protein': targets.daily_protein,
-                'carbs': targets.daily_carbs,
-                'fat': targets.daily_fat,
-            }
-        except MealTarget.DoesNotExist:
-            # Default targets if not set
-            targets_data = {
-                'calories': 2200,
-                'protein': 165,
-                'carbs': 220,
-                'fat': 73,
-            }
-        
-        # Calculate remaining
-        remaining = {
-            'calories': targets_data['calories'] - totals['calories'],
-            'protein': targets_data['protein'] - totals['protein'],
-            'carbs': targets_data['carbs'] - totals['carbs'],
-            'fat': targets_data['fat'] - totals['fat'],
-        }
+        meals = Meal.objects.filter(user=request.user, date=target_date)
+        summary = MealCalculatorService.get_day_summary(request.user, target_date)
         
         return Response({
             'date': target_date,
             'meals': MealSerializer(meals, many=True).data,
-            'totals': totals,
-            'targets': targets_data,
-            'remaining': remaining
+            'totals': summary['totals'],
+            'targets': summary['targets'],
+            'remaining': summary['remaining'],
         })
 
 class MealTargetViewSet(viewsets.ModelViewSet):

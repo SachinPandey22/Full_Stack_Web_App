@@ -12,6 +12,44 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone as dj_tz
 from django.conf import settings
 from .models import PairingCode, MobileDevice, StepSample
+from .models import StepSample
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def list_steps(request):
+    """
+    Return recent step samples for the logged-in user.
+    Optional query params:
+      - from: ISO datetime (inclusive)
+      - to:   ISO datetime (exclusive)
+      - limit: int (default 200)
+    """
+    qs = StepSample.objects.filter(user=request.user)
+
+    q_from = request.GET.get("from")
+    q_to   = request.GET.get("to")
+    limit  = int(request.GET.get("limit", 200))
+
+    if q_from:
+        dt = parse_datetime(q_from)
+        if dt and dj_tz.is_naive(dt): dt = dj_tz.make_aware(dt, dj_tz.utc)
+        if dt: qs = qs.filter(start__gte=dt)
+
+    if q_to:
+        dt = parse_datetime(q_to)
+        if dt and dj_tz.is_naive(dt): dt = dj_tz.make_aware(dt, dj_tz.utc)
+        if dt: qs = qs.filter(end__lt=dt)
+
+    qs = qs.order_by("-start")[:limit]
+
+    data = [{
+        "start": s.start.isoformat(),
+        "end": s.end.isoformat(),
+        "steps": s.steps,
+        "source": s.source,
+        "ext_id": s.ext_id,
+    } for s in qs]
+    return Response(data)
 
 def _rand_code(n=6):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=n))

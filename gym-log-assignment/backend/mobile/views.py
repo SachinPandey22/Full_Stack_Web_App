@@ -1,3 +1,8 @@
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from django.db import transaction
+import random, string
 from django.shortcuts import render
 import json, jwt
 from datetime import datetime, timedelta, timezone
@@ -6,6 +11,44 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone as dj_tz
 from django.conf import settings
 from .models import PairingCode, MobileDevice, StepSample
+
+def _rand_code(n=6):
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=n))
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])         # ✅ JWT required
+@transaction.atomic
+def create_pairing_code(request):
+    # one active code per user – delete old ones
+    PairingCode.objects.filter(user=request.user).delete()
+
+    # ensure uniqueness
+    for _ in range(10):
+        code = _rand_code(6)
+        if not PairingCode.objects.filter(code=code).exists():
+            break
+
+    pc = PairingCode.objects.create(user=request.user, code=code)
+    return Response({"code": pc.code, "expires_at": pc.expires_at.isoformat()})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])         # ✅ JWT required
+def list_devices(request):
+    qs = MobileDevice.objects.filter(user=request.user).order_by("-last_seen","-created_at")
+    data = [{
+        "id": d.id,
+        "platform": d.platform,
+        "device_id": d.device_id,
+        "last_seen": d.last_seen.isoformat() if d.last_seen else None,
+        "created_at": d.created_at.isoformat() if d.created_at else None,
+    } for d in qs]
+    return Response(data)
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])         # ✅ JWT required
+def revoke_device(request, pk):
+    MobileDevice.objects.filter(id=pk, user=request.user).delete()
+    return Response({"ok": True})
 
 JWT_EXP_MIN = 60 * 24 * 7   # 7 days
 

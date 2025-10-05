@@ -29,7 +29,7 @@ def create_pairing_code(request):
         if not PairingCode.objects.filter(code=code).exists():
             break
 
-    pc = PairingCode.objects.create(user=request.user, code=code)
+    pc = PairingCode.objects.create(user=request.user, code=code, used=False)
     return Response({"code": pc.code, "expires_at": pc.expires_at.isoformat()})
 
 @api_view(["GET"])
@@ -88,6 +88,9 @@ def link_device(request):
 
     if pc.expires_at < dj_tz.now():
         return HttpResponseForbidden("code expired")
+    
+    pc.used = True
+    pc.save(update_fields=["used"])
 
     # create or update device
     md, _ = MobileDevice.objects.update_or_create(

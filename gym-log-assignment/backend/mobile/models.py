@@ -10,6 +10,7 @@ class PairingCode(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     code = models.CharField(max_length=12, unique=True)
     expires_at = models.DateTimeField(default=default_expiry)
+    used = models.BooleanField(default=False)
 
 class MobileDevice(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

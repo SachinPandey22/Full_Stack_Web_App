@@ -24,7 +24,7 @@ class StepSample(models.Model):
     end = models.DateTimeField()
     steps = models.IntegerField()
     source = models.CharField(max_length=20)     # 'health_connect' | 'healthkit'
-    ext_id = models.CharField(max_length=128)    # idempotency key
+    ext_id = models.CharField(max_length=128, unique=False)    # idempotency key
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=["user","ext_id"], name="uniq_user_extid_steps")

@@ -2,6 +2,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.db import transaction
+from django.utils.dateparse import parse_datetime
 import random, string
 from django.shortcuts import render
 import json, jwt
@@ -97,41 +98,86 @@ def link_device(request):
     token = _issue_jwt(pc.user_id, device_id)
     return JsonResponse({"token": token, "user_id": pc.user_id})
 
+
+def _to_aware_datetime(val):
+    """
+    Accepts ISO8601 strings (e.g. '2025-10-05T16:00:00Z') or epoch seconds/ms.
+    Returns a timezone-aware datetime (UTC).
+    """
+    # epoch numbers (seconds or milliseconds)
+    if isinstance(val, (int, float)):
+        # treat large numbers as milliseconds
+        if val > 10_000_000_000:  # ~ year 2286 if seconds; so assume ms
+            val = val / 1000.0
+        return dj_tz.datetime.fromtimestamp(val, tz=dj_tz.utc)
+
+    # strings → try ISO8601
+    if isinstance(val, str):
+        dt = parse_datetime(val)
+        if dt is None:
+            raise ValueError(f"Unparseable datetime: {val!r}")
+        # make aware if naive
+        if dj_tz.is_naive(dt):
+            dt = dj_tz.make_aware(dt, dj_tz.utc)
+        return dt
+
+    raise TypeError(f"Unsupported datetime type: {type(val).__name__}")
+
 @csrf_exempt
 def ingest_data(request):
-    if request.method != "POST": return HttpResponseBadRequest("POST only")
-    claims = _auth(request)
-    if not claims: return HttpResponseForbidden("bad token")
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST only")
+
+    claims = _auth(request)  # device JWT
+    if not claims:
+        return HttpResponseForbidden("bad token")
 
     try:
         body = json.loads(request.body or "{}")
-        steps = body.get("steps", [])
+        steps = body.get("steps", []) or []
         source = body.get("source", "health_connect")
     except Exception:
         return HttpResponseBadRequest("invalid json")
 
-    # write steps
     created, skipped = 0, 0
-    for s in steps:
+    errors = []
+
+    for idx, s in enumerate(steps):
         try:
+            ext_id = str(s["ext_id"]).strip()
+            if not ext_id:
+                raise ValueError("missing ext_id")
+
+            # Parse and normalize times → aware UTC datetimes
+            start_dt = _to_aware_datetime(s["start"])
+            end_dt   = _to_aware_datetime(s["end"])
+            step_cnt = int(s["steps"])
+
             obj, made = StepSample.objects.get_or_create(
                 user_id=claims["uid"],
-                ext_id=s["ext_id"],
+                ext_id=ext_id,
                 defaults={
-                    "start": s["start"], "end": s["end"],
-                    "steps": int(s["steps"]), "source": source
-                }
+                    "start": start_dt,
+                    "end": end_dt,
+                    "steps": step_cnt,
+                    "source": source[:20],  # fits your CharField(max_length=20)
+                },
             )
             created += int(made)
             skipped += int(not made)
-        except Exception:
+
+        except Exception as e:
+            # capture which item failed and why (doesn't break the whole batch)
+            errors.append({"index": idx, "reason": str(e)})
             continue
 
-    # update device heartbeat
+    # update device heartbeat (best-effort)
     try:
-        MobileDevice.objects.filter(user_id=claims["uid"], device_id=claims["did"])\
-            .update(last_seen=dj_tz.now())
-    except:
+        MobileDevice.objects.filter(
+            user_id=claims["uid"],
+            device_id=claims["did"]
+        ).update(last_seen=dj_tz.now())
+    except Exception:
         pass
 
     return JsonResponse({"ok": True, "created": created, "skipped": skipped})

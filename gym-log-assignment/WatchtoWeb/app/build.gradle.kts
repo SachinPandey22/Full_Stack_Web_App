@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.watchtoweb"
-        minSdk = 26
+        minSdk = 28
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -63,4 +63,5 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.foundation)
+    implementation("androidx.health.connect:connect-client:1.2.0-alpha01")
 }

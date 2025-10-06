@@ -9,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -33,7 +32,7 @@ import org.json.JSONObject
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-private const val SERVER = "http://10.198.146.182:8000" // <-- PUT YOUR PC's LAN IP here for real phone. (Emulator = http://10.0.2.2:8000)
+private const val SERVER = "http://10.0.2.2:8000" // <-- PUT YOUR PC's LAN IP here for real phone. (Emulator = http://10.0.2.2:8000)
 
 class MainActivity : ComponentActivity() {
 

@@ -33,7 +33,7 @@ import org.json.JSONObject
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-private const val SERVER = "http://10.198.146.182:8000" // <-- PUT YOUR PC's LAN IP here for real phone. (Emulator = http://10.0.2.2:8000)
+private const val SERVER = "http://10.0.2.2:8000" // <-- PUT YOUR PC's LAN IP here for real phone. (Emulator = http://10.0.2.2:8000)
 
 class MainActivity : ComponentActivity() {
 

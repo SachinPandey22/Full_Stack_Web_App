@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPairingCode, fetchDevices, revokeDevice } from "../../services/pairing";
+import StepsPanel from "./StepsPanel";
 
 function formatRelTime(iso) {
   try {
@@ -31,6 +32,7 @@ export default function ConnectDevicePanel() {
   const [err, setErr] = useState("");
   const [pairing, setPairing] = useState(null); // { code, expires_at }
   const { seconds, done } = useCountdown(pairing?.expires_at);
+  const hasDevice = Array.isArray(devices) && devices.length > 0;
 
   async function loadDevices() {
     setErr("");
@@ -182,6 +184,15 @@ export default function ConnectDevicePanel() {
           </div>
         )}
       </div>
+      <div className="mt-6">
+        {hasDevice ? (
+          <StepsPanel />
+        ) : (
+         <p className="text-sm text-gray-600">
+            Link a device to see your step data here.
+          </p>
+        )}
+      </div>  
     </div>
   );
 }

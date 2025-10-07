@@ -55,4 +55,5 @@ urlpatterns = [
 
     #  Include everything from users/urls.py
     path("api/", include("users.urls")),
+    path("api/", include("mobile.urls")),
 ]

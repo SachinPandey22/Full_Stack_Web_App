@@ -109,9 +109,31 @@ GitHub / Bitbucket
          Display Steps, Heart rate, sleep + Design ios application
 
 
+   # Surendra: Developed full-stack meal logging system with CRUD APIs, data models for meals/macros tracking, and frontend UI featuring real-time daily totals, quick-add modal, and optimistic updates for seamless user experience
+
+      1. SCRUM-28 Data Model & Service Logic
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-28
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-28-DataModelServiceLogic?dest=main
+
+      2. SCRUM-29 API/Backend: Day Summary & CRUD
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-29
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-29-API-backend-summary-crud
+
+      3. SCRUM-27 Design: Meal Day View + Add/Edit Flow
+   Type: Design
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-27
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-27-design-specs-docs
+
+      4. SCRUM-30 Frontend: Meal Log UI & Quick-Add
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-30
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-30-frontend-MealLogUI2
 
 
-
+   *Refine Meal Log UI with improved error handling and loading states + Expand backend with advanced filtering, meal templates, and bulk operations for enhanced data management
+   
 ## Features
 1. User Profiles
 

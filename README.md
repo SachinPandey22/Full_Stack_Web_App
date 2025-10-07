@@ -109,6 +109,31 @@ GitHub / Bitbucket
          Display Steps, Heart rate, sleep + Design ios application
 
 
+# SAPNIL: Designed UI for Workout Library - Added Workouts according to the muscle groups - Added images to the workouts
+
+      1. SCRUM-14 Exercise Library UI  Type: Frontend
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-14
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-14-exercise-library-ui-frontend-de
+
+      2. SCRUM-13 API + Database Schema Type: Backend + Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-13
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-13-api-database-schema-backend-des
+
+      3. SCRUM-15 Adding Image to Buttons of Workout Library Type: Frontend+Design
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-15
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-15-adding-image-to-buttons-of-work?dest=main
+
+      4. SCRUM-16 Adding Image to Workouts Type: Frontend+Design
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-16
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-16-adding-image-to-workouts
+
+      
+      * Next Step:
+         Build detail pages with “add to plan,” add search and filter chips, Workout pages with descriptions and video, add tests, run instructions, track calorie tracking after workout
+         
+         
+
+
 
 
 

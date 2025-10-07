@@ -88,6 +88,7 @@ GitHub / Bitbucket
          
          
  # MISAN: Designed an android app to access health data locally through user's phone - tested pairing code to connect app and web server - designed frontend component to display status
+ 
       1. SCRUM-36 Backend: Design Oauth2 flow for smartwatch integration  Type: Implementation
             Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-36
             Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-36-design-oauth2-flow-for-smartwat

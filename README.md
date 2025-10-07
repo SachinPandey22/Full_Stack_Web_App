@@ -85,6 +85,27 @@ GitHub / Bitbucket
       
       * Next Step:
          TDEE calculation from profile + activity level using a documented formula, Updating profile immediately updates recommended targets
+         
+         
+ # MISAN: Designed an android app to access health data locally through user's phone - tested pairing code to connect app and web server - designed frontend component to display status
+      1. SCRUM-36 Backend: Design Oauth2 flow for smartwatch integration  Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-36
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-36-design-oauth2-flow-for-smartwat
+
+      2. SCRUM-39 Testing: Testing Pairing Code Type: Test
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-39
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-39-Revised-testing-pairing-code
+
+      3. SCRUM-37 Frontend: Frontend Visualization Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-37
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-37-frontend-visualization
+
+      4. SCRUM-41 Frontend+Backend: App development Type: Design
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-41
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-41-app-development
+      
+      * Next Step:
+         Display Steps, Heart rate, sleep + Design ios application
 
 
 

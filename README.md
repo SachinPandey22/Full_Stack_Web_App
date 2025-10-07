@@ -1,10 +1,11 @@
 # SHAKTIMAN- AI Fitness Tracker
 > An AI-powered fitness assistant that records body metrics, tracks fitness progress, and provides personalized diet and workout suggestions.
-> Live demo [_here_](https://www.example.com). <!-- If you have the project hosted somewhere, include the link here. -->
+
 
 ## Table of Contents
 * [General Info](#general-information)
 * [Technologies Used](#technologies-used)
+* [Contributions]
 * [Features](#features)
 * [Screenshots](#screenshots)
 * [Setup](#setup)
@@ -54,6 +55,39 @@ React Hot Toast
 
 GitHub / Bitbucket
  – version control and collaboration
+
+
+
+ ## Contributions
+
+* * Sprint 1 (Sept 22 - Oct 3)
+
+   # SACHIN: Completed the authentication flow — both frontend and backend — including user registration, login, protected routes, and backend testing.
+      1. SCRUM-23 Frontend: Auth Screens, Client Validation & API Integration  Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-23
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/commits/branch/feature%2FSCRUM-23-frontend-auth-screens-client-va
+
+      2. SCRUM-6 Design: Auth UX & Error States (Register, Login, Logout) Type: Design
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-6
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/commits/branch/feature%2FSCRUM-6-design-auth-ux-error-states-regi
+
+      3. SCRUM-22 Backend: Auth API & SQL Persistence Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-22
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/commits/branch/feature%2FSCRUM-22-backend-auth-api-sql-persistenc
+
+      4. SCRUM-26 Frontend Tests: Component & Flow (React Testing Library) Type: Unit/UI Testing
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-26
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/commits/branch/feature%2FSCRUM-26-frontend-tests-component-flow-v
+
+      5. SCRUM-25 Backend Tests: Unit & Integration Type: Unit/Integration Testing
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-25
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/commits/branch/feature%2FSCRUM-25-backend-tests-unit-integration-
+      
+      * Next Step:
+         TDEE calculation from profile + activity level using a documented formula, Updating profile immediately updates recommended targets
+
+
+
 
 
 ## Features

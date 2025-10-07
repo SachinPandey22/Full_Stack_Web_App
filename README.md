@@ -108,6 +108,57 @@ GitHub / Bitbucket
       * Next Step:
          Display Steps, Heart rate, sleep + Design ios application
 
+# BIGYAN: Completed the profile setup feature, including frontend validation and UI design, backend API creation, and data persistence with personalized dashboard integration.
+
+
+1. SCRUM-7 Frontend: Validation & Personalization
+   Type: Implementation
+   Status: Done
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?jql=assignee%20%3D%20712020%3A05b5acc5-5dfe-46c6-b168-92783269987e&selectedIssue=SCRUM-7
+   Description:
+   Implemented client-side validation rules for the profile form (required fields, weight > 0, height > 0).
+   Disabled the “Save” button until all inputs were valid.
+   Added a success toast confirming profile setup and personalized the dashboard with the user’s name.
+   Branch: feature/SCRUM-7-frontend-validation-personalization
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-7-frontend-validation-integration
+
+2. SCRUM-5 UI Design: Profile Form
+   Type: Design / Frontend Implementation
+   Status: Done 
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?jql=assignee%20%3D%20712020%3A05b5acc5-5dfe-46c6-b168-92783269987e&selectedIssue=SCRUM-7
+   Description:
+   Built a React-based Profile Form with fields for Name, Sex (dropdown), Height, Weight, and Goal (dropdown).
+   Applied proper input types (number for height/weight and select for dropdowns).
+   Ensured responsive design for both web and mobile using CSS Flexbox and media queries.
+   Branch: feature/SCRUM-5-ui-design-profile-form
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-5-ui-design-%E2%80%93-profile-form
+
+3. SCRUM-9 Backend: Profile API Endpoint
+   Type: Backend / API Implementation
+   Status: Done 
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?jql=assignee%20%3D%20712020%3A05b5acc5-5dfe-46c6-b168-92783269987e&selectedIssue=SCRUM-9
+   Description:
+   Created /api/user/profile endpoint with JWT authentication.
+   Supported POST and PUT for saving user profile data.
+   Implemented server-side input validation (ensuring weight and height > 0).
+   Tested endpoint using Postman and verified secure data persistence.
+   Branch: feature/SCRUM-9-backend-profile-api
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-9-backend-api-endpoint
+
+4. SCRUM-11 Persistence & State Management
+   Type: Full-Stack Integration
+   Status: Done 
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?jql=assignee%20%3D%20712020%3A05b5acc5-5dfe-46c6-b168-92783269987e&selectedIssue=SCRUM-11
+   Description:
+   Integrated SQL persistence for the profile. The frontend automatically fetches saved profile data upon reload and pre-fills the form.
+   Implemented error-handling for invalid tokens and server errors with user-friendly messages.
+   Branch: feature/SCRUM-11-profile-persistence
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-11-persistence-state-management
+
+Next Steps (Sprint 2):
+- Update profile immediately after changes to reflect new TDEE targets.
+- Add error handling for API and invalid inputs.
+- Create automated frontend tests for validation and persistence.
 
 # SAPNIL: Designed UI for Workout Library - Added Workouts according to the muscle groups - Added images to the workouts
 
@@ -136,7 +187,31 @@ GitHub / Bitbucket
 
 
 
+   # Surendra: Developed full-stack meal logging system with CRUD APIs, data models for meals/macros tracking, and frontend UI featuring real-time daily totals, quick-add modal, and optimistic updates for seamless user experience
 
+      1. SCRUM-28 Data Model & Service Logic
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-28
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-28-DataModelServiceLogic?dest=main
+
+      2. SCRUM-29 API/Backend: Day Summary & CRUD
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-29
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-29-API-backend-summary-crud
+
+      3. SCRUM-27 Design: Meal Day View + Add/Edit Flow
+   Type: Design
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-27
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-27-design-specs-docs
+
+      4. SCRUM-30 Frontend: Meal Log UI & Quick-Add
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/boards/1?selectedIssue=SCRUM-30
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-30-frontend-MealLogUI2
+
+
+   *Refine Meal Log UI with improved error handling and loading states + Expand backend with advanced filtering, meal templates, and bulk operations for enhanced data management
+   
 ## Features
 1. User Profiles
 

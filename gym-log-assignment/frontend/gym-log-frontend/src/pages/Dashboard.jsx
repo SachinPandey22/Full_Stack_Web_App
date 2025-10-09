@@ -12,17 +12,33 @@ import AIPanel from '../components/AIPanel/AIPanel';
 import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivation';
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
-
+import { getProfile } from '../services/api';
 
 // for authenticated users
 export default function Dashboard() {
   const { user, clearSession } = useAuth();
 
 // Reading profile info from localStorage
-  const profile = JSON.parse(localStorage.getItem('userProfile'));
+const { getAccessToken } = useAuth();
+const [profile, setProfile] = React.useState(null);
+
+React.useEffect(() => {
+  const fetchUserProfile = async () => {
+    const token = getAccessToken();
+    if (!token) return;
+    try {
+      const data = await getProfile(token);  // ✅ Same function you use in ProfileForm
+      setProfile(data);
+    } catch (err) {
+      console.error("Failed to load profile", err);
+    }
+  };
+  fetchUserProfile();
+}, [user, getAccessToken]); 
 
   const onLogout = () => {
     clearSession();
+    localStorage.removeItem('userProfile');
     toast.success('Signed out');
     window.location.href = '/login';
   };

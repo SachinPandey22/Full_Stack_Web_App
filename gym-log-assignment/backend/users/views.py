@@ -5,6 +5,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, UserOutSerializer
+from rest_framework import generics, permissions
+from .models import Profile
+from .serializers import ProfileSerializer
 
 def build_auth_payload(user):
     """
@@ -86,3 +89,23 @@ class MeView(APIView):
     def get(self, request):
         # If Authorization: Bearer <access> is valid, you'll reach here
         return Response({'user': UserOutSerializer(request.user).data})
+    
+class LogoutView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        # Clear the httpOnly refresh cookie (basic server-side logout)
+        resp = Response({"detail": "Logged out."})
+        resp.delete_cookie("refresh")
+        return resp
+    
+class ProfileView(generics.RetrieveUpdateAPIView):
+    """
+    GET /api/profile/   -> fetch the logged-in user's profile
+    PUT /api/profile/   -> update the logged-in user's profile
+    """
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user.profile

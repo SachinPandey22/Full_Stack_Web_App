@@ -15,9 +15,9 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
-from users.views import RegisterView, LoginView, RefreshView, MeView
+from mobile import views as m
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -34,11 +34,26 @@ urlpatterns = [
     path('', hello_view, name='hello'),
     path('api/hello/', api_hello_view, name='api_hello'),
 
+    path('api/', include('exercises.urls')),
+    path('api/', include('MealLogging.urls')),
+    
+    # Mobile
+    path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
+    path("api/mobile/ingest", m.ingest_data),    # post data with JWT
+    
     # 🔐 Auth
-    path('api/auth/register/', RegisterView.as_view(), name='register'),
-    path('api/auth/login/', LoginView.as_view(), name='login'),
-    path('api/auth/refresh/', RefreshView.as_view(), name='refresh'),
+    #path('api/auth/register/', RegisterView.as_view(), name='register'),
+    #path('api/auth/login/', LoginView.as_view(), name='login'),
+    #path('api/auth/refresh/', RefreshView.as_view(), name='refresh'),
+    
 
     # 🔒 Protected example
-    path('api/me/', MeView.as_view(), name='me'),
+    #path('api/me/', MeView.as_view(), name='me'),
+    
+    #EXITING
+    #path('api/auth/logout/', LogoutView.as_view(), name='logout')
+
+    #  Include everything from users/urls.py
+    path("api/", include("users.urls")),
+    path("api/", include("mobile.urls")),
 ]

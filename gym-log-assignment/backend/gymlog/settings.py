@@ -36,12 +36,15 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'mobile',
     'django.contrib.staticfiles',
+    'django_filters',
     'rest_framework',
     'corsheaders',
     'users',
     'workouts',
     'exercises',
+    'MealLogging',
 ]
 
 MIDDLEWARE = [
@@ -81,8 +84,12 @@ WSGI_APPLICATION = 'gymlog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'fitnessdb',          # database name you created
+        'USER': 'fitnessuser',        # postgres user you created
+        'PASSWORD': 'mypassword',     # password you set
+        'HOST': 'localhost',          # local since you're running it on your Mac
+        'PORT': '5432',               # default postgres port
     }
 }
 

@@ -35,9 +35,23 @@ export default function Register() {
       const data = await registerUser(values);
       setSession({ access: data?.access, user: data?.user });
       toast.success('Account created!');
-      navigate('/dashboard', { replace: true });
+      navigate('/profile', { replace: true });
     } catch (err) {
-      const msg = err?.response?.data?.detail || 'Email already in use. Try another.';
+      console.error('Registration error:', err.response?.data); // Debug log
+    
+    // Handle error message from backend
+    let msg = 'Registration failed. Please try again.';
+    
+    if (err?.response?.data?.detail) {
+      const detail = err.response.data.detail;
+      // Backend can return array or string
+      msg = Array.isArray(detail) ? detail[0] : detail;
+    } else if (err?.response?.data?.email) {
+      // Handle validation errors on specific fields
+      const emailError = err.response.data.email;
+      msg = Array.isArray(emailError) ? emailError[0] : emailError;
+    }
+      
       toast.error(msg);
       resetField('password'); // preserve email, clear password
       setFocus('email');

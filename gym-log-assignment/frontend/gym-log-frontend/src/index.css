@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 .auth-card {
   max-width: 420px;
   margin: 60px auto;

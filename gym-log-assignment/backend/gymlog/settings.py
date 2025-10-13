@@ -85,26 +85,26 @@ WSGI_APPLICATION = 'gymlog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-if DATABASE_URL:
+# if DATABASE_URL:
     # Use Supabase (or any DATABASE_URL provided)
-    DATABASES = {
+DATABASES = {
         'default': dj_database_url.parse(
             DATABASE_URL,
             conn_max_age=600,       # persistent connections
             ssl_require=True        # Supabase requires SSL
         )
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'fitnessdb',          # database name you created
-            'USER': 'fitnessuser',        # postgres user you created
-            'PASSWORD': 'mypassword',     # password you set
-            'HOST': 'localhost',          # local since you're running it on your Mac
-            'PORT': '5432',               # default postgres port
-        }
-    }
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'fitnessdb',          # database name you created
+#             'USER': 'fitnessuser',        # postgres user you created
+#             'PASSWORD': 'mypassword',     # password you set
+#             'HOST': 'localhost',          # local since you're running it on your Mac
+#             'PORT': '5432',               # default postgres port
+#         }
+#     }
 
 
 # Password validation

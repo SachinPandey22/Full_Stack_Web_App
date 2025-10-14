@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import dj_database_url
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,10 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x62!!-@!%7ie8^(w)gxpvn@_*ydp7h0x-#m+34ik0(v1dpi#bb'
+SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+DATABASE_URL = config('DATABASE_URL', default='')
 
 ALLOWED_HOSTS = []
 
@@ -82,16 +85,26 @@ WSGI_APPLICATION = 'gymlog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# if DATABASE_URL:
+    # Use Supabase (or any DATABASE_URL provided)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fitnessdb',          # database name you created
-        'USER': 'fitnessuser',        # postgres user you created
-        'PASSWORD': 'mypassword',     # password you set
-        'HOST': 'localhost',          # local since you're running it on your Mac
-        'PORT': '5432',               # default postgres port
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,       # persistent connections
+            ssl_require=True        # Supabase requires SSL
+        )
     }
-}
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'fitnessdb',          # database name you created
+#             'USER': 'fitnessuser',        # postgres user you created
+#             'PASSWORD': 'mypassword',     # password you set
+#             'HOST': 'localhost',          # local since you're running it on your Mac
+#             'PORT': '5432',               # default postgres port
+#         }
+#     }
 
 
 # Password validation

@@ -20,6 +20,7 @@ const schema = z.object({
   weight: z.number({ invalid_type_error: 'Weight must be a number' })
     .min(1, 'Weight must be greater than 0'),
   goal: z.enum(['lose', 'gain', 'maintain'], { required_error: 'Please select a goal' }),
+  activity_level: z.enum(['sedentary','light','moderate','very','extra'], { required_error: 'Please select activity' }),
 });
 
 export default function ProfileForm() {
@@ -121,6 +122,19 @@ export default function ProfileForm() {
         <label>Weight (kg)</label>
         <input type="number" {...register('weight', { valueAsNumber: true })} />
         {formState.errors.weight && <p className="error">{formState.errors.weight.message}</p>}
+
+        {/* Activity Level */}
+      <label>Activity Level</label>
+      <select {...register('activity_level')}>
+      <option value="">Select</option>
+      <option value="sedentary">Sedentary</option>
+      <option value="light">Lightly Active</option>
+      <option value="moderate">Moderately Active</option>
+      <option value="very">Very Active</option>
+      <option value="extra">Extra Active</option>
+      </select>
+      {formState.errors.activity_level && <p className="error">{formState.errors.activity_level.message}</p>}
+      
 
         {/* Goal */}
         <label>Goal</label>

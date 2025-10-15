@@ -288,31 +288,7 @@ function WorkoutLibrary() {
   >
 
                   
-                    {/* <div style={{
-                      width: '100%',
-                      height: '160px',
-                      background: '#374151',
-                      borderRadius: '8px',
-                      marginBottom: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center'
-                    }}>
-                      {exercise.video_url ? (
-                        <img 
-                          src={exercise.video_url} 
-                          alt={exercise.name} 
-                          style={{ 
-                            width: '100%', 
-                            height: '100%', 
-                            objectFit: 'cover', 
-                            borderRadius: '8px' 
-                          }} 
-                        />
-                      ) : (
-                        <span style={{ fontSize: '48px' }}>💪</span>
-                      )}
-                    </div> */
+                   
                     
                     <div style={{
   width: '100%',

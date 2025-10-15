@@ -322,7 +322,7 @@ function WorkoutLibrary() {
     </div>
   )}
 </div>
-}
+
                     <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
                       {exercise.name}
                     </h3>

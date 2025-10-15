@@ -40,7 +40,15 @@ class UserOutSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ["name", "sex", "height", "weight", "goal"]
+        fields = ["name", "sex", "height", "weight", "goal", "activity_level"]
+        extra_kwargs = {
+            "sex": {"required": True, "allow_null": False},
+            "height": {"required": True, "allow_null": False},
+            "weight": {"required": True, "allow_null": False},
+            "goal": {"required": True, "allow_null": False},
+            "activity_level": {"required": True, "allow_null": False},
+            # name stays optional
+        }
 
     def validate_height(self, value):
         if value <= 0:

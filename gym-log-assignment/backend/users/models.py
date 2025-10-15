@@ -18,6 +18,17 @@ class Profile(models.Model):
         blank=True,
         default=''
     )
-
+    activity_level = models.CharField(
+        max_length=10,
+        choices=[
+            ("sedentary", "sedentary"),
+            ("light", "light"),
+            ("moderate", "moderate"),
+            ("very", "very"),
+            ("extra", "extra"),
+        ],
+        blank=True,   # keep optional so old rows don’t break
+        null=True,
+    )
     def __str__(self):
         return f"{self.user.username}'s profile"

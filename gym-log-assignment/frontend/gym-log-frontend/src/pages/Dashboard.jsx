@@ -13,10 +13,11 @@ import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivat
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
 import { getProfile } from '../services/api';
-
+import { useNavigate } from 'react-router-dom';
 // for authenticated users
 export default function Dashboard() {
   const { user, clearSession } = useAuth();
+  const navigate = useNavigate();
 
 // Reading profile info from localStorage
 const { getAccessToken } = useAuth();
@@ -38,7 +39,7 @@ React.useEffect(() => {
 
   const onLogout = () => {
     clearSession();
-    localStorage.removeItem('userProfile');
+    // localStorage.removeItem('userProfile');
     toast.success('Signed out');
     window.location.href = '/login';
   };
@@ -47,7 +48,27 @@ React.useEffect(() => {
     <div style={{ padding: '20px' }}>
       {/* Header with user info + logout */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h2>Welcome {profile?.name ||user?.email || 'athlete'}!</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <h2>Welcome {profile?.name || user?.email || 'athlete'}!</h2>
+          <button
+            onClick={() => navigate('/profile')}
+            style={{
+              background: '#ffffff',
+              border: '2px solid #007bff',
+              borderRadius: '50%',
+              width: '32px',
+              height: '32px',
+              cursor: 'pointer',
+              color: '#007bff',
+              fontSize: '16px',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            }}
+            title="Edit Profile"
+          >
+            👤
+          </button>
+        </div>
         {profile?.goal && (
           <p style={{ marginLeft: '20px', color: '#555' }}>
             Goal: {profile.goal}

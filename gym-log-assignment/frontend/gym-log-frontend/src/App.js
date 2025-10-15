@@ -8,6 +8,7 @@ import LandingPage from './pages/LandingPage'; // import the landing page
 import ProfileForm from './components/ProfileForm';
 import GymRidePage from './pages/GymRidePage';
 import WorkoutLibrary from './components/WorkoutActivity/WorkoutLibrary';
+import ExerciseDetail from './components/WorkoutActivity/ExerciseDetail';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/profile" element={<ProfileForm />} />
         <Route path="/workout-library" element={<WorkoutLibrary />} />
+        <Route path="/exercises/:id" element={<ExerciseDetail />} />
         {/* Add more protected pages here later */}
         {/* add more protected pages later */}
       </Route>

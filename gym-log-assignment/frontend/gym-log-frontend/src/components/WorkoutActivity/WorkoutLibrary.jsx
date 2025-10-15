@@ -266,24 +266,28 @@ function WorkoutLibrary() {
                 gap: '24px'
               }}>
                 {exercises.map((exercise) => (
-                  <div
-                    key={exercise.id}
-                    style={{
-                      background: '#1f2937',
-                      borderRadius: '12px',
-                      padding: '24px',
-                      border: '1px solid #374151',
-                      transition: 'all 0.3s'
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.transform = 'scale(1.05)';
-                      e.currentTarget.style.borderColor = '#60a5fa';
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.transform = 'scale(1)';
-                      e.currentTarget.style.borderColor = '#374151';
-                    }}
-                  >
+  <div
+    key={exercise.id}
+    onClick={() => navigate(`/exercises/${exercise.id}`)}
+    style={{
+      background: '#1f2937',
+      borderRadius: '12px',
+      padding: '24px',
+      border: '1px solid #374151',
+      transition: 'all 0.3s',
+      cursor: 'pointer'
+    }}
+    onMouseOver={(e) => {
+      e.currentTarget.style.transform = 'scale(1.05)';
+      e.currentTarget.style.borderColor = '#60a5fa';
+    }}
+    onMouseOut={(e) => {
+      e.currentTarget.style.transform = 'scale(1)';
+      e.currentTarget.style.borderColor = '#374151';
+    }}
+  >
+
+                  
                     {/* <div style={{
                       width: '100%',
                       height: '160px',

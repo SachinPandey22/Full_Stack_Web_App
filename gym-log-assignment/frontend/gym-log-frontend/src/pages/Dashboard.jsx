@@ -1,8 +1,9 @@
 //  for authenticated users
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button/Button';
+import { NotificationsBell } from '../components/Notifications/Index'
 
 // Importing sub-components for the dashboard
 import DailyOverview from '../components/DailyOverview/DailyOverview';
@@ -17,6 +18,8 @@ import { getProfile } from '../services/api';
 // for authenticated users
 export default function Dashboard() {
   const { user, clearSession } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(2);
 
 // Reading profile info from localStorage
 const { getAccessToken } = useAuth();
@@ -49,10 +52,15 @@ React.useEffect(() => {
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
         <h2>Welcome {profile?.name ||user?.email || 'athlete'}!</h2>
         {profile?.goal && (
-          <p style={{ marginLeft: '20px', color: '#555' }}>
+          <p style={{ marginLeft: '290px', color: '#555' }}>
             Goal: {profile.goal}
           </p>
         )}
+
+        <NotificationsBell
+          onClick={() => setIsOpen(o => !o)}
+          hasUnread={unreadCount > 0}
+        />
 
         <Button onClick={onLogout}>Logout</Button>
       </div>

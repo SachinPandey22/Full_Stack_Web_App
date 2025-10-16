@@ -1,8 +1,9 @@
 //  for authenticated users
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button/Button';
+import { NotificationsBell } from '../components/Notifications/Index'
 
 // Importing sub-components for the dashboard
 import DailyOverview from '../components/DailyOverview/DailyOverview';
@@ -18,6 +19,8 @@ import { useNavigate } from 'react-router-dom';
 // for authenticated users
 export default function Dashboard() {
   const { user, clearSession } = useAuth();
+  const [isOpen, setIsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(2);
   const navigate = useNavigate();
 
 // Reading profile info from localStorage
@@ -71,10 +74,15 @@ React.useEffect(() => {
           </button>
         </div>
         {profile?.goal && (
-          <p style={{ marginLeft: '20px', color: '#555' }}>
+          <p style={{ marginLeft: '290px', color: '#555' }}>
             Goal: {profile.goal}
           </p>
         )}
+
+        <NotificationsBell
+          onClick={() => setIsOpen(o => !o)}
+          hasUnread={unreadCount > 0}
+        />
 
         <Button onClick={onLogout}>Logout</Button>
       </div>

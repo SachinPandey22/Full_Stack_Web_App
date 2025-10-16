@@ -19,6 +19,9 @@ const schema = z.object({
     .min(50, 'Height must be at least 50 cm'),
   weight: z.number({ invalid_type_error: 'Weight must be a number' })
     .min(1, 'Weight must be greater than 0'),
+  age: z.number({ invalid_type_error: 'Age must be a number' })
+    .min(1, 'Age must be at least 1')
+    .max(120, 'Age must be less than 120'),
   goal: z.enum(['lose', 'gain', 'maintain'], { required_error: 'Please select a goal' }),
   activity_level: z.enum(['sedentary','light','moderate','very','extra'], { required_error: 'Please select activity' }),
 });
@@ -123,18 +126,22 @@ export default function ProfileForm() {
         <input type="number" {...register('weight', { valueAsNumber: true })} />
         {formState.errors.weight && <p className="error">{formState.errors.weight.message}</p>}
 
+        {/* Age */}
+        <label>Age</label>
+        <input type="number" {...register('age', { valueAsNumber: true })} />
+        {formState.errors.age && <p className="error">{formState.errors.age.message}</p>}
         {/* Activity Level */}
-      <label>Activity Level</label>
-      <select {...register('activity_level')}>
-      <option value="">Select</option>
-      <option value="sedentary">Sedentary</option>
-      <option value="light">Lightly Active</option>
-      <option value="moderate">Moderately Active</option>
-      <option value="very">Very Active</option>
-      <option value="extra">Extra Active</option>
-      </select>
-      {formState.errors.activity_level && <p className="error">{formState.errors.activity_level.message}</p>}
-      
+        <label>Activity Level</label>
+        <select {...register('activity_level')}>
+        <option value="">Select</option>
+        <option value="sedentary">Sedentary</option>
+        <option value="light">Lightly Active</option>
+        <option value="moderate">Moderately Active</option>
+        <option value="very">Very Active</option>
+        <option value="extra">Extra Active</option>
+        </select>
+        {formState.errors.activity_level && <p className="error">{formState.errors.activity_level.message}</p>}
+        
 
         {/* Goal */}
         <label>Goal</label>

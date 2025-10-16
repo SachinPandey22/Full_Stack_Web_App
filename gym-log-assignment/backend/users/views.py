@@ -8,6 +8,7 @@ from .serializers import RegisterSerializer, UserOutSerializer
 from rest_framework import generics, permissions
 from .models import Profile
 from .serializers import ProfileSerializer
+from .utils import compute_targets
 
 def build_auth_payload(user):
     """
@@ -17,6 +18,56 @@ def build_auth_payload(user):
     refresh = RefreshToken.for_user(user)
     access = str(refresh.access_token)
     return access, refresh
+
+class NutritionTargetsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile: Profile = getattr(request.user, "profile", None)
+        if not profile:
+            return Response({"detail": "Profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        missing = []
+        if not profile.sex:
+            missing.append("sex")
+        if not profile.height:
+            missing.append("height")
+        if not profile.weight:
+            missing.append("weight")
+        if not profile.activity_level:
+            missing.append("activity_level")
+        if not profile.goal:
+            missing.append("goal")
+        if not profile.age_years:
+            missing.append("age_years")
+
+        if missing:
+            return Response(
+                {"detail": "Incomplete profile.", "missing_fields": missing},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        t = compute_targets(
+            sex=profile.sex,
+            weight_kg=profile.weight,
+            height_cm=profile.height,
+            age_years=profile.age_years,
+            activity_level=profile.activity_level,
+            goal=profile.goal,
+        )
+
+        return Response({
+            "bmr": t.bmr,
+            "tdee": t.tdee,
+            "goal": profile.goal,
+            "target_calories": t.target_calories,
+            "macros": {
+                "protein_g": t.protein_g,
+                "fat_g": t.fat_g,
+                "carbs_g": t.carbs_g,
+            },
+            "assumptions": t.meta
+        })
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]

@@ -40,13 +40,14 @@ class UserOutSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = ["name", "sex", "height", "weight", "goal", "activity_level"]
+        fields = ["name", "sex", "height", "weight", "goal", "activity_level", "age"]
         extra_kwargs = {
             "sex": {"required": True, "allow_null": False},
             "height": {"required": True, "allow_null": False},
             "weight": {"required": True, "allow_null": False},
             "goal": {"required": True, "allow_null": False},
             "activity_level": {"required": True, "allow_null": False},
+            "age": {"required": True, "allow_null": False},
             # name stays optional
         }
 
@@ -60,4 +61,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Weight must be greater than 0.")
         return value    
 
-    
+    def validate_age(self, value):
+        if value <= 0 or value > 120:
+            raise serializers.ValidationError("Age must be between 1 and 120.")
+        return value

@@ -12,6 +12,8 @@ class Profile(models.Model):
     )
     height = models.FloatField(null=True, blank=True)  # Allow NULL
     weight = models.FloatField(null=True, blank=True)  # Allow NULL
+    age = models.IntegerField(null=True, blank=True)
+
     goal = models.CharField(
         max_length=10, 
         choices=[("lose","Lose"), ("gain","Gain"), ("maintain","Maintain")],

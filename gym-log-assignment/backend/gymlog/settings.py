@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'corsheaders',
-    'users',
+    'users.apps.UsersConfig',
     'workouts',
     'exercises',
     'MealLogging',

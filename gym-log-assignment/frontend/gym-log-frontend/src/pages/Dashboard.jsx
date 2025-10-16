@@ -12,6 +12,7 @@ import AIPanel from '../components/AIPanel/AIPanel';
 import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivation';
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
+import NutritionCard from "../components/Nutrition/NutritionCard";
 import { getProfile } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 // for authenticated users
@@ -84,7 +85,7 @@ React.useEffect(() => {
         gridTemplateAreas: `
           "overview overview actions"
           "meals workout aipan"
-          "progress progress connect"
+          "progress nutritions connect"
         `,
         gridTemplateColumns: '1fr 1fr 1fr',
         gap: '5px',
@@ -111,8 +112,11 @@ React.useEffect(() => {
           <QuickActions />
         </div>
         <div style={{ gridArea: 'connect', background: '#eef5ff', borderRadius: '10px', padding: '20px' }}>
-          <ConnectDevicePanel />
+          <ConnectDevicePanel /> 
         </div>
+        <div style={{ gridArea: 'nutritions', background: '#eef5ff', borderRadius: '20px', padding: '20px' }}>
+          <NutritionCard /> 
+        </div>        
       </div>
     </div>
   );

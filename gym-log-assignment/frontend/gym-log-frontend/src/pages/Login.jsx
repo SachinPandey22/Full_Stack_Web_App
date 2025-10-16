@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 import { loginUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
+import ChatPopup from '../components/AIPanel/ChatPopup';
+
 
 import Button from '../components/common/Button/Button';
 import StatusIndicator from '../components/common/StatusIndicator/StatusIndicator';
@@ -63,6 +65,7 @@ export default function Login() {
 
       <p style={{marginTop: 12}}>New here? <a href="/register">Create an account</a></p>
       <StatusIndicator status="info" message="We’ll keep you signed in with your access token." />
+      <ChatPopup /> 
     </div>
   );
 }

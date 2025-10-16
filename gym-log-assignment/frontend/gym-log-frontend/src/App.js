@@ -6,17 +6,15 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import LandingPage from './pages/LandingPage'; // import the landing page
 import ProfileForm from './components/ProfileForm';
-import GymRidePage from './pages/GymRidePage';
 import WorkoutLibrary from './components/WorkoutActivity/WorkoutLibrary';
 import ExerciseDetail from './components/WorkoutActivity/ExerciseDetail';
+import NutritionPage from './components/Nutrition/NutritionPage';
 
 function App() {
   return (
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
-      {/* Public landing page */}
-      <Route path="/" element={<GymRidePage />} />
 
       {/* Public auth pages */}
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -28,15 +26,12 @@ function App() {
         <Route path="/profile" element={<ProfileForm />} />
         <Route path="/workout-library" element={<WorkoutLibrary />} />
         <Route path="/exercises/:id" element={<ExerciseDetail />} />
-        {/* Add more protected pages here later */}
+        <Route path="/nutrition" element={<NutritionPage />} />
         {/* add more protected pages later */}
       </Route>
 
       {/* Catch-all: if unknown path, send back to landing */}
       <Route path="*" element={<Navigate to="/" replace />} />
-      {/* Catch-all route */}
-      <Route path="*" element={<Navigate to="/" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

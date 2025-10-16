@@ -4,10 +4,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer, UserOutSerializer
 from rest_framework import generics, permissions
-from .models import Profile
+
+from .serializers import RegisterSerializer, UserOutSerializer
+from .models import Profile, NutritionTargets   # ✅ added NutritionTargets
 from .serializers import ProfileSerializer
+from .utils import compute_targets
+
 
 def build_auth_payload(user):
     """
@@ -17,6 +20,75 @@ def build_auth_payload(user):
     refresh = RefreshToken.for_user(user)
     access = str(refresh.access_token)
     return access, refresh
+
+
+class NutritionTargetsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile: Profile = getattr(request.user, "profile", None)
+        if not profile:
+            return Response({"detail": "Profile not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        missing = []
+        if not profile.sex:
+            missing.append("sex")
+        if not profile.height:
+            missing.append("height")
+        if not profile.weight:
+            missing.append("weight")
+        if not profile.activity_level:
+            missing.append("activity_level")
+        if not profile.goal:
+            missing.append("goal")
+        if not profile.age:
+            missing.append("age")
+
+        if missing:
+            return Response(
+                {"detail": "Incomplete profile.", "missing_fields": missing},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Compute fresh targets from current profile
+        t = compute_targets(
+            sex=profile.sex,
+            weight_kg=profile.weight,
+            height_cm=profile.height,
+            age_years=profile.age,            # ✅ your model uses `age`
+            activity_level=profile.activity_level,
+            goal=profile.goal,
+        )
+
+        # ✅ Persist (upsert) the latest numbers for this user in Supabase
+        meta = getattr(t, "meta", {}) or getattr(t, "assumptions", {}) or {}
+        NutritionTargets.objects.update_or_create(
+            user=request.user,
+            defaults=dict(
+                bmr=round(getattr(t, "bmr", 0)),
+                tdee=round(getattr(t, "tdee", 0)),
+                target_calories=round(getattr(t, "target_calories", 0)),
+                protein_g=round(getattr(t, "protein_g", 0)),
+                fat_g=round(getattr(t, "fat_g", 0)),
+                carbs_g=round(getattr(t, "carbs_g", 0)),
+                meta=meta,
+            ),
+        )
+
+        # Response shape your frontend already handles
+        return Response({
+            "bmr": t.bmr,
+            "tdee": t.tdee,
+            "goal": profile.goal,
+            "target_calories": t.target_calories,
+            "macros": {
+                "protein_g": t.protein_g,
+                "fat_g": t.fat_g,
+                "carbs_g": t.carbs_g,
+            },
+            "assumptions": meta,   # keep returning meta/assumptions
+        })
+
 
 class RegisterView(APIView):
     permission_classes = [AllowAny]
@@ -89,7 +161,8 @@ class MeView(APIView):
     def get(self, request):
         # If Authorization: Bearer <access> is valid, you'll reach here
         return Response({'user': UserOutSerializer(request.user).data})
-    
+
+
 class LogoutView(APIView):
     permission_classes = [AllowAny]
 
@@ -98,7 +171,8 @@ class LogoutView(APIView):
         resp = Response({"detail": "Logged out."})
         resp.delete_cookie("refresh")
         return resp
-    
+
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     """
     GET /api/profile/   -> fetch the logged-in user's profile

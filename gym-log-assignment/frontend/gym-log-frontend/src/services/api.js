@@ -62,3 +62,12 @@ export async function updateProfile(values, token) {
   });
   return res.data; // returns updated profile object
 }
+
+// 🍎 Nutrition API
+export async function getNutritionTargets(token) {
+  const res = await apiClient.get('/api/nutrition/targets/', {
+    headers: { Authorization: `Bearer ${token}` },
+    withCredentials: true,
+  });
+  return res.data; // backend returns bmr, tdee, target_calories, and macros/meta (or flat)
+}

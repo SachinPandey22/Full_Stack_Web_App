@@ -1,9 +1,9 @@
 //  for authenticated users
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button/Button';
-import { NotificationsBell } from '../components/Notifications/Index'
+import { NotificationsBell, NotificationsDropdown } from '../components/Notifications/Index'
 
 // Importing sub-components for the dashboard
 import DailyOverview from '../components/DailyOverview/DailyOverview';
@@ -22,6 +22,9 @@ export default function Dashboard() {
   const [isOpen, setIsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(2);
   const navigate = useNavigate();
+  const [notifOpen, setNotifOpen] = useState(false);
+  const anchorRef = useRef(null);
+
 
 // Reading profile info from localStorage
 const { getAccessToken } = useAuth();
@@ -79,10 +82,18 @@ React.useEffect(() => {
           </p>
         )}
 
-        <NotificationsBell
-          onClick={() => setIsOpen(o => !o)}
-          hasUnread={unreadCount > 0}
-        />
+        {/* Anchor: bell + controlled dropdown */}
+          <div ref={anchorRef} style={{ position: 'relative' }}>
+  <NotificationsBell onClick={() => setNotifOpen(v => !v)} hasUnread={false} />
+  <NotificationsDropdown
+    isOpenExternal={notifOpen}
+    onOpenChange={setNotifOpen}
+    logoSrc="/notification_image.jpg"
+    anchorRef={anchorRef}        // NEW
+  />
+</div>
+
+
 
         <Button onClick={onLogout}>Logout</Button>
       </div>

@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Utensils, Plus, Edit2, Trash2, Copy, Flame, Apple, Coffee, Sunset, Moon, ArrowLeft, Sparkles } from 'lucide-react';
+import { Utensils, Plus, Edit2, Trash2, Copy, Apple, Coffee, Sunset, Moon, ArrowLeft } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useSwipeable } from 'react-swipeable';
 import { format, addDays, subDays, isSameDay } from 'date-fns';
 import DateNavigator from './DateNavigator';
+import MotivationalQuotes from './MotivationalQuotes';
 
 const MealLogging = () => {
   const [showMealLog, setShowMealLog] = useState(false);
@@ -11,14 +12,13 @@ const MealLogging = () => {
   const [goalsSet, setGoalsSet] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
   
-  // Add current date state
   const [currentDate, setCurrentDate] = useState(new Date());
   
   const [meals, setMeals] = useState([
-    { id: 1, type: 'breakfast', name: 'Oatmeal & Berries', calories: 320, protein: 12, carbs: 58, fat: 6, time: '8:30 AM', date: new Date().toDateString() },
-    { id: 2, type: 'lunch', name: 'Grilled Chicken Salad', calories: 450, protein: 42, carbs: 28, fat: 18, time: '12:45 PM', date: new Date().toDateString() },
-    { id: 3, type: 'dinner', name: 'Salmon & Sweet Potato', calories: 580, protein: 38, carbs: 52, fat: 22, time: '7:00 PM', date: new Date().toDateString() },
-    { id: 4, type: 'snacks', name: 'Greek Yogurt & Almonds', calories: 200, protein: 15, carbs: 18, fat: 8, time: '3:30 PM', date: new Date().toDateString() }
+    { id: 1, type: 'breakfast', name: 'Oatmeal & Berries', calories: 320, protein: 12, carbs: 58, fat: 6, time: '8:30 AM', date: new Date().toDateString(), notes: '' },
+    { id: 2, type: 'lunch', name: 'Grilled Chicken Salad', calories: 450, protein: 42, carbs: 28, fat: 18, time: '12:45 PM', date: new Date().toDateString(), notes: '' },
+    { id: 3, type: 'dinner', name: 'Salmon & Sweet Potato', calories: 580, protein: 38, carbs: 52, fat: 22, time: '7:00 PM', date: new Date().toDateString(), notes: '' },
+    { id: 4, type: 'snacks', name: 'Greek Yogurt & Almonds', calories: 200, protein: 15, carbs: 18, fat: 8, time: '3:30 PM', date: new Date().toDateString(), notes: '' }
   ]);
   
   const [newMeal, setNewMeal] = useState({
@@ -27,12 +27,11 @@ const MealLogging = () => {
     calories: '',
     protein: '',
     carbs: '',
-    fat: ''
+    fat: '',
+    notes: ''
   });
 
   const [toast, setToast] = useState('');
-  const [quote] = useState("Progress, not perfection.");
-  const [streak] = useState(4);
 
   const [dailyGoals, setDailyGoals] = useState({ 
     calories: 2200, 
@@ -48,7 +47,6 @@ const MealLogging = () => {
     fat: ''
   });
 
-  // Filter meals for current date
   const currentDateMeals = meals.filter(meal => 
     meal.date === currentDate.toDateString()
   );
@@ -62,7 +60,6 @@ const MealLogging = () => {
 
   const remaining = dailyGoals.calories - totals.calories;
 
-  // Generate week data based on current date
   const generateWeekData = () => {
     const data = [];
     for (let i = -6; i <= 0; i++) {
@@ -108,14 +105,11 @@ const MealLogging = () => {
     }
   };
 
-  // Swipe gesture handlers
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
-      // Swipe left = next day
       setCurrentDate(addDays(currentDate, 1));
     },
     onSwipedRight: () => {
-      // Swipe right = previous day
       setCurrentDate(subDays(currentDate, 1));
     },
     trackMouse: true,
@@ -167,12 +161,13 @@ const MealLogging = () => {
       carbs: parseInt(newMeal.carbs) || 0,
       fat: parseInt(newMeal.fat) || 0,
       time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      date: currentDate.toDateString()
+      date: currentDate.toDateString(),
+      notes: newMeal.notes || ''
     };
     
     setMeals([...meals, meal]);
     setShowModal(false);
-    setNewMeal({ type: 'breakfast', name: '', calories: '', protein: '', carbs: '', fat: '' });
+    setNewMeal({ type: 'breakfast', name: '', calories: '', protein: '', carbs: '', fat: '', notes: '' });
     showToast('✅ Meal added successfully!');
   };
 
@@ -248,19 +243,26 @@ const MealLogging = () => {
           </div>
         </div>
         
-        <div className="flex items-center justify-between">
-          <div className="flex gap-4 text-sm">
-            <span className="font-bold text-gray-700">{meal.calories} cal</span>
-            <span className="text-gray-600">P: {meal.protein}g</span>
-            <span className="text-gray-600">C: {meal.carbs}g</span>
-            <span className="text-gray-600">F: {meal.fat}g</span>
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="flex gap-4 text-sm">
+              <span className="font-bold text-gray-700">{meal.calories} cal</span>
+              <span className="text-gray-600">P: {meal.protein}g</span>
+              <span className="text-gray-600">C: {meal.carbs}g</span>
+              <span className="text-gray-600">F: {meal.fat}g</span>
+            </div>
           </div>
+          
+          {meal.notes && (
+            <div className="pt-2 border-t border-gray-200">
+              <p className="text-sm text-gray-600 italic">💭 {meal.notes}</p>
+            </div>
+          )}
         </div>
       </div>
     );
   };
 
-  // Dashboard card view
   if (!showMealLog) {
     return (
       <>
@@ -284,7 +286,6 @@ const MealLogging = () => {
           </button>
         </div>
 
-        {/* Goals Modal - Show when opening tracker for first time */}
         {showGoalsModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">
@@ -359,14 +360,12 @@ const MealLogging = () => {
     );
   }
 
-  // Full meal log view with swipe gestures
   return (
     <div 
       {...swipeHandlers}
       className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden z-50"
     >
       <div className="h-full flex flex-col">
-        {/* Header with back button and date navigator */}
         <div className="p-4 md:p-8 bg-white shadow-sm border-b border-gray-100">
           <div className="max-w-7xl mx-auto">
             <button
@@ -386,11 +385,7 @@ const MealLogging = () => {
                   className="mb-4"
                 />
                 
-                <div className="flex items-center gap-3 text-gray-600 mb-4">
-                  <div className="flex items-center gap-2 text-orange-600 font-semibold text-lg">
-                    <Flame size={24} />
-                    <span>{streak} day streak</span>
-                  </div>
+                <div className="flex items-center gap-3 mb-4">
                   <button
                     onClick={() => setShowGoalsModal(true)}
                     className="text-sm text-purple-600 hover:text-purple-700 font-medium underline"
@@ -399,23 +394,15 @@ const MealLogging = () => {
                   </button>
                 </div>
 
-                <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-4 border-l-4 border-purple-500">
-                  <div className="flex items-center gap-2">
-                    <Sparkles size={18} className="text-purple-600" />
-                    <p className="text-gray-700 italic font-medium">"{quote}"</p>
-                  </div>
-                </div>
+                <MotivationalQuotes />
               </div>
-
             </div>
           </div>
         </div>
 
-        {/* Scrollable content area */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
           <div className="max-w-5xl mx-auto space-y-8">
             
-            {/* Daily Progress */}
             <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-3">
@@ -440,7 +427,6 @@ const MealLogging = () => {
               </div>
             </div>
 
-            {/* Today's Meals */}
             <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">
@@ -482,7 +468,6 @@ const MealLogging = () => {
               </button>
             </div>
 
-            {/* Weekly Overview */}
             <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
               <h3 className="text-2xl font-bold text-gray-800 mb-6">Weekly Overview</h3>
               <ResponsiveContainer width="100%" height={250}>
@@ -526,10 +511,9 @@ const MealLogging = () => {
         </div>
       </div>
 
-      {/* Add Meal Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors text-2xl"
@@ -610,6 +594,22 @@ const MealLogging = () => {
                 </div>
               </div>
 
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Notes (Optional)
+                </label>
+                <textarea
+                  value={newMeal.notes}
+                  onChange={(e) => setNewMeal({...newMeal, notes: e.target.value})}
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+                  placeholder="Add any notes about this meal..."
+                  rows="3"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  E.g., "Felt energized after", "Too salty", "Post-workout meal"
+                </p>
+              </div>
+
               <button
                 onClick={addMeal}
                 className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl mt-6"
@@ -621,7 +621,6 @@ const MealLogging = () => {
         </div>
       )}
 
-      {/* Goals Modal */}
       {showGoalsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">

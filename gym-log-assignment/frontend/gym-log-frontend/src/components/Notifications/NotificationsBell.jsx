@@ -20,7 +20,7 @@ export default function NotificationsBell({onClick, hasUnread}) {
         width: 36,
         height: 36,
         borderRadius: 8,
-        background: '#3670e5',
+        background: '#007bff',
         cursor: 'pointer',
         
       }}

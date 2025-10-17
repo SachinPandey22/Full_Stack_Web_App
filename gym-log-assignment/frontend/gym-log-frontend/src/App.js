@@ -9,9 +9,15 @@ import ProfileForm from './components/ProfileForm';
 import WorkoutLibrary from './components/WorkoutActivity/WorkoutLibrary';
 import ExerciseDetail from './components/WorkoutActivity/ExerciseDetail';
 import NutritionPage from './components/Nutrition/NutritionPage';
+import ChatPopup from './components/ChatSupport/ChatPopup'; 
 
 function App() {
   return (
+    <>
+    {/* ChatPopup visible on all pages */}
+    <ChatPopup /> 
+
+
     <Routes>
       {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
@@ -33,6 +39,7 @@ function App() {
       {/* Catch-all: if unknown path, send back to landing */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </> 
   );
 }
 

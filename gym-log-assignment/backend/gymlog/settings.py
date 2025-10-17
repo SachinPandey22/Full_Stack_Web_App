@@ -9,6 +9,16 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+#we will need this if we wnt to add stripe or payment gateway in future
+#import ssl, certifi
+#try:
+#   ssl_context = ssl.create_default_context(cafile=certifi.where())
+#    ssl._create_default_https_context = lambda *args, **kwargs: ssl_context
+#   print("SSL context initialized with certifi CA bundle")
+#except Exception as e:
+#    print("SSL context setup failed:", e)
+
+
 import dj_database_url
 from decouple import config
 from pathlib import Path
@@ -48,6 +58,7 @@ INSTALLED_APPS = [
     'workouts',
     'exercises',
     'MealLogging',
+    'support',  
 ]
 
 MIDDLEWARE = [
@@ -177,3 +188,10 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD') 

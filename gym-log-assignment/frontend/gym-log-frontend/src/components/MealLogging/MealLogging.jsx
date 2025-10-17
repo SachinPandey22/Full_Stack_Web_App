@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
-import { Utensils, Plus, Edit2, Trash2, Copy, Flame, Apple, Coffee, Sunset, Moon, ArrowLeft, Sparkles, Calendar } from 'lucide-react';
+import { Utensils, Plus, Edit2, Trash2, Copy, Flame, Apple, Coffee, Sunset, Moon, ArrowLeft, Sparkles } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useSwipeable } from 'react-swipeable';
+import { format, addDays, subDays, isSameDay } from 'date-fns';
+import DateNavigator from './DateNavigator';
 
 const MealLogging = () => {
   const [showMealLog, setShowMealLog] = useState(false);
@@ -8,11 +11,14 @@ const MealLogging = () => {
   const [goalsSet, setGoalsSet] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
   
+  // Add current date state
+  const [currentDate, setCurrentDate] = useState(new Date());
+  
   const [meals, setMeals] = useState([
-    { id: 1, type: 'breakfast', name: 'Oatmeal & Berries', calories: 320, protein: 12, carbs: 58, fat: 6, time: '8:30 AM' },
-    { id: 2, type: 'lunch', name: 'Grilled Chicken Salad', calories: 450, protein: 42, carbs: 28, fat: 18, time: '12:45 PM' },
-    { id: 3, type: 'dinner', name: 'Salmon & Sweet Potato', calories: 580, protein: 38, carbs: 52, fat: 22, time: '7:00 PM' },
-    { id: 4, type: 'snacks', name: 'Greek Yogurt & Almonds', calories: 200, protein: 15, carbs: 18, fat: 8, time: '3:30 PM' }
+    { id: 1, type: 'breakfast', name: 'Oatmeal & Berries', calories: 320, protein: 12, carbs: 58, fat: 6, time: '8:30 AM', date: new Date().toDateString() },
+    { id: 2, type: 'lunch', name: 'Grilled Chicken Salad', calories: 450, protein: 42, carbs: 28, fat: 18, time: '12:45 PM', date: new Date().toDateString() },
+    { id: 3, type: 'dinner', name: 'Salmon & Sweet Potato', calories: 580, protein: 38, carbs: 52, fat: 22, time: '7:00 PM', date: new Date().toDateString() },
+    { id: 4, type: 'snacks', name: 'Greek Yogurt & Almonds', calories: 200, protein: 15, carbs: 18, fat: 8, time: '3:30 PM', date: new Date().toDateString() }
   ]);
   
   const [newMeal, setNewMeal] = useState({
@@ -42,7 +48,12 @@ const MealLogging = () => {
     fat: ''
   });
 
-  const totals = meals.reduce((acc, meal) => ({
+  // Filter meals for current date
+  const currentDateMeals = meals.filter(meal => 
+    meal.date === currentDate.toDateString()
+  );
+
+  const totals = currentDateMeals.reduce((acc, meal) => ({
     calories: acc.calories + meal.calories,
     protein: acc.protein + meal.protein,
     carbs: acc.carbs + meal.carbs,
@@ -51,15 +62,24 @@ const MealLogging = () => {
 
   const remaining = dailyGoals.calories - totals.calories;
 
-  const weekData = [
-    { day: 'Mon', calories: 2100 },
-    { day: 'Tue', calories: 2250 },
-    { day: 'Wed', calories: 1900 },
-    { day: 'Thu', calories: 2180 },
-    { day: 'Fri', calories: totals.calories },
-    { day: 'Sat', calories: 0 },
-    { day: 'Sun', calories: 0 }
-  ];
+  // Generate week data based on current date
+  const generateWeekData = () => {
+    const data = [];
+    for (let i = -6; i <= 0; i++) {
+      const date = addDays(currentDate, i);
+      const dayMeals = meals.filter(meal => meal.date === date.toDateString());
+      const dayCalories = dayMeals.reduce((sum, meal) => sum + meal.calories, 0);
+      
+      data.push({
+        day: format(date, 'EEE'),
+        calories: dayCalories,
+        date: date
+      });
+    }
+    return data;
+  };
+
+  const weekData = generateWeekData();
 
   const mealTypeConfig = {
     breakfast: { 
@@ -88,6 +108,21 @@ const MealLogging = () => {
     }
   };
 
+  // Swipe gesture handlers
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: () => {
+      // Swipe left = next day
+      setCurrentDate(addDays(currentDate, 1));
+    },
+    onSwipedRight: () => {
+      // Swipe right = previous day
+      setCurrentDate(subDays(currentDate, 1));
+    },
+    trackMouse: true,
+    trackTouch: true,
+    preventScrollOnSwipe: true,
+  });
+
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
@@ -99,6 +134,11 @@ const MealLogging = () => {
     } else {
       setShowMealLog(true);
     }
+  };
+
+  const handleDateChange = (newDate) => {
+    setCurrentDate(newDate);
+    showToast(`📅 Switched to ${format(newDate, 'MMM d, yyyy')}`);
   };
 
   const saveGoals = () => {
@@ -126,7 +166,8 @@ const MealLogging = () => {
       protein: parseInt(newMeal.protein) || 0,
       carbs: parseInt(newMeal.carbs) || 0,
       fat: parseInt(newMeal.fat) || 0,
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+      date: currentDate.toDateString()
     };
     
     setMeals([...meals, meal]);
@@ -141,6 +182,22 @@ const MealLogging = () => {
   };
 
   const copyYesterday = () => {
+    const yesterday = subDays(currentDate, 1);
+    const yesterdayMeals = meals.filter(meal => meal.date === yesterday.toDateString());
+    
+    if (yesterdayMeals.length === 0) {
+      showToast('❌ No meals found for yesterday');
+      return;
+    }
+
+    const copiedMeals = yesterdayMeals.map(meal => ({
+      ...meal,
+      id: Date.now() + Math.random(),
+      date: currentDate.toDateString(),
+      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    }));
+
+    setMeals([...meals, ...copiedMeals]);
     showToast('📋 Yesterday\'s meals copied!');
   };
 
@@ -302,152 +359,171 @@ const MealLogging = () => {
     );
   }
 
-  // Full meal log view
+  // Full meal log view with swipe gestures
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 p-4 md:p-8 overflow-y-auto z-50">
-      <div className="max-w-5xl mx-auto">
-        
-        <button
-          onClick={() => setShowMealLog(false)}
-          className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mb-6 transition-colors group"
-        >
-          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-          Back to Dashboard
-        </button>
+    <div 
+      {...swipeHandlers}
+      className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden z-50"
+    >
+      <div className="h-full flex flex-col">
+        {/* Header with back button and date navigator */}
+        <div className="p-4 md:p-8 bg-white shadow-sm border-b border-gray-100">
+          <div className="max-w-7xl mx-auto">
+            <button
+              onClick={() => setShowMealLog(false)}
+              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mb-6 transition-colors group"
+            >
+              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+              Back to Dashboard
+            </button>
 
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">Meal Log</h1>
-              <div className="flex items-center gap-3 text-gray-600">
-                <Calendar size={18} />
-                <p className="text-lg">Friday, October 5, 2025</p>
+            <div className="flex items-start justify-between gap-8">
+              <div className="flex-1">
+                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Meal Log</h1>
+                <DateNavigator 
+                  currentDate={currentDate}
+                  onDateChange={handleDateChange}
+                  className="mb-4"
+                />
+                
+                <div className="flex items-center gap-3 text-gray-600 mb-4">
+                  <div className="flex items-center gap-2 text-orange-600 font-semibold text-lg">
+                    <Flame size={24} />
+                    <span>{streak} day streak</span>
+                  </div>
+                  <button
+                    onClick={() => setShowGoalsModal(true)}
+                    className="text-sm text-purple-600 hover:text-purple-700 font-medium underline"
+                  >
+                    Edit Goals
+                  </button>
+                </div>
+
+                <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-4 border-l-4 border-purple-500">
+                  <div className="flex items-center gap-2">
+                    <Sparkles size={18} className="text-purple-600" />
+                    <p className="text-gray-700 italic font-medium">"{quote}"</p>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        {/* Scrollable content area */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+          <div className="max-w-5xl mx-auto space-y-8">
+            
+            {/* Daily Progress */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+              <div className="mb-6">
+                <div className="flex justify-between items-center mb-3">
+                  <h2 className="text-2xl font-bold text-gray-800">Daily Progress</h2>
+                  <span className="text-3xl font-bold text-blue-600">{totals.calories} / {dailyGoals.calories}</span>
+                </div>
+                <div className="h-5 bg-gray-200 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
+                    style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
+                  />
+                </div>
+                <p className="text-sm text-gray-600 mt-2 font-medium">
+                  {remaining > 0 ? `${remaining} kcal remaining` : `Goal reached! 🎉`}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <ProgressBar current={totals.protein} goal={dailyGoals.protein} label="Protein" color="bg-red-500" />
+                <ProgressBar current={totals.carbs} goal={dailyGoals.carbs} label="Carbs" color="bg-yellow-500" />
+                <ProgressBar current={totals.fat} goal={dailyGoals.fat} label="Fat" color="bg-green-500" />
               </div>
             </div>
-            <div className="text-right">
-              <div className="flex items-center gap-2 text-orange-600 font-semibold text-lg mb-2">
-                <Flame size={24} />
-                <span>{streak} day streak</span>
+
+            {/* Today's Meals */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  {isSameDay(currentDate, new Date()) ? "Today's Meals" : `Meals for ${format(currentDate, 'MMM d, yyyy')}`}
+                </h2>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                >
+                  <Plus size={18} />
+                  Add Meal
+                </button>
               </div>
+
+              <div className="space-y-6">
+                {['breakfast', 'lunch', 'dinner', 'snacks'].map(type => {
+                  const typeMeals = currentDateMeals.filter(m => m.type === type);
+                  return (
+                    <div key={type}>
+                      <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 ml-1">{type}</h3>
+                      {typeMeals.length > 0 ? (
+                        <div className="space-y-3">
+                          {typeMeals.map(meal => <MealCard key={meal.id} meal={meal} />)}
+                        </div>
+                      ) : (
+                        <p className="text-gray-400 text-sm italic ml-2 mb-2">No meals added yet</p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+
               <button
-                onClick={() => setShowGoalsModal(true)}
-                className="text-sm text-purple-600 hover:text-purple-700 font-medium underline"
+                onClick={copyYesterday}
+                className="w-full mt-6 border-2 border-dashed border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
               >
-                Edit Goals
+                <Copy size={18} />
+                Copy Yesterday's Meals
               </button>
             </div>
-          </div>
 
-          <div className="bg-gradient-to-r from-purple-100 to-blue-100 rounded-xl p-4 border-l-4 border-purple-500">
-            <div className="flex items-center gap-2">
-              <Sparkles size={18} className="text-purple-600" />
-              <p className="text-gray-700 italic font-medium">"{quote}"</p>
+            {/* Weekly Overview */}
+            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-6">Weekly Overview</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={weekData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis 
+                    dataKey="day" 
+                    tick={{ fontSize: 14, fill: '#6b7280' }}
+                    stroke="#d1d5db"
+                  />
+                  <YAxis 
+                    tick={{ fontSize: 14, fill: '#6b7280' }}
+                    stroke="#d1d5db"
+                  />
+                  <Tooltip 
+                    contentStyle={{ 
+                      background: '#fff', 
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '12px',
+                      fontSize: '14px',
+                      padding: '12px'
+                    }}
+                  />
+                  <Bar 
+                    dataKey="calories" 
+                    fill="url(#colorGradient)" 
+                    radius={[10, 10, 0, 0]}
+                  />
+                  <defs>
+                    <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#6366f1" />
+                    </linearGradient>
+                  </defs>
+                </BarChart>
+              </ResponsiveContainer>
+              <p className="text-sm text-gray-500 mt-4 text-center">Daily calorie intake this week</p>
             </div>
+
           </div>
         </div>
-
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
-          <div className="mb-6">
-            <div className="flex justify-between items-center mb-3">
-              <h2 className="text-2xl font-bold text-gray-800">Daily Progress</h2>
-              <span className="text-3xl font-bold text-blue-600">{totals.calories} / {dailyGoals.calories}</span>
-            </div>
-            <div className="h-5 bg-gray-200 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
-                style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
-              />
-            </div>
-            <p className="text-sm text-gray-600 mt-2 font-medium">
-              {remaining > 0 ? `${remaining} kcal remaining` : `Goal reached! 🎉`}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <ProgressBar current={totals.protein} goal={dailyGoals.protein} label="Protein" color="bg-red-500" />
-            <ProgressBar current={totals.carbs} goal={dailyGoals.carbs} label="Carbs" color="bg-yellow-500" />
-            <ProgressBar current={totals.fat} goal={dailyGoals.fat} label="Fat" color="bg-green-500" />
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-800">Today's Meals</h2>
-            <button
-              onClick={() => setShowModal(true)}
-              className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
-            >
-              <Plus size={18} />
-              Add Meal
-            </button>
-          </div>
-
-          <div className="space-y-6">
-            {['breakfast', 'lunch', 'dinner', 'snacks'].map(type => {
-              const typeMeals = meals.filter(m => m.type === type);
-              return (
-                <div key={type}>
-                  <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 ml-1">{type}</h3>
-                  {typeMeals.length > 0 ? (
-                    <div className="space-y-3">
-                      {typeMeals.map(meal => <MealCard key={meal.id} meal={meal} />)}
-                    </div>
-                  ) : (
-                    <p className="text-gray-400 text-sm italic ml-2 mb-2">No meals added yet</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          <button
-            onClick={copyYesterday}
-            className="w-full mt-6 border-2 border-dashed border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
-          >
-            <Copy size={18} />
-            Copy Yesterday's Meals
-          </button>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-          <h3 className="text-2xl font-bold text-gray-800 mb-6">Weekly Overview</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={weekData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="day" 
-                tick={{ fontSize: 14, fill: '#6b7280' }}
-                stroke="#d1d5db"
-              />
-              <YAxis 
-                tick={{ fontSize: 14, fill: '#6b7280' }}
-                stroke="#d1d5db"
-              />
-              <Tooltip 
-                contentStyle={{ 
-                  background: '#fff', 
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '12px',
-                  fontSize: '14px',
-                  padding: '12px'
-                }}
-              />
-              <Bar 
-                dataKey="calories" 
-                fill="url(#colorGradient)" 
-                radius={[10, 10, 0, 0]}
-              />
-              <defs>
-                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#3b82f6" />
-                  <stop offset="100%" stopColor="#6366f1" />
-                </linearGradient>
-              </defs>
-            </BarChart>
-          </ResponsiveContainer>
-          <p className="text-sm text-gray-500 mt-4 text-center">Daily calorie intake this week</p>
-        </div>
-
       </div>
 
       {/* Add Meal Modal */}

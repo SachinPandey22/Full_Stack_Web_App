@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { loginUser } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
-import ChatPopup from '../components/AIPanel/ChatPopup';
+import ChatPopup from '../components/ChatSupport/ChatPopup';
 
 
 import Button from '../components/common/Button/Button';

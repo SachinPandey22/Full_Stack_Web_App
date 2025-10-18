@@ -84,3 +84,6 @@ for item in counts:
     print(f"   {item['muscle_group'].title()}: {item['total']} exercises")
 
 print("\n🎉 Database populated successfully!")
+
+
+#this needs to be changed so I dont know. I need to add this on my database

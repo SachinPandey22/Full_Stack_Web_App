@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="profile")
@@ -52,3 +53,21 @@ class NutritionTargets(models.Model):
 
     def __str__(self):
         return f"NutritionTargets<{self.user_id}>"
+    
+class NutritionSnapshot(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="nutrition_snapshots")
+    date = models.DateField(default=timezone.now)  # store as UTC date
+    bmr = models.PositiveIntegerField()
+    tdee = models.PositiveIntegerField()
+    target_calories = models.PositiveIntegerField()
+    protein_g = models.PositiveIntegerField()
+    fat_g = models.PositiveIntegerField()
+    carbs_g = models.PositiveIntegerField()
+    meta = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        unique_together = ("user", "date")
+        ordering = ("-date",)
+
+    def __str__(self):
+        return f"Snapshot({self.user_id}, {self.date})"

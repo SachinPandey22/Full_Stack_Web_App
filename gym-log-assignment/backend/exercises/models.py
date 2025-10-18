@@ -32,6 +32,8 @@ class Exercise(models.Model):
     difficulty = models.CharField(max_length=20, choices=DIFFICULTY_CHOICES, default="beginner")
     
     image = models.CharField(max_length=500, blank=True, null=True)
+    steps = models.TextField(blank=True, null=True) 
+    tips = models.TextField(blank=True, null=True)
 
     video = models.FileField(upload_to="exercise_videos/", blank=True, null=True)
 

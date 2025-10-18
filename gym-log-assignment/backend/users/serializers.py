@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Profile  #importing profile model
 from django.db import transaction
+from .models import NutritionSnapshot
 
 class RegisterSerializer(serializers.ModelSerializer):
     # username will be email; enforce password min length
@@ -65,3 +66,12 @@ class ProfileSerializer(serializers.ModelSerializer):
         if value <= 0 or value > 120:
             raise serializers.ValidationError("Age must be between 1 and 120.")
         return value
+    
+class NutritionSnapshotSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = NutritionSnapshot
+        fields = [
+            "date", "bmr", "tdee", "target_calories",
+            "protein_g", "fat_g", "carbs_g", "meta",
+        ]
+        read_only_fields = fields

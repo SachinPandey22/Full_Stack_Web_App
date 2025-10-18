@@ -5,10 +5,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import generics, permissions
+from django.utils import timezone
 
-from .serializers import RegisterSerializer, UserOutSerializer
-from .models import Profile, NutritionTargets   # ✅ added NutritionTargets
-from .serializers import ProfileSerializer
+from .serializers import RegisterSerializer, UserOutSerializer, ProfileSerializer, NutritionSnapshotSerializer
+from .models import Profile, NutritionTargets, NutritionSnapshot   # ✅ added NutritionTargets
 from .utils import compute_targets
 
 
@@ -88,6 +88,59 @@ class NutritionTargetsView(APIView):
             },
             "assumptions": meta,   # keep returning meta/assumptions
         })
+
+class NutritionSnapshotsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        qs = NutritionSnapshot.objects.filter(user=request.user).order_by("-date")
+        ser = NutritionSnapshotSerializer(qs, many=True)
+        return Response(ser.data)
+
+    def post(self, request):
+        # Get today's targets either from stored NutritionTargets or compute fresh
+        try:
+            profile: Profile = request.user.profile
+        except Profile.DoesNotExist:
+            return Response({"detail": "Profile not found."}, status=status.HTTP_400_BAD_REQUEST)
+
+        missing = [f for f in ["sex","height","weight","age","goal","activity_level"]
+                   if not getattr(profile, f, None)]
+        if missing:
+            return Response({"missing_fields": missing}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Try to read latest stored targets; if absent, compute now
+        nt = getattr(request.user, "nutrition_targets", None)
+        if nt is None:
+            t = compute_targets(
+                sex=profile.sex, height_cm=profile.height, weight_kg=profile.weight,
+                age_years=profile.age, activity_level=profile.activity_level, goal=profile.goal,
+            )
+            # shape-normalize
+            payload = dict(
+                bmr=round(getattr(t, "bmr", 0)),
+                tdee=round(getattr(t, "tdee", 0)),
+                target_calories=round(getattr(t, "target_calories", 0)),
+                protein_g=round(getattr(t, "protein_g", 0)),
+                fat_g=round(getattr(t, "fat_g", 0)),
+                carbs_g=round(getattr(t, "carbs_g", 0)),
+                meta=getattr(t, "meta", {}) or getattr(t, "assumptions", {}) or {},
+            )
+        else:
+            payload = dict(
+                bmr=nt.bmr, tdee=nt.tdee, target_calories=nt.target_calories,
+                protein_g=nt.protein_g, fat_g=nt.fat_g, carbs_g=nt.carbs_g,
+                meta=nt.meta or {},
+            )
+
+        today = timezone.now().date()
+        snap, _ = NutritionSnapshot.objects.update_or_create(
+            user=request.user, date=today,
+            defaults=payload,
+        )
+        ser = NutritionSnapshotSerializer(snap)
+        return Response(ser.data, status=status.HTTP_201_CREATED)
+
 
 
 class RegisterView(APIView):

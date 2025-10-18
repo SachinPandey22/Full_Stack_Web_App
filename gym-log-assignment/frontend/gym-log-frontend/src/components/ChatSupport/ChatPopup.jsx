@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import "./ChatPopup.css";
+import { useNavigate } from "react-router-dom";
+
 
 const ChatPopup = () => {
   const [open, setOpen] = useState(false);
   const [showMessageForm, setShowMessageForm] = useState(false);
+  const navigate = useNavigate();
+
 
 
   const handleSendMessage = async () => {
@@ -72,8 +76,18 @@ const ChatPopup = () => {
                 <input type="text" placeholder="Search for help" />
               </div>
               <div className="help-links">
-                <p>Here we will have most asked questions ➜</p>
-                <p>Hi I am testing feature for now ➜</p>
+                <p
+                  className="link"
+                  onClick={() => {
+                    setOpen(false);  // Close chat popup
+                    navigate('/profile'); // Navigate to FAQ page
+                  }}
+                  style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+              
+                >
+                  
+                Update your profile ➜
+                </p>
               </div>
             </div>
           ) : (

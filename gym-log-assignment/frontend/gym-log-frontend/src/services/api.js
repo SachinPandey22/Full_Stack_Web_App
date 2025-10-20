@@ -71,3 +71,18 @@ export async function getNutritionTargets(token) {
   });
   return res.data; // backend returns bmr, tdee, target_calories, and macros/meta (or flat)
 }
+
+// Nutrition snapshots
+export async function getNutritionSnapshots(token) {
+  const res = await apiClient.get('/api/nutrition/snapshots/', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data; // [{date,bmr,tdee,target_calories,protein_g,fat_g,carbs_g,meta}, ...]
+}
+
+export async function createNutritionSnapshot(token) {
+  const res = await apiClient.post('/api/nutrition/snapshots/', null, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data; // the created/updated snapshot for today
+}

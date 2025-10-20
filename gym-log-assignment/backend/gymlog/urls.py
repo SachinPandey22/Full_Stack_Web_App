@@ -43,6 +43,9 @@ urlpatterns = [
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
     path("api/mobile/ingest", m.ingest_data),    # post data with JWT
 
+    #Notification
+    path("api/", include("notifications.urls")),
+
     # for support app ie. sending support emails
     path('api/', include(support_urls)),  # Support app URLs
     

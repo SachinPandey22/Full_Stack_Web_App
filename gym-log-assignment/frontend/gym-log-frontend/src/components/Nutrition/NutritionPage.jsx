@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { getNutritionTargets, getProfile } from '../../services/api';
+import { getNutritionTargets, getProfile, getNutritionSnapshots, createNutritionSnapshot } from '../../services/api';
 
 export default function NutritionPage() {
   const { getAccessToken } = useAuth();
@@ -10,6 +10,9 @@ export default function NutritionPage() {
   const [targets, setTargets] = useState(null);
   const [profile, setProfile]   = useState(null);
   const [loading, setLoading]   = useState(true);
+  const [snapshots, setSnapshots] = useState([]);
+  const [savingSnap, setSavingSnap] = useState(false);
+
 
   useEffect(() => {
     let mounted = true;
@@ -53,6 +56,20 @@ export default function NutritionPage() {
     })();
     return () => { mounted = false; };
   }, [getAccessToken]);
+
+  useEffect(() => {
+  const loadSnaps = async () => {
+    try {
+      const token = getAccessToken();
+      if (!token) return;
+      const data = await getNutritionSnapshots(token);
+      setSnapshots((data || []).slice(0, 7)); // show last 7
+    } catch {
+      /* optional: toast.error('Could not load history'); */
+    }
+  };
+  loadSnaps();
+}, [getAccessToken]);
 
   if (loading) {
     return (
@@ -207,6 +224,50 @@ export default function NutritionPage() {
                     </div>
                   </div>
                 </>
+              )}
+            </div>
+            <div style={{ marginTop: 24 }}>
+              <h3 style={{ margin: 0 }}>Progress (last 7 days)</h3>
+              <div style={{ display: 'flex', gap: 8, margin: '8px 0 12px' }}>
+                <button
+                  disabled={savingSnap}
+                  onClick={async () => {
+                    try {
+                      setSavingSnap(true);
+                      const token = getAccessToken();
+                      await createNutritionSnapshot(token);
+                      const data = await getNutritionSnapshots(token);
+                      setSnapshots((data || []).slice(0, 7));
+                      toast.success("Today's snapshot saved.");
+                    } catch (e) {
+                      toast.error(e?.response?.data?.detail || 'Could not save snapshot.');
+                    } finally {
+                      setSavingSnap(false);
+                    }
+                  }}
+                  style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #ddd', cursor: 'pointer' }}
+                >
+                  {savingSnap ? 'Saving…' : 'Save Today’s Snapshot'}
+                </button>
+              </div>
+
+              {snapshots.length === 0 ? (
+                <p style={{ color: '#666' }}>No history yet. Save your first snapshot.</p>
+              ) : (
+                <div style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', background: '#fafafa', fontWeight: 600 }}>
+                    <div>Date</div>
+                    <div>Target Calories</div>
+                    <div>Macros (P/F/C g)</div>
+                  </div>
+                  {snapshots.map((s, i) => (
+                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', borderTop: '1px solid #f0f0f0' }}>
+                      <div>{(s.date || '').slice(0, 10)}</div>
+                      <div>{Math.round(s.target_calories)} kcal</div>
+                      <div>{Math.round(s.protein_g)}/{Math.round(s.fat_g)}/{Math.round(s.carbs_g)}</div>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
           </main>

@@ -10,3 +10,7 @@ class Notification(models.Model):
 
 class Meta:
     ordering = ["-created_at"]
+
+def __str__(self):
+    first = (self.user.first_name or self.user.get_username() or "").strip()
+    return f"{first} → {self.message[:40]}"

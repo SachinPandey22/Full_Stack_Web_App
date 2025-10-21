@@ -133,7 +133,7 @@ class NutritionSnapshotsView(APIView):
                 meta=nt.meta or {},
             )
 
-        today = timezone.now().date()
+        today = timezone.localtime(timezone.now()).date()
         snap, _ = NutritionSnapshot.objects.update_or_create(
             user=request.user, date=today,
             defaults=payload,

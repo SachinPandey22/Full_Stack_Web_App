@@ -120,23 +120,43 @@ function WorkoutLibrary() {
             </h1>
             <p style={{ color: '#9ca3af' }}>Select a muscle group to view exercises</p>
           </div>
-          <button
-            onClick={goToDashboard}
-            style={{
-              background: '#9333ea',
-              color: 'white',
-              padding: '10px 20px',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              fontWeight: 'bold',
-              transition: 'background 0.3s'
-            }}
-            onMouseOver={(e) => e.target.style.background = '#7e22ce'}
-            onMouseOut={(e) => e.target.style.background = '#9333ea'}
-          >
-            🏠 Back to Dashboard
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+  <button
+    onClick={() => navigate('/my-workouts')}
+    style={{
+      background: '#3b82f6',
+      color: 'white',
+      padding: '10px 20px',
+      borderRadius: '8px',
+      border: 'none',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      transition: 'background 0.3s'
+    }}
+    onMouseOver={(e) => e.target.style.background = '#2563eb'}
+    onMouseOut={(e) => e.target.style.background = '#3b82f6'}
+  >
+    📋 My Workouts
+  </button>
+  
+  <button
+    onClick={goToDashboard}
+    style={{
+      background: '#9333ea',
+      color: 'white',
+      padding: '10px 20px',
+      borderRadius: '8px',
+      border: 'none',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      transition: 'background 0.3s'
+    }}
+    onMouseOver={(e) => e.target.style.background = '#7e22ce'}
+    onMouseOut={(e) => e.target.style.background = '#9333ea'}
+  >
+    🏠 Back to Dashboard
+  </button>
+</div>
         </div>
       </div>
 

@@ -125,7 +125,7 @@ export default function ExerciseDetail() {
       color: '#d1d5db',
       lineHeight: 1.6
     }}>
-      {exercise.tips.split('•').map((tip, idx) => 
+      {exercise.tips.split('|').map((tip, idx) => 
         tip.trim() && <div key={idx} style={{ marginBottom: 4 }}>• {tip.trim()}</div>
       )}
     </div>

@@ -97,6 +97,42 @@ export default function ExerciseDetail() {
               <p style={{ color: '#d1d5db', textTransform: 'capitalize' }}>{exercise.category}</p>
             </section>
 
+            {exercise.steps && (
+  <section style={{ marginBottom: 24 }}>
+    <h3 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: '#60a5fa' }}>
+      📋 How to Perform
+    </h3>
+    <div style={{ color: '#d1d5db', lineHeight: 1.8 }}>
+      {exercise.steps.split('\n').map((step, idx) => (
+        <div key={idx} style={{ marginBottom: 8, paddingLeft: 4 }}>
+          {step}
+        </div>
+      ))}
+    </div>
+  </section>
+)}
+
+{exercise.tips && (
+  <section style={{ marginBottom: 24 }}>
+    <h3 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: '#f59e0b' }}>
+      💡 Tips & Tricks
+    </h3>
+    <div style={{ 
+      background: 'rgba(245, 158, 11, 0.1)', 
+      padding: 16, 
+      borderRadius: 8, 
+      borderLeft: '4px solid #f59e0b',
+      color: '#d1d5db',
+      lineHeight: 1.6
+    }}>
+      {exercise.tips.split('|').map((tip, idx) => 
+        tip.trim() && <div key={idx} style={{ marginBottom: 4 }}>• {tip.trim()}</div>
+      )}
+    </div>
+  </section>
+)}
+
+
             {exercise.video && (
               <section style={{ marginBottom: 24 }}>
                 <h3 style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 8, color: '#60a5fa' }}>Video Demo</h3>

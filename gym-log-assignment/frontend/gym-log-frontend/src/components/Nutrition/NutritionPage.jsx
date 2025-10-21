@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import NutritionTrends from './NutritionTrends';
 import { getNutritionTargets, getProfile, getNutritionSnapshots, createNutritionSnapshot } from '../../services/api';
 
 export default function NutritionPage() {
@@ -12,7 +13,8 @@ export default function NutritionPage() {
   const [loading, setLoading]   = useState(true);
   const [snapshots, setSnapshots] = useState([]);
   const [savingSnap, setSavingSnap] = useState(false);
-
+  const [tab, setTab] = useState('current'); // 'current' | 'progress'
+  const [range, setRange] = useState(7); // 7 or 30
 
   useEffect(() => {
     let mounted = true;
@@ -58,18 +60,19 @@ export default function NutritionPage() {
   }, [getAccessToken]);
 
   useEffect(() => {
-  const loadSnaps = async () => {
-    try {
-      const token = getAccessToken();
-      if (!token) return;
-      const data = await getNutritionSnapshots(token);
-      setSnapshots((data || []).slice(0, 7)); // show last 7
-    } catch {
-      /* optional: toast.error('Could not load history'); */
-    }
-  };
-  loadSnaps();
-}, [getAccessToken]);
+    const loadSnaps = async () => {
+      try {
+        const token = getAccessToken();
+        if (!token) return;
+        const data = await getNutritionSnapshots(token);
+        // ✅ store full history; we'll slice by selected range when rendering
+        setSnapshots(data || []);
+      } catch {
+        /* optional: toast.error('Could not load history'); */
+      }
+    };
+    loadSnaps();
+  }, [getAccessToken]);
 
   if (loading) {
     return (
@@ -226,9 +229,42 @@ export default function NutritionPage() {
                 </>
               )}
             </div>
+
+            {/* ------- Progress Section (Charts + List) ------- */}
             <div style={{ marginTop: 24 }}>
-              <h3 style={{ margin: 0 }}>Progress (last 7 days)</h3>
-              <div style={{ display: 'flex', gap: 8, margin: '8px 0 12px' }}>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+                <h3 style={{ margin: 0 }}>Progress</h3>
+                <div style={{ display: 'flex', gap: 8, marginLeft: 12 }}>
+                  <button
+                    onClick={() => setRange(7)}
+                    style={{
+                      padding:'6px 10px',
+                      borderRadius:8,
+                      border: range===7 ? '1px solid #111827' : '1px solid #ddd',
+                      background: range===7 ? '#111827' : '#fff',
+                      color: range===7 ? '#fff' : '#111827',
+                      cursor:'pointer'
+                    }}
+                  >
+                    Last 7
+                  </button>
+                  <button
+                    onClick={() => setRange(30)}
+                    style={{
+                      padding:'6px 10px',
+                      borderRadius:8,
+                      border: range===30 ? '1px solid #111827' : '1px solid #ddd',
+                      background: range===30 ? '#111827' : '#fff',
+                      color: range===30 ? '#fff' : '#111827',
+                      cursor:'pointer'
+                    }}
+                  >
+                    Last 30
+                  </button>
+                </div>
+
+                <div style={{ flex: 1 }} />
+
                 <button
                   disabled={savingSnap}
                   onClick={async () => {
@@ -237,7 +273,7 @@ export default function NutritionPage() {
                       const token = getAccessToken();
                       await createNutritionSnapshot(token);
                       const data = await getNutritionSnapshots(token);
-                      setSnapshots((data || []).slice(0, 7));
+                      setSnapshots(data || []);
                       toast.success("Today's snapshot saved.");
                     } catch (e) {
                       toast.error(e?.response?.data?.detail || 'Could not save snapshot.');
@@ -254,22 +290,31 @@ export default function NutritionPage() {
               {snapshots.length === 0 ? (
                 <p style={{ color: '#666' }}>No history yet. Save your first snapshot.</p>
               ) : (
-                <div style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
-                  <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', background: '#fafafa', fontWeight: 600 }}>
-                    <div>Date</div>
-                    <div>Target Calories</div>
-                    <div>Macros (P/F/C g)</div>
+                <>
+                  {/* ✅ Charts */}
+                  <div style={{ marginBottom: 16 }}>
+                    <NutritionTrends data={(snapshots || []).slice(0, range)} />
                   </div>
-                  {snapshots.map((s, i) => (
-                    <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', borderTop: '1px solid #f0f0f0' }}>
-                      <div>{(s.date || '').slice(0, 10)}</div>
-                      <div>{Math.round(s.target_calories)} kcal</div>
-                      <div>{Math.round(s.protein_g)}/{Math.round(s.fat_g)}/{Math.round(s.carbs_g)}</div>
+
+                  {/* Existing list, now using selected range */}
+                  <div style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', background: '#fafafa', fontWeight: 600 }}>
+                      <div>Date</div>
+                      <div>Target Calories</div>
+                      <div>Macros (P/F/C g)</div>
                     </div>
-                  ))}
-                </div>
+                    {(snapshots || []).slice(0, range).map((s, i) => (
+                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', borderTop: '1px solid #f0f0f0' }}>
+                        <div>{(s.date || '').slice(0, 10)}</div>
+                        <div>{Math.round(s.target_calories)} kcal</div>
+                        <div>{Math.round(s.protein_g)}/{Math.round(s.fat_g)}/{Math.round(s.carbs_g)}</div>
+                      </div>
+                    ))}
+                  </div>
+                </>
               )}
             </div>
+            {/* ------- /Progress Section ------- */}
           </main>
         </div>
       </div>
@@ -633,4 +678,3 @@ styleSheet.textContent = `
   }
 `;
 document.head.appendChild(styleSheet);
-

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';  // Adjust path if needed
+import { useAuth } from '../../context/AuthContext';  
 
 
 export default function MyWorkouts() {
@@ -12,7 +12,7 @@ export default function MyWorkouts() {
 
  useEffect(() => {
   fetchWorkouts();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  
 }, []);
 
   const fetchWorkouts = async () => {

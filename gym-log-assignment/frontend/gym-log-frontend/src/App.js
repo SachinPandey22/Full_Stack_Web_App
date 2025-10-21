@@ -10,6 +10,7 @@ import WorkoutLibrary from './components/WorkoutActivity/WorkoutLibrary';
 import ExerciseDetail from './components/WorkoutActivity/ExerciseDetail';
 import NutritionPage from './components/Nutrition/NutritionPage';
 import ChatPopup from './components/ChatSupport/ChatPopup'; 
+import MyWorkouts from './components/WorkoutActivity/MyWorkouts';
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         <Route path="/workout-library" element={<WorkoutLibrary />} />
         <Route path="/exercises/:id" element={<ExerciseDetail />} />
         <Route path="/nutrition" element={<NutritionPage />} />
+        <Route path="/my-workouts" element={<MyWorkouts />} />
         {/* add more protected pages later */}
       </Route>
 

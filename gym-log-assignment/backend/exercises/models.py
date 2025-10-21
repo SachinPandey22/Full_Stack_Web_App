@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Exercise(models.Model):
     CATEGORY_CHOICES = [
@@ -39,3 +40,18 @@ class Exercise(models.Model):
 
     def __str__(self):
         return self.name
+
+class UserWorkout(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='workouts')
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    added_date = models.DateTimeField(auto_now_add=True)
+    sets = models.IntegerField(default=3, blank=True, null=True)
+    reps = models.IntegerField(default=10, blank=True, null=True)
+    notes = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('user', 'exercise')
+        ordering = ['-added_date']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.exercise.name}"

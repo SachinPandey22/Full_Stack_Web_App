@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';  // Adjust path if needed
+
 
 export default function ExerciseDetail() {
   const { id } = useParams();
@@ -7,12 +9,50 @@ export default function ExerciseDetail() {
   const [exercise, setExercise] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [isAdded, setIsAdded] = useState(false);
+  const [addingWorkout, setAddingWorkout] = useState(false);
+  const { getAccessToken } = useAuth();
+
+
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/exercises/${id}/`)
       .then(r => r.json())
       .then(setExercise)
       .finally(() => setLoading(false));
   }, [id]);
+
+   const handleAddToWorkout = async () => {
+    setAddingWorkout(true);
+    try {
+      const token = getAccessToken();
+
+      const response = await fetch('http://127.0.0.1:8000/api/my-workouts/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ exercise_id: parseInt(id) })
+      });
+      
+      if (response.ok) {
+        setIsAdded(true);
+        alert('✓ Added to your workout list!');
+      } else if (response.status === 400) {
+        alert('Already in your workout list');
+        setIsAdded(true);
+      } else if (response.status === 401) {
+        alert('Please login to add workouts');
+      } else {
+        alert('Failed to add workout');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Failed to add workout');
+    } finally {
+      setAddingWorkout(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -140,25 +180,27 @@ export default function ExerciseDetail() {
               </section>
             )}
 
-            <div style={{ marginTop: 32 }}>
+             <div style={{ marginTop: 32 }}>
               <button
-                onClick={() => alert('Added to workout plan')}
+                onClick={handleAddToWorkout}
+                disabled={addingWorkout || isAdded}
                 style={{
-                  background: '#9333ea',
+                  background: isAdded ? '#22c55e' : '#9333ea',
                   color: 'white',
                   padding: '14px 28px',
                   borderRadius: 12,
                   border: 'none',
-                  cursor: 'pointer',
+                  cursor: addingWorkout || isAdded ? 'not-allowed' : 'pointer',
                   fontWeight: 'bold',
                   fontSize: 16,
-                  boxShadow: '0 4px 12px rgba(147, 51, 234, 0.4)',
-                  transition: 'all 0.3s'
+                  boxShadow: isAdded ? '0 4px 12px rgba(34, 197, 94, 0.4)' : '0 4px 12px rgba(147, 51, 234, 0.4)',
+                  transition: 'all 0.3s',
+                  opacity: addingWorkout || isAdded ? 0.7 : 1
                 }}
-                onMouseOver={(e) => (e.target.style.background = '#7e22ce')}
-                onMouseOut={(e) => (e.target.style.background = '#9333ea')}
+                onMouseOver={(e) => !isAdded && !addingWorkout && (e.target.style.background = '#7e22ce')}
+                onMouseOut={(e) => !isAdded && !addingWorkout && (e.target.style.background = '#9333ea')}
               >
-                Add to Workout
+                {isAdded ? '✓ Added to Workout' : addingWorkout ? 'Adding...' : 'Add to Workout'}
               </button>
             </div>
           </div>

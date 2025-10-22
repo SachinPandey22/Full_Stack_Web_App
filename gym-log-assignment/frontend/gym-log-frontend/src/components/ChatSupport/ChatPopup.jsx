@@ -88,8 +88,45 @@ const ChatPopup = () => {
                   
                 Update your profile ➜
                 </p>
+                <p
+                  className="link"
+                  onClick={() => {
+                    setOpen(false);  // Close chat popup
+                    navigate('/workout-library'); // Navigate to workout library page
+                  }}
+                  style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+              
+                >
+                  
+                Add a workout  ➜
+                </p>
+                <p
+                  className="link"
+                  onClick={() => {
+                    setOpen(false);  // Close chat popup
+                    navigate('/MealLogging'); // Navigate to Meal Logging page
+                  }}
+                  style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+                >
+                  Add a meal ➜
+
+                </p>
+
+                <p
+                  className="link"
+                  onClick={() => {
+                    setOpen(false);  // Close chat popup
+                    navigate('/nutrition'); // Navigate to Nutrition page
+                  }}
+                  style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
+                >
+                  View nutrition tips ➜
+
+                </p>  
+
               </div>
             </div>
+              
           ) : (
             // Message form content
             <div className="message-form">

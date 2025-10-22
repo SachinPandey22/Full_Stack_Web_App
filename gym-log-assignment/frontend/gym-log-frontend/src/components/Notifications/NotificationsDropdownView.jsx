@@ -2,6 +2,9 @@ import React from 'react';
 
 export default function NotificationsDropdownView({
   logoSrc = '/notification_image.jpg',
+  items = [],
+  loading = false,
+  onMarkAllRead,
   // in future: items = [], onMarkAllRead, onItemClick, etc.
 }) {
   return (
@@ -24,10 +27,20 @@ export default function NotificationsDropdownView({
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <strong>Notifications</strong>
-        {/* reserved for future actions */}
+        {items.length > 0 && (
+          <button onClick={onMarkAllRead} style={{ fontSize:12, border:'none', background:'transparent', color:'#2563eb', cursor:'pointer' }}>
+            Mark all read
+          </button>
+        )}
       </div>
 
-      {/* Empty state */}
+      {/* Body */}
+      {loading ? (
+        <div style={{ color: '#6b7280', fontSize: 14, padding: '12px 4px' }}>
+          Loading…
+        </div>
+      ) : items.length === 0 ? (
+        // Empty state
       <div
         style={{
           display: 'flex',
@@ -48,6 +61,40 @@ export default function NotificationsDropdownView({
         />
         <div style={{ fontSize: 14 }}>You’re up-to-date</div>
       </div>
+    ) : (
+        // Items list
+        <ul
+          style={{
+            listStyle: 'none',
+            padding: 0,
+            margin: 0,
+            maxHeight: 260,
+            overflowY: 'auto',
+          }}
+        >
+          {items.map((n) => (
+            <li
+              key={n.id}
+              style={{
+                padding: '8px 6px',
+                borderRadius: 8,
+                background: n.is_read ? 'transparent' : '#f9fafb',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 6,
+              }}
+            >
+              <span style={{ fontSize: 14 }}>{n.message}</span>
+              <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>
+                {n.created_at
+                  ? new Date(n.created_at).toLocaleString()
+                  : ''}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { useSwipeable } from 'react-swipeable';
 import { format, addDays, subDays, isSameDay } from 'date-fns';
 import DateNavigator from './DateNavigator';
 import MotivationalQuotes from './MotivationalQuotes';
+import WaterTracker from './WaterTracker'; 
 
 const MealLogging = () => {
   const [showMealLog, setShowMealLog] = useState(false);
@@ -400,120 +401,143 @@ const MealLogging = () => {
           </div>
         </div>
 
+        {/* MODIFIED: Added flex layout for main content + sidebar */}
         <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-5xl mx-auto space-y-8">
+          <div className="max-w-7xl mx-auto"> {/* Changed from max-w-5xl to max-w-7xl */}
             
-            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-              <div className="mb-6">
-                <div className="flex justify-between items-center mb-3">
-                  <h2 className="text-2xl font-bold text-gray-800">Daily Progress</h2>
-                  <span className="text-3xl font-bold text-blue-600">{totals.calories} / {dailyGoals.calories}</span>
-                </div>
-                <div className="h-5 bg-gray-200 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
-                    style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
-                  />
-                </div>
-                <p className="text-sm text-gray-600 mt-2 font-medium">
-                  {remaining > 0 ? `${remaining} kcal remaining` : `Goal reached! 🎉`}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <ProgressBar current={totals.protein} goal={dailyGoals.protein} label="Protein" color="bg-red-500" />
-                <ProgressBar current={totals.carbs} goal={dailyGoals.carbs} label="Carbs" color="bg-yellow-500" />
-                <ProgressBar current={totals.fat} goal={dailyGoals.fat} label="Fat" color="bg-green-500" />
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {isSameDay(currentDate, new Date()) ? "Today's Meals" : `Meals for ${format(currentDate, 'MMM d, yyyy')}`}
-                </h2>
-                <button
-                  onClick={() => setShowModal(true)}
-                  className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
-                >
-                  <Plus size={18} />
-                  Add Meal
-                </button>
-              </div>
-
-              <div className="space-y-6">
-                {['breakfast', 'lunch', 'dinner', 'snacks'].map(type => {
-                  const typeMeals = currentDateMeals.filter(m => m.type === type);
-                  return (
-                    <div key={type}>
-                      <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 ml-1">{type}</h3>
-                      {typeMeals.length > 0 ? (
-                        <div className="space-y-3">
-                          {typeMeals.map(meal => <MealCard key={meal.id} meal={meal} />)}
-                        </div>
-                      ) : (
-                        <p className="text-gray-400 text-sm italic ml-2 mb-2">No meals added yet</p>
-                      )}
+            {/* MODIFIED: Flex container for main content and sidebar */}
+            <div className="flex gap-6">
+              
+              {/* MODIFIED: Main content area wrapped in flex-1 */}
+              <div className="flex-1 space-y-8">
+                
+                {/* Daily Progress Card */}
+                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-3">
+                      <h2 className="text-2xl font-bold text-gray-800">Daily Progress</h2>
+                      <span className="text-3xl font-bold text-blue-600">{totals.calories} / {dailyGoals.calories}</span>
                     </div>
-                  );
-                })}
+                    <div className="h-5 bg-gray-200 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
+                        style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
+                      />
+                    </div>
+                    <p className="text-sm text-gray-600 mt-2 font-medium">
+                      {remaining > 0 ? `${remaining} kcal remaining` : `Goal reached! 🎉`}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <ProgressBar current={totals.protein} goal={dailyGoals.protein} label="Protein" color="bg-red-500" />
+                    <ProgressBar current={totals.carbs} goal={dailyGoals.carbs} label="Carbs" color="bg-yellow-500" />
+                    <ProgressBar current={totals.fat} goal={dailyGoals.fat} label="Fat" color="bg-green-500" />
+                  </div>
+                </div>
+
+                {/* Today's Meals Card */}
+                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-gray-800">
+                      {isSameDay(currentDate, new Date()) ? "Today's Meals" : `Meals for ${format(currentDate, 'MMM d, yyyy')}`}
+                    </h2>
+                    <button
+                      onClick={() => setShowModal(true)}
+                      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
+                    >
+                      <Plus size={18} />
+                      Add Meal
+                    </button>
+                  </div>
+
+                  <div className="space-y-6">
+                    {['breakfast', 'lunch', 'dinner', 'snacks'].map(type => {
+                      const typeMeals = currentDateMeals.filter(m => m.type === type);
+                      return (
+                        <div key={type}>
+                          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 ml-1">{type}</h3>
+                          {typeMeals.length > 0 ? (
+                            <div className="space-y-3">
+                              {typeMeals.map(meal => <MealCard key={meal.id} meal={meal} />)}
+                            </div>
+                          ) : (
+                            <p className="text-gray-400 text-sm italic ml-2 mb-2">No meals added yet</p>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    onClick={copyYesterday}
+                    className="w-full mt-6 border-2 border-dashed border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
+                  >
+                    <Copy size={18} />
+                    Copy Yesterday's Meals
+                  </button>
+                </div>
+
+                {/* Weekly Overview Card */}
+                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-6">Weekly Overview</h3>
+                  <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={weekData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                      <XAxis 
+                        dataKey="day" 
+                        tick={{ fontSize: 14, fill: '#6b7280' }}
+                        stroke="#d1d5db"
+                      />
+                      <YAxis 
+                        tick={{ fontSize: 14, fill: '#6b7280' }}
+                        stroke="#d1d5db"
+                      />
+                      <Tooltip 
+                        contentStyle={{ 
+                          background: '#fff', 
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '12px',
+                          fontSize: '14px',
+                          padding: '12px'
+                        }}
+                      />
+                      <Bar 
+                        dataKey="calories" 
+                        fill="url(#colorGradient)" 
+                        radius={[10, 10, 0, 0]}
+                      />
+                      <defs>
+                        <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#8b5cf6" />
+                          <stop offset="100%" stopColor="#6366f1" />
+                        </linearGradient>
+                      </defs>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              
               </div>
-
-              <button
-                onClick={copyYesterday}
-                className="w-full mt-6 border-2 border-dashed border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
-              >
-                <Copy size={18} />
-                Copy Yesterday's Meals
-              </button>
+              
+              {/* NEW: Water Tracker Sidebar - Sticky on right side */}
+              <div className="w-80 flex-shrink-0 hidden lg:block">
+                <div className="sticky top-8">
+                  <WaterTracker 
+                    currentDate={currentDate} 
+                    onToast={showToast}
+                  />
+                </div>
+              </div>
+              
             </div>
-
-            <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-              <h3 className="text-2xl font-bold text-gray-800 mb-6">Weekly Overview</h3>
-              <ResponsiveContainer width="100%" height={250}>
-                <BarChart data={weekData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis 
-                    dataKey="day" 
-                    tick={{ fontSize: 14, fill: '#6b7280' }}
-                    stroke="#d1d5db"
-                  />
-                  <YAxis 
-                    tick={{ fontSize: 14, fill: '#6b7280' }}
-                    stroke="#d1d5db"
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      background: '#fff', 
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '12px',
-                      fontSize: '14px',
-                      padding: '12px'
-                    }}
-                  />
-                  <Bar 
-                    dataKey="calories" 
-                    fill="url(#colorGradient)" 
-                    radius={[10, 10, 0, 0]}
-                  />
-                  <defs>
-                    <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#3b82f6" />
-                      <stop offset="100%" stopColor="#6366f1" />
-                    </linearGradient>
-                  </defs>
-                </BarChart>
-              </ResponsiveContainer>
-              <p className="text-sm text-gray-500 mt-4 text-center">Daily calorie intake this week</p>
-            </div>
-
           </div>
         </div>
       </div>
 
+      {/* Add Meal Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors text-2xl"
@@ -521,8 +545,7 @@ const MealLogging = () => {
               ✕
             </button>
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">Add New Meal</h2>
-            <p className="text-gray-500 mb-6">Log your meal to track your progress</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Add Meal</h2>
 
             <div className="space-y-4">
               <div>
@@ -621,6 +644,7 @@ const MealLogging = () => {
         </div>
       )}
 
+      {/* Edit Goals Modal */}
       {showGoalsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">
@@ -707,6 +731,7 @@ const MealLogging = () => {
         </div>
       )}
 
+      {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl animate-fade-in flex items-center gap-3 z-50">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />

@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'exercises',
     'MealLogging',
     'support',
-    'notifications',  
+    "notifications.apps.NotificationsConfig",
 ]
 
 MIDDLEWARE = [

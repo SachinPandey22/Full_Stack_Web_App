@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Meal, MealTarget
+from .models import Meal, MealTarget, WaterIntake
+
 
 class MealSerializer(serializers.ModelSerializer):
     """Serializer for Meal model"""
@@ -27,6 +28,7 @@ class MealSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Meal name is required")
         return value.strip()
 
+
 class MealTargetSerializer(serializers.ModelSerializer):
     """Serializer for MealTarget model"""
     
@@ -46,3 +48,18 @@ class MealTargetSerializer(serializers.ModelSerializer):
                     field: f"{field} must be greater than 0"
                 })
         return data
+
+
+class WaterIntakeSerializer(serializers.ModelSerializer):
+    """Serializer for WaterIntake model"""
+    
+    class Meta:
+        model = WaterIntake
+        fields = ['id', 'date', 'glasses', 'total_ml', 'glass_size', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'total_ml', 'created_at', 'updated_at']
+
+
+class WaterIntakeCreateUpdateSerializer(serializers.Serializer):
+    """Serializer for creating/updating water intake"""
+    date = serializers.DateField(required=True)
+    glasses = serializers.IntegerField(required=True, min_value=0)

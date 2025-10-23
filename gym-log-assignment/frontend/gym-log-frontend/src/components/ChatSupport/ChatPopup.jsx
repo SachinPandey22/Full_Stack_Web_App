@@ -12,7 +12,6 @@ const ChatPopup = () => {
 
 
 
-
   const handleSendMessage = async () => {
   const email = document.querySelector(".email-input").value;
   const message = document.querySelector(".message-input").value;

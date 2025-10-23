@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import "./ChatPopup.css";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../context/AuthContext';
 
 
 const ChatPopup = () => {
   const [open, setOpen] = useState(false);
   const [showMessageForm, setShowMessageForm] = useState(false);
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
+
 
 
 
@@ -60,7 +63,7 @@ const ChatPopup = () => {
 
           {!showMessageForm ? (
             <div className="chat-content">
-              <h2>Hi there,</h2>
+              <h2>Hi {(profile?.name?.split(' ')[0]) || 'there'},</h2>
               <h3>How can we help?</h3>
               <div
                 className="message-card"
@@ -159,9 +162,15 @@ const ChatPopup = () => {
             </div>
           )}
 
-
           <div className="chat-footer">
-            <button className="footer-btn active">🏠 Home</button>
+          
+            <button 
+              className="footer-btn active"           
+              onClick={() => navigate('/Dashboard')}
+            >
+              🏠 Home
+              </button>
+
             <button className="footer-btn">💬 Messages</button>
             <button className="footer-btn">❓ Help</button>
           </div>

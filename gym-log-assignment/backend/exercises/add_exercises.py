@@ -1,21 +1,20 @@
+import ssl
+import psycopg2
 import os
-import django
 
-# Setup Django - Your settings module is 'gymlog.settings'
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'gymlog.settings')
-django.setup()
+ssl._create_default_https_context = ssl._create_unverified_context
+os.environ['PGSSLMODE'] = 'allow'
 
 from exercises.models import Exercise
+from django.db.models import Count
 
-print("🔄 Clearing existing exercises...")
-Exercise.objects.all().delete()
+def run_exercise_script():
+    print("🔄 Clearing existing exercises...")
+    Exercise.objects.all().delete()
 
-print("📝 Adding new exercises...")
-
-
-
-# Add new exercises with images
-exercises_created = Exercise.objects.bulk_create([
+    print("📝 Adding new exercises...")
+    
+    exercises_created = Exercise.objects.bulk_create([
     # CHEST EXERCISES
     Exercise(
         name="Barbell Bench Press",
@@ -502,17 +501,13 @@ exercises_created = Exercise.objects.bulk_create([
     ),
 ])
 
-print(f"✅ Successfully added {len(exercises_created)} exercises!")
+    print(f"✅ Successfully added {len(exercises_created)} exercises!")
 
-# Show summary by muscle group
-from django.db.models import Count
-counts = Exercise.objects.values('muscle_group').annotate(total=Count('id')).order_by('muscle_group')
+    counts = Exercise.objects.values('muscle_group').annotate(total=Count('id')).order_by('muscle_group')
+    print("\n📊 Exercise Count by Muscle Group:")
+    for item in counts:
+        print(f"{item['muscle_group'].title()}: {item['total']} exercises")
 
-print("\n📊 Exercise Count by Muscle Group:")
-for item in counts:
-    print(f"   {item['muscle_group'].title()}: {item['total']} exercises")
-
-print("\n🎉 Database populated successfully!")
+    print("\n🎉 Database populated successfully!")
 
 
-#this needs to be changed so I dont know. I need to add this on my database

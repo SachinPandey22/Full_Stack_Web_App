@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useNotificationsDropdownBehavior from './useNotificationsDropdownBehavior';
 import NotificationsDropdownView from './NotificationsDropdownView';
 import { getNotifications, markAllNotificationsRead } from '../../services/notifications';
+import { getNotifEnabled, setNotifEnabled } from '../../services/notify';
 
 /**
  * Container/implementation: composes behavior + presentation.
@@ -20,6 +21,7 @@ export default function NotificationsDropdown({
 
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [enabled, setEnabled] = useState(getNotifEnabled());
 
 
 
@@ -27,7 +29,7 @@ export default function NotificationsDropdown({
   useEffect(() => bindOutsideAndEsc(!!isOpenExternal), [isOpenExternal, bindOutsideAndEsc]);
 
   useEffect(() => {
-    if (!isOpenExternal) return;
+    if (!isOpenExternal || !enabled) return;
     let alive = true;
 
     (async () => {
@@ -44,7 +46,7 @@ export default function NotificationsDropdown({
     })();
 
     return () => { alive = false; };
-  }, [isOpenExternal]);
+  }, [isOpenExternal, enabled]);
 
   if (!isOpenExternal) return null;
 
@@ -53,8 +55,10 @@ export default function NotificationsDropdown({
     <div /* ref is on the parent wrapper via anchorRef */>
       <NotificationsDropdownView 
         logoSrc={logoSrc} 
-        items={items}
-        loading={loading}
+        items={enabled ? items: []}
+        loading={enabled ? loading: false}
+        notificationsEnabled={enabled}
+        onToggleEnabled={() => setEnabled(v => !v)}
         onMarkAllRead={async () => {
           try {
             await markAllNotificationsRead();

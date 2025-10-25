@@ -1,26 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Utensils, Plus, Edit2, Trash2, Copy, Apple, Coffee, Sunset, Moon, ArrowLeft } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { useSwipeable } from 'react-swipeable';
-import { format, addDays, subDays, isSameDay } from 'date-fns';
+import { format, addDays, subDays } from 'date-fns';
 import DateNavigator from './DateNavigator';
 import MotivationalQuotes from './MotivationalQuotes';
-import WaterTracker from './WaterTracker'; 
+import WaterTracker from './WaterTracker';
+import {
+  getMealsByDate,
+  createMeal,
+  deleteMeal as apiDeleteMeal,
+  getMealTargets,
+  saveMealTargets
+} from '../../services/MealLogging';
 
 const MealLogging = () => {
   const [showMealLog, setShowMealLog] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [goalsSet, setGoalsSet] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
+  const [loading, setLoading] = useState(false);
   
   const [currentDate, setCurrentDate] = useState(new Date());
   
-  const [meals, setMeals] = useState([
-    { id: 1, type: 'breakfast', name: 'Oatmeal & Berries', calories: 320, protein: 12, carbs: 58, fat: 6, time: '8:30 AM', date: new Date().toDateString(), notes: '' },
-    { id: 2, type: 'lunch', name: 'Grilled Chicken Salad', calories: 450, protein: 42, carbs: 28, fat: 18, time: '12:45 PM', date: new Date().toDateString(), notes: '' },
-    { id: 3, type: 'dinner', name: 'Salmon & Sweet Potato', calories: 580, protein: 38, carbs: 52, fat: 22, time: '7:00 PM', date: new Date().toDateString(), notes: '' },
-    { id: 4, type: 'snacks', name: 'Greek Yogurt & Almonds', calories: 200, protein: 15, carbs: 18, fat: 8, time: '3:30 PM', date: new Date().toDateString(), notes: '' }
-  ]);
+  const [meals, setMeals] = useState([]);
   
   const [newMeal, setNewMeal] = useState({
     type: 'breakfast',
@@ -47,6 +50,61 @@ const MealLogging = () => {
     carbs: '',
     fat: ''
   });
+
+  useEffect(() => {
+    loadMealTargets();
+  }, []);
+
+  const loadMealTargets = async () => {
+    try {
+      const targets = await getMealTargets();
+      if (targets) {
+        setDailyGoals({
+          calories: targets.daily_calories,
+          protein: targets.daily_protein,
+          carbs: targets.daily_carbs,
+          fat: targets.daily_fat
+        });
+        setGoalsSet(true);
+      }
+    } catch (error) {
+      console.error('Failed to load meal targets:', error);
+    }
+  };
+
+  const loadMealsForDate = useCallback(async (date) => {
+    try {
+      setLoading(true);
+      const dateStr = format(date, 'yyyy-MM-dd');
+      const mealsData = await getMealsByDate(dateStr);
+      
+      const transformedMeals = mealsData.map(meal => ({
+        id: meal.id,
+        type: meal.meal_type,
+        name: meal.name,
+        calories: meal.calories,
+        protein: meal.protein,
+        carbs: meal.carbs,
+        fat: meal.fat,
+        time: meal.time,
+        date: date.toDateString(),
+        notes: meal.notes || ''
+      }));
+      
+      setMeals(transformedMeals);
+    } catch (error) {
+      console.error('Failed to load meals:', error);
+      showToast('Failed to load meals');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (goalsSet) {
+      loadMealsForDate(currentDate);
+    }
+  }, [currentDate, goalsSet, loadMealsForDate]);
 
   const currentDateMeals = meals.filter(meal => 
     meal.date === currentDate.toDateString()
@@ -136,78 +194,146 @@ const MealLogging = () => {
     showToast(`📅 Switched to ${format(newDate, 'MMM d, yyyy')}`);
   };
 
-  const saveGoals = () => {
-    const newGoals = {
-      calories: parseInt(goalInput.calories) || 2200,
-      protein: parseInt(goalInput.protein) || 165,
-      carbs: parseInt(goalInput.carbs) || 220,
-      fat: parseInt(goalInput.fat) || 73
-    };
-    setDailyGoals(newGoals);
-    setGoalsSet(true);
-    setShowGoalsModal(false);
-    setShowMealLog(true);
-    showToast('🎯 Goals set! Let\'s start tracking!');
-  };
-
-  const addMeal = () => {
-    if (!newMeal.name || !newMeal.calories) return;
-    
-    const meal = {
-      id: Date.now(),
-      type: newMeal.type,
-      name: newMeal.name,
-      calories: parseInt(newMeal.calories) || 0,
-      protein: parseInt(newMeal.protein) || 0,
-      carbs: parseInt(newMeal.carbs) || 0,
-      fat: parseInt(newMeal.fat) || 0,
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-      date: currentDate.toDateString(),
-      notes: newMeal.notes || ''
-    };
-    
-    setMeals([...meals, meal]);
-    setShowModal(false);
-    setNewMeal({ type: 'breakfast', name: '', calories: '', protein: '', carbs: '', fat: '', notes: '' });
-    showToast('✅ Meal added successfully!');
-  };
-
-  const deleteMeal = (id) => {
-    setMeals(meals.filter(m => m.id !== id));
-    showToast('🗑️ Meal removed');
-  };
-
-  const copyYesterday = () => {
-    const yesterday = subDays(currentDate, 1);
-    const yesterdayMeals = meals.filter(meal => meal.date === yesterday.toDateString());
-    
-    if (yesterdayMeals.length === 0) {
-      showToast('❌ No meals found for yesterday');
-      return;
+  const saveGoals = async () => {
+    try {
+      const newGoals = {
+        daily_calories: parseInt(goalInput.calories) || 2200,
+        daily_protein: parseInt(goalInput.protein) || 165,
+        daily_carbs: parseInt(goalInput.carbs) || 220,
+        daily_fat: parseInt(goalInput.fat) || 73
+      };
+      
+      await saveMealTargets(newGoals);
+      
+      setDailyGoals({
+        calories: newGoals.daily_calories,
+        protein: newGoals.daily_protein,
+        carbs: newGoals.daily_carbs,
+        fat: newGoals.daily_fat
+      });
+      setGoalsSet(true);
+      setShowGoalsModal(false);
+      setShowMealLog(true);
+      showToast('🎯 Goals saved successfully!');
+    } catch (error) {
+      console.error('Failed to save goals:', error);
+      showToast('❌ Failed to save goals');
     }
-
-    const copiedMeals = yesterdayMeals.map(meal => ({
-      ...meal,
-      id: Date.now() + Math.random(),
-      date: currentDate.toDateString(),
-      time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-    }));
-
-    setMeals([...meals, ...copiedMeals]);
-    showToast('📋 Yesterday\'s meals copied!');
   };
 
-  const ProgressBar = ({ current, goal, label, color = 'bg-blue-500' }) => {
+  const addMeal = async () => {
+    try {
+      setLoading(true);
+      const dateStr = format(currentDate, 'yyyy-MM-dd');
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+      
+      const mealData = {
+        meal_type: newMeal.type,
+        name: newMeal.name,
+        calories: parseInt(newMeal.calories) || 0,
+        protein: parseInt(newMeal.protein) || 0,
+        carbs: parseInt(newMeal.carbs) || 0,
+        fat: parseInt(newMeal.fat) || 0,
+        date: dateStr,
+        time: timeStr,
+        notes: newMeal.notes || ''
+      };
+
+      const createdMeal = await createMeal(mealData);
+      
+      const transformedMeal = {
+        id: createdMeal.id,
+        type: createdMeal.meal_type,
+        name: createdMeal.name,
+        calories: createdMeal.calories,
+        protein: createdMeal.protein,
+        carbs: createdMeal.carbs,
+        fat: createdMeal.fat,
+        time: createdMeal.time,
+        date: currentDate.toDateString(),
+        notes: createdMeal.notes || ''
+      };
+
+      setMeals([...meals, transformedMeal]);
+      setShowModal(false);
+      setNewMeal({ type: 'breakfast', name: '', calories: '', protein: '', carbs: '', fat: '', notes: '' });
+      showToast('✅ Meal added successfully!');
+    } catch (error) {
+      console.error('Failed to add meal:', error);
+      showToast('❌ Failed to add meal');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const deleteMeal = async (id) => {
+    try {
+      setLoading(true);
+      await apiDeleteMeal(id);
+      setMeals(meals.filter(meal => meal.id !== id));
+      showToast('🗑️ Meal deleted');
+    } catch (error) {
+      console.error('Failed to delete meal:', error);
+      showToast('❌ Failed to delete meal');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyYesterday = async () => {
+    try {
+      setLoading(true);
+      const yesterday = subDays(currentDate, 1);
+      const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
+      const yesterdayMeals = await getMealsByDate(yesterdayStr);
+
+      if (yesterdayMeals.length === 0) {
+        showToast('❌ No meals found from yesterday');
+        return;
+      }
+
+      const todayStr = format(currentDate, 'yyyy-MM-dd');
+      const now = new Date();
+      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+      for (const meal of yesterdayMeals) {
+        const mealData = {
+          meal_type: meal.meal_type,
+          name: meal.name,
+          calories: meal.calories,
+          protein: meal.protein,
+          carbs: meal.carbs,
+          fat: meal.fat,
+          date: todayStr,
+          time: timeStr,
+          notes: meal.notes || ''
+        };
+        await createMeal(mealData);
+      }
+
+      await loadMealsForDate(currentDate);
+      showToast(`📋 Copied ${yesterdayMeals.length} meals from yesterday!`);
+    } catch (error) {
+      console.error('Failed to copy meals:', error);
+      showToast('❌ Failed to copy meals');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const ProgressBar = ({ current, goal, label, color }) => {
     const percentage = Math.min((current / goal) * 100, 100);
+    
     return (
-      <div className="mb-3">
+      <div>
         <div className="flex justify-between text-sm mb-1">
-          <span className="font-medium text-gray-700">{label}</span>
-          <span className="text-gray-600">{current}g / {goal}g</span>
+          <span className="text-gray-700 font-medium">{label}</span>
+          <span className="text-gray-600">{current}/{goal}g</span>
         </div>
-        <div className="h-2.5 bg-gray-200 rounded-full overflow-hidden">
+        <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
           <div 
-            className={`h-full ${color} transition-all duration-500`}
+            className={`${color} h-full rounded-full transition-all duration-500 ease-out`}
             style={{ width: `${percentage}%` }}
           />
         </div>
@@ -349,9 +475,10 @@ const MealLogging = () => {
 
                 <button
                   onClick={saveGoals}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl mt-6"
+                  disabled={loading}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl mt-6 disabled:opacity-50"
                 >
-                  Set Goals & Start Tracking
+                  {loading ? 'Saving...' : 'Set Goals & Start Tracking'}
                 </button>
               </div>
             </div>
@@ -362,182 +489,189 @@ const MealLogging = () => {
   }
 
   return (
-    <div 
-      {...swipeHandlers}
-      className="fixed inset-0 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 overflow-hidden z-50"
-    >
-      <div className="h-full flex flex-col">
-        <div className="p-4 md:p-8 bg-white shadow-sm border-b border-gray-100">
-          <div className="max-w-7xl mx-auto">
-            <button
-              onClick={() => setShowMealLog(false)}
-              className="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-semibold mb-6 transition-colors group"
-            >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-              Back to Dashboard
-            </button>
-
-            <div className="flex items-start justify-between gap-8">
-              <div className="flex-1">
-                <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">Meal Log</h1>
-                <DateNavigator 
-                  currentDate={currentDate}
-                  onDateChange={handleDateChange}
-                  className="mb-4"
-                />
-                
-                <div className="flex items-center gap-3 mb-4">
-                  <button
-                    onClick={() => setShowGoalsModal(true)}
-                    className="text-sm text-purple-600 hover:text-purple-700 font-medium underline"
-                  >
-                    Edit Goals
-                  </button>
-                </div>
-
-                <MotivationalQuotes />
-              </div>
-            </div>
+    <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 z-[9999] overflow-auto">
+      {loading && (
+        <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white px-6 py-3 rounded-full shadow-lg z-50">
+          <div className="flex items-center gap-3">
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
+            <span className="text-gray-700 font-medium">Loading...</span>
           </div>
         </div>
+      )}
 
-        {/* MODIFIED: Added flex layout for main content + sidebar */}
-        <div className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-7xl mx-auto"> {/* Changed from max-w-5xl to max-w-7xl */}
-            
-            {/* MODIFIED: Flex container for main content and sidebar */}
-            <div className="flex gap-6">
-              
-              {/* MODIFIED: Main content area wrapped in flex-1 */}
-              <div className="flex-1 space-y-8">
-                
-                {/* Daily Progress Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-                  <div className="mb-6">
-                    <div className="flex justify-between items-center mb-3">
-                      <h2 className="text-2xl font-bold text-gray-800">Daily Progress</h2>
-                      <span className="text-3xl font-bold text-blue-600">{totals.calories} / {dailyGoals.calories}</span>
-                    </div>
-                    <div className="h-5 bg-gray-200 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 transition-all duration-500"
-                        style={{ width: `${Math.min((totals.calories / dailyGoals.calories) * 100, 100)}%` }}
-                      />
-                    </div>
-                    <p className="text-sm text-gray-600 mt-2 font-medium">
-                      {remaining > 0 ? `${remaining} kcal remaining` : `Goal reached! 🎉`}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <ProgressBar current={totals.protein} goal={dailyGoals.protein} label="Protein" color="bg-red-500" />
-                    <ProgressBar current={totals.carbs} goal={dailyGoals.carbs} label="Carbs" color="bg-yellow-500" />
-                    <ProgressBar current={totals.fat} goal={dailyGoals.fat} label="Fat" color="bg-green-500" />
-                  </div>
-                </div>
-
-                {/* Today's Meals Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-gray-800">
-                      {isSameDay(currentDate, new Date()) ? "Today's Meals" : `Meals for ${format(currentDate, 'MMM d, yyyy')}`}
-                    </h2>
-                    <button
-                      onClick={() => setShowModal(true)}
-                      className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg flex items-center gap-2"
-                    >
-                      <Plus size={18} />
-                      Add Meal
-                    </button>
-                  </div>
-
-                  <div className="space-y-6">
-                    {['breakfast', 'lunch', 'dinner', 'snacks'].map(type => {
-                      const typeMeals = currentDateMeals.filter(m => m.type === type);
-                      return (
-                        <div key={type}>
-                          <h3 className="text-sm font-bold text-gray-500 uppercase tracking-wide mb-3 ml-1">{type}</h3>
-                          {typeMeals.length > 0 ? (
-                            <div className="space-y-3">
-                              {typeMeals.map(meal => <MealCard key={meal.id} meal={meal} />)}
-                            </div>
-                          ) : (
-                            <p className="text-gray-400 text-sm italic ml-2 mb-2">No meals added yet</p>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  <button
-                    onClick={copyYesterday}
-                    className="w-full mt-6 border-2 border-dashed border-gray-300 text-gray-600 py-3 rounded-xl font-medium hover:bg-gray-50 hover:border-gray-400 transition-all flex items-center justify-center gap-2"
-                  >
-                    <Copy size={18} />
-                    Copy Yesterday's Meals
-                  </button>
-                </div>
-
-                {/* Weekly Overview Card */}
-                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-                  <h3 className="text-2xl font-bold text-gray-800 mb-6">Weekly Overview</h3>
-                  <ResponsiveContainer width="100%" height={250}>
-                    <BarChart data={weekData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                      <XAxis 
-                        dataKey="day" 
-                        tick={{ fontSize: 14, fill: '#6b7280' }}
-                        stroke="#d1d5db"
-                      />
-                      <YAxis 
-                        tick={{ fontSize: 14, fill: '#6b7280' }}
-                        stroke="#d1d5db"
-                      />
-                      <Tooltip 
-                        contentStyle={{ 
-                          background: '#fff', 
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '12px',
-                          fontSize: '14px',
-                          padding: '12px'
-                        }}
-                      />
-                      <Bar 
-                        dataKey="calories" 
-                        fill="url(#colorGradient)" 
-                        radius={[10, 10, 0, 0]}
-                      />
-                      <defs>
-                        <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#8b5cf6" />
-                          <stop offset="100%" stopColor="#6366f1" />
-                        </linearGradient>
-                      </defs>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              
-              </div>
-              
-              {/* NEW: Water Tracker Sidebar - Sticky on right side */}
-              <div className="w-80 flex-shrink-0 hidden lg:block">
-                <div className="sticky top-8">
-                  <WaterTracker 
-                    currentDate={currentDate} 
-                    onToast={showToast}
-                  />
-                </div>
-              </div>
-              
-            </div>
+      <div className="bg-white shadow-md sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setShowMealLog(false)}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              <ArrowLeft className="w-5 h-5" />
+              <span className="font-medium">Back</span>
+            </button>
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+              Meal Tracker
+            </h1>
+            <button
+              onClick={() => setShowGoalsModal(true)}
+              className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+            >
+              Edit Goals
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Add Meal Modal */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <DateNavigator 
+          currentDate={currentDate}
+          onDateChange={handleDateChange}
+        />
+      </div>
+
+      <div {...swipeHandlers} className="max-w-7xl mx-auto px-4 space-y-6 pb-20">
+        <MotivationalQuotes />
+
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold text-gray-900">Today's Progress</h2>
+            <div className={`px-4 py-2 rounded-full font-bold ${
+              remaining >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+            }`}>
+              {remaining >= 0 ? remaining : Math.abs(remaining)} cal {remaining >= 0 ? 'left' : 'over'}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+              <p className="text-sm text-gray-600 mb-1">Calories</p>
+              <p className="text-2xl font-bold text-blue-700">{totals.calories}</p>
+              <p className="text-xs text-gray-500">of {dailyGoals.calories}</p>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
+              <p className="text-sm text-gray-600 mb-1">Protein</p>
+              <p className="text-2xl font-bold text-green-700">{totals.protein}g</p>
+              <p className="text-xs text-gray-500">of {dailyGoals.protein}g</p>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl">
+              <p className="text-sm text-gray-600 mb-1">Carbs</p>
+              <p className="text-2xl font-bold text-yellow-700">{totals.carbs}g</p>
+              <p className="text-xs text-gray-500">of {dailyGoals.carbs}g</p>
+            </div>
+            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+              <p className="text-sm text-gray-600 mb-1">Fat</p>
+              <p className="text-2xl font-bold text-purple-700">{totals.fat}g</p>
+              <p className="text-xs text-gray-500">of {dailyGoals.fat}g</p>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <ProgressBar 
+              current={totals.protein} 
+              goal={dailyGoals.protein} 
+              label="Protein" 
+              color="bg-green-500" 
+            />
+            <ProgressBar 
+              current={totals.carbs} 
+              goal={dailyGoals.carbs} 
+              label="Carbs" 
+              color="bg-yellow-500" 
+            />
+            <ProgressBar 
+              current={totals.fat} 
+              goal={dailyGoals.fat} 
+              label="Fat" 
+              color="bg-purple-500" 
+            />
+          </div>
+        </div>
+
+        <WaterTracker currentDate={currentDate} />
+
+        <div className="bg-white rounded-2xl shadow-xl p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">7-Day Calorie Trend</h2>
+          <ResponsiveContainer width="100%" height={200}>
+            <BarChart data={weekData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="day" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="calories" fill="url(#colorGradient)" radius={[8, 8, 0, 0]} />
+              <defs>
+                <linearGradient id="colorGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#8b5cf6" />
+                  <stop offset="100%" stopColor="#ec4899" />
+                </linearGradient>
+              </defs>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold text-gray-900">Meals</h2>
+            <div className="flex gap-2">
+              <button
+                onClick={copyYesterday}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all text-sm font-medium disabled:opacity-50"
+              >
+                <Copy className="w-4 h-4" />
+                Copy Yesterday
+              </button>
+              <button
+                onClick={() => setShowModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg font-medium"
+              >
+                <Plus className="w-4 h-4" />
+                Add Meal
+              </button>
+            </div>
+          </div>
+
+          {currentDateMeals.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
+              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Utensils size={36} className="text-gray-400" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">No meals logged yet</h3>
+              <p className="text-gray-500 mb-6">Start tracking your nutrition by adding your first meal!</p>
+              <button
+                onClick={() => setShowModal(true)}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg"
+              >
+                Add Your First Meal
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {['breakfast', 'lunch', 'dinner', 'snacks'].map(type => {
+                const typeMeals = currentDateMeals.filter(m => m.type === type);
+                if (typeMeals.length === 0) return null;
+                
+                return (
+                  <div key={type}>
+                    <h3 className="text-lg font-bold text-gray-900 mb-3 capitalize flex items-center gap-2">
+                      {React.createElement(mealTypeConfig[type].icon, { size: 20 })}
+                      {type}
+                    </h3>
+                    <div className="space-y-3">
+                      {typeMeals.map(meal => (
+                        <MealCard key={meal.id} meal={meal} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-6 right-6 text-gray-400 hover:text-gray-600 transition-colors text-2xl"
@@ -545,7 +679,7 @@ const MealLogging = () => {
               ✕
             </button>
 
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Add Meal</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-6">Add New Meal</h2>
 
             <div className="space-y-4">
               <div>
@@ -635,16 +769,16 @@ const MealLogging = () => {
 
               <button
                 onClick={addMeal}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl mt-6"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl mt-6 disabled:opacity-50"
               >
-                Add Meal
+                {loading ? 'Adding...' : 'Add Meal'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Edit Goals Modal */}
       {showGoalsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">
@@ -722,16 +856,16 @@ const MealLogging = () => {
 
               <button
                 onClick={saveGoals}
-                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl mt-6"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl mt-6 disabled:opacity-50"
               >
-                {goalsSet ? 'Update Goals' : 'Set Goals & Start Tracking'}
+                {loading ? 'Saving...' : goalsSet ? 'Update Goals' : 'Set Goals & Start Tracking'}
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Toast Notification */}
       {toast && (
         <div className="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl animate-fade-in flex items-center gap-3 z-50">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />

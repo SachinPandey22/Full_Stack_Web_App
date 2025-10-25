@@ -45,3 +45,35 @@
 .instructions li {
   margin-bottom: 8px;
 }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Variants */
+.btn--ghost {
+  background: transparent;
+  color: #ffffff;            /* on dark nav */
+}
+
+.btn--primary {
+  background: #ffffff;
+  color: #0337c8;            /* DarkPrimaryBlue */
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Accessible, rounded focus ring (replaces the square outline) */
+.btn:focus { outline: none; }
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.6);
+  border-radius: 6px;
+}

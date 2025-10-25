@@ -4,9 +4,11 @@ export default function NotificationsDropdownView({
   logoSrc = '/notification_image.jpg',
   items = [],
   loading = false,
-  onMarkAllRead,
-  // in future: items = [], onMarkAllRead, onItemClick, etc.
-}) {
+  notificationsEnabled = true,
+  onToggleEnabled,
+  
+}) 
+{
   return (
     <div
       role="dialog"
@@ -27,11 +29,34 @@ export default function NotificationsDropdownView({
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
         <strong>Notifications</strong>
-        {items.length > 0 && (
-          <button onClick={onMarkAllRead} style={{ fontSize:12, border:'none', background:'transparent', color:'#2563eb', cursor:'pointer' }}>
-            Mark all read
-          </button>
-        )}
+
+        <button
+          type="button"
+          role="switch"
+          aria-checked={notificationsEnabled}
+          onClick={onToggleEnabled}            
+          style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            fontSize:12, color:'#374151', background:'transparent', border:'none', cursor:'pointer',
+          }}
+        >
+        <span>{notificationsEnabled ? 'On' : 'Off'}</span>
+        <span
+          style={{
+            width: 36, height: 20, borderRadius: 9999, position:'relative',
+            background: notificationsEnabled ? '#22c55e' : '#e5e7eb',
+            transition: 'background 120ms',
+          }}
+        > 
+        <span
+          style={{
+            position:'absolute', top:2, left: notificationsEnabled ? 18 : 2,
+            width:16, height:16, borderRadius:'50%', background:'white',
+            boxShadow:'0 1px 2px rgba(0,0,0,0.15)', transition:'left 120ms',
+          }}
+        />
+        </span>
+        </button>
       </div>
 
       {/* Body */}

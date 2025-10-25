@@ -81,7 +81,14 @@ export default function LandingPage() {
       </div>
 
       {/* Landing content */}
-      <div style={{ flex: 1, padding: '40px', textAlign: 'center', color: "blue", textShadow: "1px 1px 1px rgba(0,0,0,0.6)" }}>
+      <div style={{ 
+          flex: 1, 
+          padding: '40px', 
+          textAlign: 'center', 
+          color: "black", 
+          marginTop: '21vh',
+        }}>
+
         <h1>Welcome to Your Fitness Tracker</h1>
         <p>Track workouts, meals, and progress with AI insights.</p>
         <Link to="/register">

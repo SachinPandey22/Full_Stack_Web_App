@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import "./ChatPopup.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
+import SearchSupport from "./SearchSupport";
+
 
 
 const ChatPopup = () => {
@@ -74,9 +76,7 @@ const ChatPopup = () => {
                 </div>
                 <button className="message-arrow">➤</button>
               </div>
-              <div className="search-box">
-                <input type="text" placeholder="Search for help" />
-              </div>
+              <SearchSupport />
               <div className="help-links">
                 <p
                   className="link"

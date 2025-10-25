@@ -1,3 +1,4 @@
+// MealLogging Component - handles meal tracking, goals, and daily nutrition
 import React, { useState, useEffect, useCallback } from 'react';
 import { Utensils, Plus, Edit2, Trash2, Copy, Apple, Coffee, Sunset, Moon, ArrowLeft } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -15,16 +16,21 @@ import {
 } from '../../services/MealLogging';
 
 const MealLogging = () => {
+  // Basic UI states
   const [showMealLog, setShowMealLog] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [goalsSet, setGoalsSet] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState('');
   
+  // Date picker
   const [currentDate, setCurrentDate] = useState(new Date());
   
+  // All the meals data
   const [meals, setMeals] = useState([]);
   
+  // Form data for adding new meals
   const [newMeal, setNewMeal] = useState({
     type: 'breakfast',
     name: '',
@@ -35,8 +41,7 @@ const MealLogging = () => {
     notes: ''
   });
 
-  const [toast, setToast] = useState('');
-
+  // User's daily nutrition goals
   const [dailyGoals, setDailyGoals] = useState({ 
     calories: 2200, 
     protein: 165, 
@@ -44,6 +49,7 @@ const MealLogging = () => {
     fat: 73 
   });
 
+  // Temp storage for goal inputs
   const [goalInput, setGoalInput] = useState({
     calories: '',
     protein: '',
@@ -51,10 +57,12 @@ const MealLogging = () => {
     fat: ''
   });
 
+  // Load goals when component first renders
   useEffect(() => {
     loadMealTargets();
   }, []);
 
+  // Fetch meal targets from database
   const loadMealTargets = async () => {
     try {
       const targets = await getMealTargets();
@@ -72,12 +80,14 @@ const MealLogging = () => {
     }
   };
 
+  // Load meals for a specific date from database
   const loadMealsForDate = useCallback(async (date) => {
     try {
       setLoading(true);
       const dateStr = format(date, 'yyyy-MM-dd');
       const mealsData = await getMealsByDate(dateStr);
       
+      // Convert API format to what we use in the component
       const transformedMeals = mealsData.map(meal => ({
         id: meal.id,
         type: meal.meal_type,
@@ -100,16 +110,19 @@ const MealLogging = () => {
     }
   }, []);
 
+  // Reload meals whenever the date changes or goals are set
   useEffect(() => {
     if (goalsSet) {
       loadMealsForDate(currentDate);
     }
   }, [currentDate, goalsSet, loadMealsForDate]);
 
+  // Get only today's meals
   const currentDateMeals = meals.filter(meal => 
     meal.date === currentDate.toDateString()
   );
 
+  // Add up all the nutrition for today
   const totals = currentDateMeals.reduce((acc, meal) => ({
     calories: acc.calories + meal.calories,
     protein: acc.protein + meal.protein,
@@ -117,8 +130,10 @@ const MealLogging = () => {
     fat: acc.fat + meal.fat
   }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
 
+  // How many calories are left for today
   const remaining = dailyGoals.calories - totals.calories;
 
+  // Build data for the weekly chart
   const generateWeekData = () => {
     const data = [];
     for (let i = -6; i <= 0; i++) {
@@ -137,6 +152,7 @@ const MealLogging = () => {
 
   const weekData = generateWeekData();
 
+  // Colors and icons for different meal types
   const mealTypeConfig = {
     breakfast: { 
       icon: Coffee, 
@@ -164,6 +180,7 @@ const MealLogging = () => {
     }
   };
 
+  // Swipe left/right to change dates on mobile
   const swipeHandlers = useSwipeable({
     onSwipedLeft: () => {
       setCurrentDate(addDays(currentDate, 1));
@@ -176,11 +193,13 @@ const MealLogging = () => {
     preventScrollOnSwipe: true,
   });
 
+  // Show a quick notification message
   const showToast = (message) => {
     setToast(message);
     setTimeout(() => setToast(''), 3000);
   };
 
+  // Open the meal tracker (or show goals modal if first time)
   const handleOpenMealTracker = () => {
     if (!goalsSet) {
       setShowGoalsModal(true);
@@ -189,11 +208,13 @@ const MealLogging = () => {
     }
   };
 
+  // When user picks a new date
   const handleDateChange = (newDate) => {
     setCurrentDate(newDate);
     showToast(`📅 Switched to ${format(newDate, 'MMM d, yyyy')}`);
   };
 
+  // Save nutrition goals to the database
   const saveGoals = async () => {
     try {
       const newGoals = {
@@ -221,6 +242,7 @@ const MealLogging = () => {
     }
   };
 
+  // Add a new meal to the database
   const addMeal = async () => {
     try {
       setLoading(true);
@@ -242,6 +264,7 @@ const MealLogging = () => {
 
       const createdMeal = await createMeal(mealData);
       
+      // Add it to the list
       const transformedMeal = {
         id: createdMeal.id,
         type: createdMeal.meal_type,
@@ -267,6 +290,7 @@ const MealLogging = () => {
     }
   };
 
+  // Delete a meal
   const deleteMeal = async (id) => {
     try {
       setLoading(true);
@@ -281,6 +305,7 @@ const MealLogging = () => {
     }
   };
 
+  // Copy all meals from yesterday to today
   const copyYesterday = async () => {
     try {
       setLoading(true);
@@ -297,6 +322,7 @@ const MealLogging = () => {
       const now = new Date();
       const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
 
+      // Create each meal from yesterday
       for (const meal of yesterdayMeals) {
         const mealData = {
           meal_type: meal.meal_type,
@@ -322,12 +348,13 @@ const MealLogging = () => {
     }
   };
 
+  // Progress bar component for macros
   const ProgressBar = ({ current, goal, label, color }) => {
     const percentage = Math.min((current / goal) * 100, 100);
     
     return (
-      <div>
-        <div className="flex justify-between text-sm mb-1">
+      <div className="mb-3">
+        <div className="flex justify-between text-sm mb-2">
           <span className="text-gray-700 font-medium">{label}</span>
           <span className="text-gray-600">{current}/{goal}g</span>
         </div>
@@ -341,6 +368,7 @@ const MealLogging = () => {
     );
   };
 
+  // Single meal card
   const MealCard = ({ meal }) => {
     const config = mealTypeConfig[meal.type];
     const Icon = config.icon;
@@ -390,6 +418,7 @@ const MealLogging = () => {
     );
   };
 
+  // If tracker is closed, show the dashboard card
   if (!showMealLog) {
     return (
       <>
@@ -413,6 +442,7 @@ const MealLogging = () => {
           </button>
         </div>
 
+        {/* First time setup modal */}
         {showGoalsModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">
@@ -488,8 +518,10 @@ const MealLogging = () => {
     );
   }
 
+  // Full screen tracker view
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 z-[9999] overflow-auto">
+      {/* Loading spinner */}
       {loading && (
         <div className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-white px-6 py-3 rounded-full shadow-lg z-50">
           <div className="flex items-center gap-3">
@@ -499,6 +531,7 @@ const MealLogging = () => {
         </div>
       )}
 
+      {/* Top bar */}
       <div className="bg-white shadow-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -522,6 +555,7 @@ const MealLogging = () => {
         </div>
       </div>
 
+      {/* Date picker */}
       <div className="max-w-7xl mx-auto px-4 py-4">
         <DateNavigator 
           currentDate={currentDate}
@@ -529,9 +563,12 @@ const MealLogging = () => {
         />
       </div>
 
+      {/* Main content */}
       <div {...swipeHandlers} className="max-w-7xl mx-auto px-4 space-y-6 pb-20">
+        {/* Motivational quotes */}
         <MotivationalQuotes />
 
+        {/* Progress section */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-2xl font-bold text-gray-900">Today's Progress</h2>
@@ -542,6 +579,7 @@ const MealLogging = () => {
             </div>
           </div>
 
+          {/* Macro boxes */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
               <p className="text-sm text-gray-600 mb-1">Calories</p>
@@ -565,6 +603,7 @@ const MealLogging = () => {
             </div>
           </div>
 
+          {/* Progress bars */}
           <div className="space-y-3">
             <ProgressBar 
               current={totals.protein} 
@@ -587,8 +626,10 @@ const MealLogging = () => {
           </div>
         </div>
 
+        {/* Water tracker */}
         <WaterTracker currentDate={currentDate} />
 
+        {/* Weekly chart */}
         <div className="bg-white rounded-2xl shadow-xl p-6">
           <h2 className="text-xl font-bold text-gray-900 mb-4">7-Day Calorie Trend</h2>
           <ResponsiveContainer width="100%" height={200}>
@@ -608,6 +649,7 @@ const MealLogging = () => {
           </ResponsiveContainer>
         </div>
 
+        {/* Meals list */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-900">Meals</h2>
@@ -630,6 +672,7 @@ const MealLogging = () => {
             </div>
           </div>
 
+          {/* Show empty state or meals */}
           {currentDateMeals.length === 0 ? (
             <div className="bg-white rounded-2xl shadow-xl p-12 text-center">
               <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -669,6 +712,7 @@ const MealLogging = () => {
         </div>
       </div>
 
+      {/* Add meal modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
@@ -779,6 +823,7 @@ const MealLogging = () => {
         </div>
       )}
 
+      {/* Edit goals modal */}
       {showGoalsModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in">
@@ -866,6 +911,7 @@ const MealLogging = () => {
         </div>
       )}
 
+      {/* Toast notification */}
       {toast && (
         <div className="fixed bottom-6 right-6 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl animate-fade-in flex items-center gap-3 z-50">
           <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
@@ -873,6 +919,7 @@ const MealLogging = () => {
         </div>
       )}
 
+      {/* Fade in animation */}
       <style>{`
         @keyframes fade-in {
           from {

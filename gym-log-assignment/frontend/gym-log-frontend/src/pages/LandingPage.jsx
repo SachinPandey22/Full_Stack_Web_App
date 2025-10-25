@@ -12,6 +12,7 @@ export default function LandingPage() {
   return (
     <div
       style={{ 
+        backgroundImage: 'url("/landing_page.png")',
         backgroundSize: "cover",
         backgroundPosition: "center",
         minHeight: "100vh", // full page height

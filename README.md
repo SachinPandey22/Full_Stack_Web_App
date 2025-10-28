@@ -212,7 +212,41 @@ Next Steps (Sprint 2):
 
    *Refine Meal Log UI with improved error handling and loading states + Expand backend with advanced filtering, meal templates, and bulk operations for enhanced data management
    
-## Features
+<hr>
+
+<h2>Sprint 2 Review (Oct 13 - Oct 24)</h2>
+<h3>Branch Demoed: release/DemoSprint2</h3>
+
+<h4># MISAN: [SCRUM-35: Receive Notifications] Set-up Notification Panel so user can get messages on streaks and reminders - Refactored frontend in the landing page</h4>
+ 
+      1. SCRUM-59 : Scaffold & UI Setup Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-59
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-59-scaffold-ui-setup
+
+      2. SCRUM-61 : Add Dropdown Panel UI Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-61
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-61-add-dropdown-panel-ui
+
+      3. SCRUM-60: Connect to Backend API Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-60
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-60-connect-to-backend-api
+
+      4. SCRUM-63: Notification Preferences Page Type: Feature
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-63
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-63-notification-preferences-page
+            
+      5. SCRUM-62: Refactor Frontend Type: Design
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-62
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-62-refactor-frontend
+        
+  * Next Step:
+         Integrate streaks and Reminder messages to notification, refactor frontend for all pages
+
+
+
+
+
+<hr>## Features
 1. User Profiles
 
 What it does: Allows users to create personal accounts with information like age, weight, height, gender, and fitness goals (lose weight, gain muscle, maintain).

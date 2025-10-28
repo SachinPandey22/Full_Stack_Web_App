@@ -242,7 +242,39 @@ Next Steps (Sprint 2):
   * Next Step:
          Integrate streaks and Reminder messages to notification, refactor frontend for all pages
 
+# Surendra: Implemented comprehensive date-based navigation system with calendar integration, enhanced user experience with motivational quotes and notes functionality, added macro validation with preset suggestions, and developed water intake tracking feature with persistent storage
 
+      1. SCRUM-54 Date Navigation & Calendar Feature
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-54
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-54-DataNavigationCalenderFeatures
+   Description: Built DateNavigator component with Next/Previous day buttons, swipe gesture support for day-to-day navigation, calendar popup for date selection, and compact sidebar calendar view. Created backend API endpoints and database schema to store and fetch meals by specific dates.
+
+      2. SCRUM-52 Target Setting and Calorie Validation
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-52
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-52-target-setting-and-calorie-validation
+   Description: Implemented mandatory macro field validation (protein, carbs, fat) preventing users from proceeding without complete input. Added macro preset suggestions (40/30/30, 45/25/30 splits) with quick-select dropdown. Developed calorie surplus warning system displaying red alerts when logged calories exceed daily targets.
+
+      3. SCRUM-55 Motivation & Notes UI Revamp
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-55
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-55-motivation-notes-ui-revamp
+   Description: Removed streak feature and replaced with auto-rotating motivational quotes slideshow (3-4 quotes with swipe/timed fade transitions). Added notes field to meal logging interface allowing users to attach personal comments and reminders to individual meals.
+
+      4. SCRUM-53 Water Intake Tracker Integration
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-53
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-53-WaterIntakeTrackerIntegration
+   Description: Developed water tracking component on main dashboard with tap-to-add/remove functionality (500ml per glass). Built database schema and backend endpoints for persistent water intake logging and retrieval across dates.
+
+      5. SCRUM-31 Minor UI Polish & Consistency Check
+   Type: Quality Assurance
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-31
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-31-minor-ui-polish-consistency-che
+   Description: Conducted comprehensive UI consistency review across Meal Logging interface. Standardized spacing, padding, and font alignment for Target Setting, Water Tracker, Motivational Slideshow, and Date Navigator components. Ensured color palette and button styles align with existing design theme, resolving misalignments and correcting typos.
+   
+   * Enhanced frontend user experience with gesture-based navigation and motivational elements while strengthening data validation, expanding tracking capabilities to include hydration monitoring, and ensuring UI consistency across all new features
 
 
 

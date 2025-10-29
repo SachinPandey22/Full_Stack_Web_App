@@ -262,7 +262,11 @@ Next Steps (Sprint 2):
             Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-46
             Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-46-add-nutrition-progress-visualiz      
       * Next Step:
-         Export the data and delete the account so that the user can control their information.
+         1. Implement a feature to let users export their fitness and profile data in a downloadable format.
+         2. Add a “Delete Account” option that permanently removes the user’s data from the database.
+         3. Ensure proper confirmation and security checks before deletion to prevent accidental data loss.
+         4. Update the frontend settings page to include these options under “Privacy & Data Control.”
+
 
 # Surendra: Implemented comprehensive date-based navigation system with calendar integration, enhanced user experience with motivational quotes and notes functionality, added macro validation with preset suggestions, and developed water intake tracking feature with persistent storage
 

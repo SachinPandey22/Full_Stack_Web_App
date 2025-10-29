@@ -216,7 +216,7 @@ Next Steps (Sprint 2):
 
 <h2>Sprint 2 Review (Oct 13 - Oct 24)</h2>
 <h3>Branch Demoed: release/DemoSprint2</h3>
-
+<br>
 <h4># MISAN: [SCRUM-35: Receive Notifications] Set-up Notification Panel so user can get messages on streaks and reminders - Refactored frontend in the landing page</h4>
  
       1. SCRUM-59 : Scaffold & UI Setup Type: Implementation
@@ -239,8 +239,8 @@ Next Steps (Sprint 2):
             Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-62
             Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-62-refactor-frontend
         
-  * Next Step:
-         Integrate streaks and Reminder messages to notification, refactor frontend for all pages
+        * Next Step:
+         Integrate streaks and Reminder messages to notification, refactor frontend for all pages, Provide notification in mobile phone
 
 # Surendra: Implemented comprehensive date-based navigation system with calendar integration, enhanced user experience with motivational quotes and notes functionality, added macro validation with preset suggestions, and developed water intake tracking feature with persistent storage
 

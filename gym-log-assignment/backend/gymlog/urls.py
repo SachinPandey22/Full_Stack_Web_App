@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
 from mobile import views as m
+from support import urls as support_urls
+
 
 def hello_view(request):
     return HttpResponse("Hello! Your Gym Log project is working! 🏋️‍♂️")
@@ -40,6 +42,12 @@ urlpatterns = [
     # Mobile
     path("api/mobile/link", m.link_device),      # exchange pairing code -> JWT
     path("api/mobile/ingest", m.ingest_data),    # post data with JWT
+
+    #Notification
+    path("api/", include("notifications.urls")),
+
+    # for support app ie. sending support emails
+    path('api/', include(support_urls)),  # Support app URLs
     
     # 🔐 Auth
     #path('api/auth/register/', RegisterView.as_view(), name='register'),

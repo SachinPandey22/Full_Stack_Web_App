@@ -9,7 +9,18 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+#we will need this if we wnt to add stripe or payment gateway in future
+#import ssl, certifi
+#try:
+#   ssl_context = ssl.create_default_context(cafile=certifi.where())
+#    ssl._create_default_https_context = lambda *args, **kwargs: ssl_context
+#   print("SSL context initialized with certifi CA bundle")
+#except Exception as e:
+#    print("SSL context setup failed:", e)
 
+
+import dj_database_url
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,10 +31,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x62!!-@!%7ie8^(w)gxpvn@_*ydp7h0x-#m+34ik0(v1dpi#bb'
+SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
+
+DATABASE_URL = config('DATABASE_URL', default='')
 
 ALLOWED_HOSTS = []
 
@@ -41,10 +54,12 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'corsheaders',
-    'users',
+    'users.apps.UsersConfig',
     'workouts',
     'exercises',
     'MealLogging',
+    'support',
+    "notifications.apps.NotificationsConfig",
 ]
 
 MIDDLEWARE = [
@@ -82,16 +97,26 @@ WSGI_APPLICATION = 'gymlog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# if DATABASE_URL:
+    # Use Supabase (or any DATABASE_URL provided)
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'fitnessdb',          # database name you created
-        'USER': 'fitnessuser',        # postgres user you created
-        'PASSWORD': 'mypassword',     # password you set
-        'HOST': 'localhost',          # local since you're running it on your Mac
-        'PORT': '5432',               # default postgres port
+        'default': dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,       # persistent connections
+            ssl_require=True        # Supabase requires SSL
+        )
     }
-}
+# else:
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': 'fitnessdb',          # database name you created
+#             'USER': 'fitnessuser',        # postgres user you created
+#             'PASSWORD': 'mypassword',     # password you set
+#             'HOST': 'localhost',          # local since you're running it on your Mac
+#             'PORT': '5432',               # default postgres port
+#         }
+#     }
 
 
 # Password validation
@@ -118,7 +143,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Chicago'
 
 USE_I18N = True
 
@@ -164,3 +189,10 @@ SIMPLE_JWT = {
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
+# Email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD') 

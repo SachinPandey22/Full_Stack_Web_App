@@ -180,7 +180,7 @@ Next Steps (Sprint 2):
 
       
       * Next Step:
-         Build detail pages with “add to plan,” add search and filter chips, Workout pages with descriptions and video, add tests, run instructions, track calorie tracking after workout
+         Build detail pages with “add workout" and workout description.
          
          
 
@@ -212,7 +212,175 @@ Next Steps (Sprint 2):
 
    *Refine Meal Log UI with improved error handling and loading states + Expand backend with advanced filtering, meal templates, and bulk operations for enhanced data management
    
-## Features
+<hr>
+
+<h2>Sprint 2 Review (Oct 13 - Oct 24)</h2>
+<h3>Branch Demoed: release/DemoSprint2</h3>
+<br>
+<h4># MISAN: [SCRUM-35: Receive Notifications] Set-up Notification Panel so user can get messages on streaks and reminders - Refactored frontend in the landing page</h4>
+ 
+      1. SCRUM-59 : Scaffold & UI Setup Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-59
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-59-scaffold-ui-setup
+
+      2. SCRUM-61 : Add Dropdown Panel UI Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-61
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-61-add-dropdown-panel-ui
+
+      3. SCRUM-60: Connect to Backend API Type: Implementation
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-60
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-60-connect-to-backend-api
+
+      4. SCRUM-63: Notification Preferences Page Type: Feature
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-63
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-63-notification-preferences-page
+            
+      5. SCRUM-62: Refactor Frontend Type: Design
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-62
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-62-refactor-frontend
+        
+        * Next Step:
+         Integrate streaks and Reminder messages to notification, refactor frontend for all pages, Provide notification in mobile phone
+
+   # SACHIN(Sprint 2): Completed the Supabase Integration, TDEE and Macro Recommendation, and Nutrition Progress Visualization
+      1.	SCRUM-42 Backend: Database & Supabase Integration
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-42
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-42-backend-database-supabase-integ
+
+      2. SCRUM-43 Backend, Frontend: Add TDEE & Macro Calculation API, Nutrition Dashboard Component
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-43
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-43-backend-add-tdee-macro-calculat
+      3. SCRUM-44 Create NutritionSnapshot Model and API (Backend)
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-44
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-44-create-nutritionsnapshot-model-
+
+      4. SCRUM-45 Integrate Snapshot API with Frontend (Nutrition Page)
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-45
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-45-integrate-snapshot-api-with-fro
+
+      5. SCRUM-46 Add Nutrition Progress Visualization (Frontend UI)
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-46
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-46-add-nutrition-progress-visualiz      
+      * Next Step:
+         1. Implement a feature to let users export their fitness and profile data in a downloadable format.
+         2. Add a “Delete Account” option that permanently removes the user’s data from the database.
+         3. Ensure proper confirmation and security checks before deletion to prevent accidental data loss.
+         4. Update the frontend settings page to include these options under “Privacy & Data Control.”
+
+
+# Surendra: Implemented comprehensive date-based navigation system with calendar integration, enhanced user experience with motivational quotes and notes functionality, added macro validation with preset suggestions, and developed water intake tracking feature with persistent storage
+
+      1. SCRUM-54 Date Navigation & Calendar Feature
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-54
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-54-DataNavigationCalenderFeatures
+   Description: Built DateNavigator component with Next/Previous day buttons, swipe gesture support for day-to-day navigation, calendar popup for date selection, and compact sidebar calendar view. Created backend API endpoints and database schema to store and fetch meals by specific dates.
+
+      2. SCRUM-52 Target Setting and Calorie Validation
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-52
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-52-target-setting-and-calorie-validation
+   Description: Implemented mandatory macro field validation (protein, carbs, fat) preventing users from proceeding without complete input. Added macro preset suggestions (40/30/30, 45/25/30 splits) with quick-select dropdown. Developed calorie surplus warning system displaying red alerts when logged calories exceed daily targets.
+
+      3. SCRUM-55 Motivation & Notes UI Revamp
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-55
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-55-motivation-notes-ui-revamp
+   Description: Removed streak feature and replaced with auto-rotating motivational quotes slideshow (3-4 quotes with swipe/timed fade transitions). Added notes field to meal logging interface allowing users to attach personal comments and reminders to individual meals.
+
+      4. SCRUM-53 Water Intake Tracker Integration
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-53
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-53-WaterIntakeTrackerIntegration
+   Description: Developed water tracking component on main dashboard with tap-to-add/remove functionality (500ml per glass). Built database schema and backend endpoints for persistent water intake logging and retrieval across dates.
+
+      5. SCRUM-31 Minor UI Polish & Consistency Check
+   Type: Quality Assurance
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/jira/software/projects/SCRUM/list/?jql=project%20%3D%20%22SCRUM%22%20ORDER%20BY%20created%20DESC&selectedIssue=SCRUM-31
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-31-minor-ui-polish-consistency-che
+   Description: Conducted comprehensive UI consistency review across Meal Logging interface. Standardized spacing, padding, and font alignment for Target Setting, Water Tracker, Motivational Slideshow, and Date Navigator components. Ensured color palette and button styles align with existing design theme, resolving misalignments and correcting typos.
+   
+   Next steps: Enhanced frontend user experience with gesture-based navigation and motivational elements while strengthening data validation, expanding tracking capabilities to include hydration monitoring, and ensuring UI consistency across all new features
+
+ BIGYAN – Sprint 2 Summary (Chatbot & Support System)
+
+Implemented complete Chatbot and Support System with interactive UI access points, guided troubleshooting flows, escalation features, and full-stack automated testing to enhance user support experience and accessibility.
+
+1. SCRUM-51 Chatbot UI Access Points
+
+Type: Frontend Implementation
+Jira Link: (https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-51)
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-51-design-chatbot-ui-access-points
+
+Description:
+Designed and integrated “Chat with Support” button on login and help menus. Implemented responsive popup chat panel with adaptive layout for both desktop and mobile devices. Ensured smooth navigation and persistent accessibility across authenticated routes.
+
+2. SCRUM-58 Support & Contact Us Page
+
+Type: Frontend / UX Design
+Jira Link: (https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-58)
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-58-support-and-contact-us-page
+
+Description:
+Developed a Support page containing FAQs and troubleshooting steps. Integrated “Contact Us” form connected to backend email API for user inquiries, providing confirmation toasts for successful submissions.
+
+3. SCRUM-56 Guided Troubleshooting Flows
+
+Type: Frontend Logic / UX Interaction
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-56
+
+Reference: (https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-56-create-guided-troubleshooting-f)
+
+Description:
+Created guided chat flows to help users with common actions such as updating profile, adding a workout or meal, and viewing nutrition tips. Implemented step-by-step conversational prompts with “Start Over” reset functionality for clarity and usability.
+
+4. SCRUM-57 Escalation & Chat History Features
+
+Type: Full-Stack Enhancement
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-57
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-57-add-escalation-and-chat-history
+
+Description:
+Implemented local chat message storage using browser localStorage for session persistence. Added “Escalate to Support” feature allowing users to send unresolved issues via email. Enhanced chat UI with auto-scroll and improved readability.
+
+5. SCRUM-23 Automated Testing Integration
+
+Type: Testing / Quality Assurance
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-12
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-12-unit-testing-frontend-backend
+
+Description:
+Implemented automated tests using Vitest and Pytest. Verified chat form rendering, input validation, and persistence on the frontend. Backend tests ensured proper rejection of invalid inputs and verified successful data persistence and metric recalculation in the database.
+
+Next Sprint (3):
+Integrate AI chatbot responses, add FAQ recommendations, and connect the “Contact Us” feature to a real email support service. and polish the frontend so that it looks like a real app with features.
+
+ # SAPNIL(Sprint 2): Added Workout Components for every workouts. Added personal workout data to database for pesonalization.
+      1.	SCRUM-47 Frontend: Implement Workout Detail Page
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-47
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-47-implement-workout-detail-page
+
+      2. SCRUM-48 Backend, Populate and Structure Exercise Information
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-48
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-48-populate-and-structure-exercise
+
+      3. SCRUM-49 Backend + Frontend, Add Workouts to Personal Database
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-49
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-49-add-workouts-to-personal-databa
+
+      4. SCRUM-50 Backend, Integrate Exercise Population Command for Django App
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-50
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-50-integrate-exercise-population-c
+
+           
+      * Next Step:
+         Add functionality to log completed workouts and automatically calculate calories burned based on reps, sets, and weight.
+
+<hr>## Features
 1. User Profiles
 
 What it does: Allows users to create personal accounts with information like age, weight, height, gender, and fitness goals (lose weight, gain muscle, maintain).

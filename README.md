@@ -180,7 +180,7 @@ Next Steps (Sprint 2):
 
       
       * Next Step:
-         Build detail pages with “add to plan,” add search and filter chips, Workout pages with descriptions and video, add tests, run instructions, track calorie tracking after workout
+         Build detail pages with “add workout" and workout description.
          
          
 
@@ -355,7 +355,26 @@ Implemented automated tests using Vitest and Pytest. Verified chat form renderin
 Next Sprint (3):
 Integrate AI chatbot responses, add FAQ recommendations, and connect the “Contact Us” feature to a real email support service. and polish the frontend so that it looks like a real app with features.
 
+ # SAPNIL(Sprint 2): Added Workout Components for every workouts. Added personal workout data to database for pesonalization.
+      1.	SCRUM-47 Frontend: Implement Workout Detail Page
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-47
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-47-implement-workout-detail-page
 
+      2. SCRUM-48 Backend, Populate and Structure Exercise Information
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-48
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-48-populate-and-structure-exercise
+
+      3. SCRUM-49 Backend + Frontend, Add Workouts to Personal Database
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-49
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-49-add-workouts-to-personal-databa
+
+      4. SCRUM-50 Backend, Integrate Exercise Population Command for Django App
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-50
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-50-integrate-exercise-population-c
+
+           
+      * Next Step:
+         Add functionality to log completed workouts and automatically calculate calories burned based on reps, sets, and weight.
 
 <hr>## Features
 1. User Profiles

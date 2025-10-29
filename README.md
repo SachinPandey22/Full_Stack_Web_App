@@ -242,6 +242,28 @@ Next Steps (Sprint 2):
         * Next Step:
          Integrate streaks and Reminder messages to notification, refactor frontend for all pages, Provide notification in mobile phone
 
+   # SACHIN(Sprint 2): Completed the Supabase Integration, TDEE and Macro Recommendation, and Nutrition Progress Visualization
+      1.	SCRUM-42 Backend: Database & Supabase Integration
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-42
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-42-backend-database-supabase-integ
+
+      2. SCRUM-43 Backend, Frontend: Add TDEE & Macro Calculation API, Nutrition Dashboard Component
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-43
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-43-backend-add-tdee-macro-calculat
+      3. SCRUM-44 Create NutritionSnapshot Model and API (Backend)
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-44
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-44-create-nutritionsnapshot-model-
+
+      4. SCRUM-45 Integrate Snapshot API with Frontend (Nutrition Page)
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-45
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-45-integrate-snapshot-api-with-fro
+
+      5. SCRUM-46 Add Nutrition Progress Visualization (Frontend UI)
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-46
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-46-add-nutrition-progress-visualiz      
+      * Next Step:
+         Export the data and delete the account so that the user can control their information.
+
 # Surendra: Implemented comprehensive date-based navigation system with calendar integration, enhanced user experience with motivational quotes and notes functionality, added macro validation with preset suggestions, and developed water intake tracking feature with persistent storage
 
       1. SCRUM-54 Date Navigation & Calendar Feature

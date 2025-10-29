@@ -274,7 +274,64 @@ Next Steps (Sprint 2):
    Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-31-minor-ui-polish-consistency-che
    Description: Conducted comprehensive UI consistency review across Meal Logging interface. Standardized spacing, padding, and font alignment for Target Setting, Water Tracker, Motivational Slideshow, and Date Navigator components. Ensured color palette and button styles align with existing design theme, resolving misalignments and correcting typos.
    
-   * Enhanced frontend user experience with gesture-based navigation and motivational elements while strengthening data validation, expanding tracking capabilities to include hydration monitoring, and ensuring UI consistency across all new features
+   Next steps: Enhanced frontend user experience with gesture-based navigation and motivational elements while strengthening data validation, expanding tracking capabilities to include hydration monitoring, and ensuring UI consistency across all new features
+
+ BIGYAN – Sprint 2 Summary (Chatbot & Support System)
+
+Implemented complete Chatbot and Support System with interactive UI access points, guided troubleshooting flows, escalation features, and full-stack automated testing to enhance user support experience and accessibility.
+
+1. SCRUM-51 Chatbot UI Access Points
+
+Type: Frontend Implementation
+Jira Link: (https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-51)
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-51-design-chatbot-ui-access-points
+
+Description:
+Designed and integrated “Chat with Support” button on login and help menus. Implemented responsive popup chat panel with adaptive layout for both desktop and mobile devices. Ensured smooth navigation and persistent accessibility across authenticated routes.
+
+2. SCRUM-58 Support & Contact Us Page
+
+Type: Frontend / UX Design
+Jira Link: (https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-58)
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-58-support-and-contact-us-page
+
+Description:
+Developed a Support page containing FAQs and troubleshooting steps. Integrated “Contact Us” form connected to backend email API for user inquiries, providing confirmation toasts for successful submissions.
+
+3. SCRUM-56 Guided Troubleshooting Flows
+
+Type: Frontend Logic / UX Interaction
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-56
+
+Reference: (https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-56-create-guided-troubleshooting-f)
+
+Description:
+Created guided chat flows to help users with common actions such as updating profile, adding a workout or meal, and viewing nutrition tips. Implemented step-by-step conversational prompts with “Start Over” reset functionality for clarity and usability.
+
+4. SCRUM-57 Escalation & Chat History Features
+
+Type: Full-Stack Enhancement
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-57
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-57-add-escalation-and-chat-history
+
+Description:
+Implemented local chat message storage using browser localStorage for session persistence. Added “Escalate to Support” feature allowing users to send unresolved issues via email. Enhanced chat UI with auto-scroll and improved readability.
+
+5. SCRUM-23 Automated Testing Integration
+
+Type: Testing / Quality Assurance
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-12
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-12-unit-testing-frontend-backend
+
+Description:
+Implemented automated tests using Vitest and Pytest. Verified chat form rendering, input validation, and persistence on the frontend. Backend tests ensured proper rejection of invalid inputs and verified successful data persistence and metric recalculation in the database.
+
+Next Sprint (3):
+Integrate AI chatbot responses, add FAQ recommendations, and connect the “Contact Us” feature to a real email support service. and polish the frontend so that it looks like a real app with features.
 
 
 

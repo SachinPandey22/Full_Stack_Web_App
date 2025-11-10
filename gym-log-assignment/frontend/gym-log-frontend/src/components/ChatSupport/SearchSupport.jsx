@@ -1,31 +1,57 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./SearchSupport.css";
+import { sendChatMessage } from "../../services/api";
 
 const SearchSupport = () => {
   const [messages, setMessages] = useState([]);
   const [inputMessage, setInputMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);  
+  const chatEndRef = useRef(null);
 
-  const handleSend = () => {
-    if (!inputMessage.trim()) return;
 
-    // Add user message
-    setMessages(prev => [...prev, { sender: "user", text: inputMessage }]);
+  // scrolls to bottom when new message arrive
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, ]);
 
-    // Clear input
+  // Handle sending user message and receiving AI response
+  const handleSend = async () => {
+    const trimmed = inputMessage.trim();
+    if (!trimmed) return;
+
+    // ✅ Auto expand if chat is collapsed
+    if (!expanded) setExpanded(true);
+
+    // Add user's message to chat
+    setMessages(prev => [...prev, { sender: "user", text: trimmed }]);
     setInputMessage("");
+    setIsLoading(true);
 
-    // Add auto reply after short delay
-    setTimeout(() => {
+    try {
+      // Send message to backend (OpenAI-connected endpoint)
+      const res = await sendChatMessage(trimmed);
+
+      // Add AI response to chat
+      setMessages(prev => [...prev, { sender: "bot", text: res.reply }]);
+      if (!expanded) setExpanded(true);
+    } catch (err) {
+      console.error("Chat error:", err);
       setMessages(prev => [
         ...prev,
-        { sender: "bot", text: "Working on this feature — reply coming soon 😊" }
+        {
+          sender: "bot",
+          text: "⚠️ Sorry, I’m having trouble reaching the AI right now. Please try again later.",
+        },
       ]);
-    }, 700);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="search-support-chat">
-      {/* Chat Display */}
+      {/* Chat Window */}
       <div className="chat-messages">
         {messages.length === 0 && (
           <p className="empty-text">Start a conversation 👇</p>
@@ -34,23 +60,34 @@ const SearchSupport = () => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={msg.sender === "user" ? "msg user" : "msg bot"}
+            className={`msg ${msg.sender === "user" ? "user" : "bot"}`}
           >
             {msg.text}
           </div>
         ))}
+
+        {isLoading && (
+          <div className="msg bot loading">
+            <span className="dot"></span>
+            <span className="dot"></span>
+            <span className="dot"></span>
+          </div>
+        )}
       </div>
 
-      {/* Input + Send */}
+      {/* Input Bar */}
       <div className="chat-input-area">
         <input
           type="text"
           placeholder="Type your message..."
           value={inputMessage}
-          onChange={e => setInputMessage(e.target.value)}
+          onChange={(e) => setInputMessage(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
+          disabled={isLoading}
         />
-        <button onClick={handleSend}>➤</button>
+        <button onClick={handleSend} disabled={isLoading || !inputMessage.trim()}>
+          ➤
+        </button>
       </div>
     </div>
   );

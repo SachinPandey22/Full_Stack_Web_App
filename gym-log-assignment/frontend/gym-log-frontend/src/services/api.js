@@ -86,3 +86,8 @@ export async function createNutritionSnapshot(token) {
   });
   return res.data; // the created/updated snapshot for today
 }
+
+export async function sendChatMessage(message) {
+  const res = await apiClient.post('/api/support/chat/', { message });
+  return res.data;
+}

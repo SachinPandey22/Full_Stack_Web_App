@@ -56,7 +56,7 @@ class NutritionTargets(models.Model):
     
 class NutritionSnapshot(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="nutrition_snapshots")
-    date = models.DateField(default=timezone.now)  # store as UTC date
+    date = models.DateField(default=timezone.localdate)  # Change made after PR, store as local date
     bmr = models.PositiveIntegerField()
     tdee = models.PositiveIntegerField()
     target_calories = models.PositiveIntegerField()

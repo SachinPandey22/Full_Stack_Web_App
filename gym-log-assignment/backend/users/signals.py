@@ -3,6 +3,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Profile, NutritionTargets
 from .utils import compute_targets
+from .services import upsert_today_nutrition_snapshot
 
 @receiver(post_save, sender=Profile)
 def update_nutrition_targets_on_profile_save(sender, instance: Profile, **kwargs):
@@ -49,3 +50,10 @@ def update_nutrition_targets_on_profile_save(sender, instance: Profile, **kwargs
             meta=meta or {},
         )
     )
+@receiver(post_save, sender=Profile)
+def auto_snapshot_on_profile_save(sender, instance: Profile, **kwargs):
+    """
+    Whenever a Profile is saved, auto-create/update today's nutrition snapshot.
+    Skips silently if the profile is incomplete.
+    """
+    upsert_today_nutrition_snapshot(instance.user)

@@ -3,41 +3,32 @@ import "./SearchSupport.css";
 import { sendChatMessage } from "../../services/api";
 
 const SearchSupport = () => {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      sender: "bot",
+      text:
+        "Hi, I’m Ram, your personal Shaktiman AI assistant. I can help you find your perfect fitness program. Tell me your goals, experience level, or favorite workout style!",
+    },
+  ]);
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [expanded, setExpanded] = useState(false);  
   const chatEndRef = useRef(null);
 
-
-  // scrolls to bottom when new message arrive
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, ]);
+  }, [messages]);
 
-  // Handle sending user message and receiving AI response
   const handleSend = async () => {
     const trimmed = inputMessage.trim();
     if (!trimmed) return;
-
-    // ✅ Auto expand if chat is collapsed
-    if (!expanded) setExpanded(true);
-
-    // Add user's message to chat
-    setMessages(prev => [...prev, { sender: "user", text: trimmed }]);
+    setMessages((prev) => [...prev, { sender: "user", text: trimmed }]);
     setInputMessage("");
     setIsLoading(true);
-
     try {
-      // Send message to backend (OpenAI-connected endpoint)
       const res = await sendChatMessage(trimmed);
-
-      // Add AI response to chat
-      setMessages(prev => [...prev, { sender: "bot", text: res.reply }]);
-      if (!expanded) setExpanded(true);
+      setMessages((prev) => [...prev, { sender: "bot", text: res.reply }]);
     } catch (err) {
-      console.error("Chat error:", err);
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         {
           sender: "bot",
@@ -51,21 +42,15 @@ const SearchSupport = () => {
 
   return (
     <div className="search-support-chat">
-      {/* Chat Window */}
       <div className="chat-messages">
-        {messages.length === 0 && (
-          <p className="empty-text">Start a conversation 👇</p>
-        )}
-
-        {messages.map((msg, index) => (
+        {messages.map((msg, i) => (
           <div
-            key={index}
+            key={i}
             className={`msg ${msg.sender === "user" ? "user" : "bot"}`}
           >
             {msg.text}
           </div>
         ))}
-
         {isLoading && (
           <div className="msg bot loading">
             <span className="dot"></span>
@@ -73,9 +58,9 @@ const SearchSupport = () => {
             <span className="dot"></span>
           </div>
         )}
+        <div ref={chatEndRef} />
       </div>
 
-      {/* Input Bar */}
       <div className="chat-input-area">
         <input
           type="text"

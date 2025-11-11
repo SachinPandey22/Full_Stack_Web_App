@@ -46,6 +46,9 @@
   overflow-y: auto;
   padding: 12px;
   background: #fafafa;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .msg {
@@ -56,8 +59,16 @@
   line-height: 1.3;
 }
 
-.msg.user { align-self: flex-end; background: #e0e7ff; }
-.msg.bot  { align-self: flex-start; background: #f3f4f6; }
+.msg.user {
+  align-self: flex-end;
+  background: #e0e7ff;
+  text-align: right;
+}
+.msg.bot {
+  align-self: flex-start;
+  background: #f3f4f6;
+  text-align: left;
+}
 
 /* Input */
 .chat-input-area {

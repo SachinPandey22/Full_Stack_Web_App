@@ -20,6 +20,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 
 import dj_database_url
+import os
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
 from decouple import config
 from pathlib import Path
 

@@ -47,7 +47,7 @@ urlpatterns = [
     path("api/", include("notifications.urls")),
 
     # for support app ie. sending support emails
-    path('api/', include(support_urls)),  # Support app URLs
+    path('api/support/', include(support_urls)),  # Support app URLs
     
     # 🔐 Auth
     #path('api/auth/register/', RegisterView.as_view(), name='register'),

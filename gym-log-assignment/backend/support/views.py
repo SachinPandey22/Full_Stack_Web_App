@@ -7,6 +7,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.core.mail import get_connection, send_mail
 import ssl, certifi
+import openai
+import os
 
 @api_view(['POST'])
 def send_support_email(request):
@@ -38,3 +40,27 @@ def send_support_email(request):
         connection=connection,
     )
     return Response({"success": True, "message": "Email sent!"})
+
+@api_view(['POST'])
+def chat_with_ai(request):
+    user_message = request.data.get("message", "")
+    if not user_message:
+        return Response({"error": "Message required"}, status=400)
+
+    try:
+        openai.api_key = os.getenv("OPENAI_API_KEY")
+        response = openai.chat.completions.create(
+            model="gpt-4o-mini",  # fast and cheaper for real-time support
+            messages=[
+                {"role": "system", "content": "You are a friendly AI assistant that helps users troubleshoot their fitness app or website issues."},
+                {"role": "user", "content": user_message},
+            ],
+            max_tokens=200,
+        )
+        reply = response.choices[0].message.content.strip()
+        return Response({"reply": reply})
+    except Exception as e:
+        print("Error communicating with OpenAI:", e)
+        return Response({"error": str(e)}, status=500)
+    
+

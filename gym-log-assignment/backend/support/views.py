@@ -11,6 +11,8 @@ import ssl, certifi
 import openai
 import os
 from users.models import Profile
+from MealLogging.models import Meal
+from exercises.models import UserWorkout
 
 @api_view(['POST'])
 def send_support_email(request):
@@ -85,6 +87,45 @@ def chat_with_ai(request):
             goal = profile.goal
         goal = goal or payload_user.get("goal", "Not provided")
 
+        recent_meals = list(
+            Meal.objects.filter(user=request.user).order_by("-date", "-time")[:3]
+        )
+        if recent_meals:
+            meal_lines = []
+            for meal in recent_meals:
+                meal_lines.append(
+                    f"{meal.date.isoformat()} {meal.time.strftime('%H:%M')} "
+                    f"{meal.meal_type.title()}: {meal.name} "
+                    f"({meal.calories} kcal, {meal.protein}g protein, {meal.carbs}g carbs, {meal.fat}g fat)"
+                )
+            meal_section = "\n".join(meal_lines)
+        else:
+            meal_section = "No recent meal logs."
+
+        recent_workouts = list(
+            UserWorkout.objects.filter(user=request.user)
+            .select_related("exercise")
+            .order_by("-added_date")[:3]
+        )
+        if recent_workouts:
+            workout_lines = []
+            for workout in recent_workouts:
+                exercise_name = workout.exercise.name if workout.exercise else "Workout"
+                details = []
+                if workout.sets:
+                    details.append(f"{workout.sets} sets")
+                if workout.reps:
+                    details.append(f"{workout.reps} reps")
+                if workout.notes:
+                    details.append(f"Notes: {workout.notes}")
+                detail_text = f" ({', '.join(details)})" if details else ""
+                workout_lines.append(
+                    f"{workout.added_date.date().isoformat()} - {exercise_name}{detail_text}"
+                )
+            workout_section = "\n".join(workout_lines)
+        else:
+            workout_section = "No recent workouts logged."
+
         user_context = f"""
 User Info:
 Name: {name}
@@ -94,16 +135,27 @@ Height: {height_display}
 Weight: {weight_display}
 Activity Level: {activity_level}
 Goal: {goal}
+
+Recent Meals:
+{meal_section}
+
+Recent Workouts:
+{workout_section}
 """.strip()
 
         openai.api_key = os.getenv("OPENAI_API_KEY")
         response = openai.chat.completions.create(
             model="gpt-4o-mini",  # fast and cheaper for real-time support
             messages=[
-                {"role": "system", "content": "You are Ram: a friendly AI assistant for Shaktiman application that helps users troubleshoot their Issues here in the application. give short just the required answer to user queres"},
-                #{"role": "system", "context": "give short just the required answer to user queres "},
+                {
+                    "role": "system",
+                    "content": (
+                        "You are Ram, the friendly AI assistant for the Shaktiman fitness app. "
+                        "Offer supportive fitness guidance and troubleshooting tied to the user's context. "
+                        "Keep every response within 2-3 sentences and avoid charts or formulas unless the user explicitly asks for them."
+                    ),
+                },
                 {"role": "system", "content": user_context},
-                
                 {"role": "user", "content": user_message},
             ],
             max_tokens=200,

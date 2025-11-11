@@ -87,7 +87,19 @@ export async function createNutritionSnapshot(token) {
   return res.data; // the created/updated snapshot for today
 }
 
-export async function sendChatMessage(message) {
-  const res = await apiClient.post('/api/support/chat/', { message });
+export const sendChatMessage = async (message, userInfo = {}, token = null) => {
+  const config = {};
+  if (token) {
+    config.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  const res = await apiClient.post(
+    "/api/chat_with_ai/",
+    { message, user: userInfo },
+    config,
+  );
+
   return res.data;
-}
+};

@@ -19,6 +19,7 @@ from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
 from mobile import views as m
 from support import urls as support_urls
+from support.views import chat_with_ai
 
 
 def hello_view(request):
@@ -48,6 +49,7 @@ urlpatterns = [
 
     # for support app ie. sending support emails
     path('api/support/', include(support_urls)),  # Support app URLs
+    path('api/chat_with_ai/', chat_with_ai, name='chat_with_ai'),
     
     # 🔐 Auth
     #path('api/auth/register/', RegisterView.as_view(), name='register'),

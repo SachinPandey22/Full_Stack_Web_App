@@ -77,43 +77,53 @@ class UserWorkout(models.Model):
         """Check if workout is completed"""
         return self.completed_date is not None
     
-    def calculate_calories(self):
+    def calculate_calories_advanced(self):
         """
-        Calculate calories burned using MET formula
-        Uses weight from user's profile
-        
-        Formula: Calories = MET × weight(kg) × duration(hours)
+        Advanced calorie calculation using BMR formula
+        Uses Harris-Benedict equation with age, sex, weight, height
+        More accurate and personalized
         """
         if not self.duration_minutes:
             return None
         
         try:
-            # Get weight from profile
             profile = self.user.profile
             
-            if not profile.weight:
-                return None  # No weight in profile
+            # Check if we have complete profile data
+            if not all([profile.weight, profile.age, profile.sex, profile.height]):
+                # Fallback to simple calculation if data missing
+                return self.calculate_calories()
             
-            weight_kg = profile.weight  # Assuming weight is in kg
+            # Calculate BMR (Basal Metabolic Rate) using Harris-Benedict equation
+            if profile.sex.lower() == 'male':
+                # Men: BMR = 10 × weight(kg) + 6.25 × height(cm) - 5 × age(years) + 5
+                bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5
+            else:  # female
+                # Women: BMR = 10 × weight(kg) + 6.25 × height(cm) - 5 × age(years) - 161
+                bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161
             
-            # Get MET value from exercise
+            # Calculate calories using MET and BMR
+            # Formula: (MET × BMR / 24) × duration(hours)
             met_value = self.exercise.met_value
-            
-            # Calculate calories
             duration_hours = self.duration_minutes / 60
-            calories = met_value * weight_kg * duration_hours
+            
+            calories_per_hour = (met_value * bmr) / 24
+            calories = calories_per_hour * duration_hours
             
             return round(calories, 1)
             
         except Exception as e:
-            print(f"Error calculating calories: {e}")
-            return None
+            print(f"Error in advanced calculation: {e}, using simple method")
+            # Fallback to simple calculation
+            return self.calculate_calories()
     
     def save(self, *args, **kwargs):
-        """Auto-calculate calories before saving"""
+        """Auto-calculate calories before saving using advanced method"""
         if self.completed_date and self.duration_minutes:
-            calculated_calories = self.calculate_calories()
-            if calculated_calories:
-                self.calories_burned = calculated_calories
+            # Try advanced calculation first (uses age, sex, height, weight)
+            # Falls back to simple calculation if data missing
+            calculated = self.calculate_calories_advanced()
+            if calculated:
+                self.calories_burned = calculated
         
         super().save(*args, **kwargs)

@@ -59,7 +59,3 @@ class WaterIntakeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'total_ml', 'created_at', 'updated_at']
 
 
-class WaterIntakeCreateUpdateSerializer(serializers.Serializer):
-    """Serializer for creating/updating water intake"""
-    date = serializers.DateField(required=True)
-    glasses = serializers.IntegerField(required=True, min_value=0)

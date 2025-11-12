@@ -1,5 +1,15 @@
 from django.urls import path
-from .views import RegisterView, LoginView, RefreshView, MeView, LogoutView, ProfileView, NutritionTargetsView, NutritionSnapshotsView
+from .views import (
+    RegisterView,
+    LoginView,
+    RefreshView,
+    MeView,
+    LogoutView,
+    ProfileView,
+    NutritionTargetsView,
+    NutritionRecommendationsView,
+    NutritionSnapshotsView,
+)
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -9,6 +19,7 @@ urlpatterns = [
     path('logout/', LogoutView.as_view(), name='logout'),
     path('profile/', ProfileView.as_view(), name='profile'),
     path('user/profile/', ProfileView.as_view(), name='user-profile'),
+    path('nutrition/recommendations/', NutritionRecommendationsView.as_view(), name='nutrition_recommendations'),
     path('nutrition/targets/', NutritionTargetsView.as_view(), name='nutrition_targets'),
-    path("nutrition/snapshots/", NutritionSnapshotsView.as_view() , name="nutrition_snapshots"),
+    path('nutrition/snapshots/', NutritionSnapshotsView.as_view(), name='nutrition_snapshots'),
 ]

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Profile  #importing profile model
 from django.db import transaction
-from .models import NutritionSnapshot
+from .models import NutritionSnapshot, NutritionTargets
 
 class RegisterSerializer(serializers.ModelSerializer):
     # username will be email; enforce password min length
@@ -75,3 +75,33 @@ class NutritionSnapshotSerializer(serializers.ModelSerializer):
             "protein_g", "fat_g", "carbs_g", "meta",
         ]
         read_only_fields = fields
+
+
+class NutritionTargetsSerializer(serializers.ModelSerializer):
+    source = serializers.SerializerMethodField()
+
+    class Meta:
+        model = NutritionTargets
+        fields = [
+            "target_calories",
+            "protein_g",
+            "carbs_g",
+            "fat_g",
+            "bmr",
+            "tdee",
+            "meta",
+            "updated_at",
+            "source",
+        ]
+        read_only_fields = ["bmr", "tdee", "meta", "updated_at", "source"]
+
+    def get_source(self, obj):
+        meta = obj.meta or {}
+        return meta.get("source", "manual")
+
+
+class NutritionTargetsWriteSerializer(serializers.Serializer):
+    target_calories = serializers.IntegerField(min_value=1)
+    protein_g = serializers.IntegerField(min_value=0)
+    carbs_g = serializers.IntegerField(min_value=0)
+    fat_g = serializers.IntegerField(min_value=0)

@@ -1,5 +1,6 @@
 from django.db.models import Sum
 from .models import Meal, MealTarget
+from users.models import NutritionTargets
 
 class MealCalculatorService:
     
@@ -21,6 +22,19 @@ class MealCalculatorService:
     
     @staticmethod
     def get_user_targets(user):
+        try:
+            targets = user.nutrition_targets
+        except NutritionTargets.DoesNotExist:
+            targets = None
+
+        if targets:
+            return {
+                'calories': targets.target_calories,
+                'protein': targets.protein_g,
+                'carbs': targets.carbs_g,
+                'fat': targets.fat_g,
+            }
+
         try:
             targets = MealTarget.objects.get(user=user)
             return {

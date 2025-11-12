@@ -10,7 +10,21 @@ class ExerciseSerializer(serializers.ModelSerializer):
 class UserWorkoutSerializer(serializers.ModelSerializer):
     exercise = ExerciseSerializer(read_only=True)
     exercise_id = serializers.IntegerField(write_only=True)
+    is_completed = serializers.ReadOnlyField()
+    calories_burned = serializers.ReadOnlyField()
 
     class Meta:
         model = UserWorkout
-        fields = ['id', 'exercise', 'exercise_id', 'added_date', 'sets', 'reps', 'notes']
+        fields = [
+            'id', 
+            'exercise', 
+            'exercise_id', 
+            'added_date', 
+            'sets', 
+            'reps', 
+            'notes',
+            'completed_date',      # 🆕
+            'duration_minutes',    # 🆕
+            'calories_burned',     # 🆕 Read-only
+            'is_completed'         # 🆕 Read-only
+        ]

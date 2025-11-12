@@ -1,3 +1,7 @@
+import csv
+from datetime import datetime
+from io import StringIO
+from django.http import HttpResponse
 from django.contrib.auth import authenticate
 from django.utils import timezone
 from rest_framework import generics, permissions, status
@@ -278,3 +282,134 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user.profile
+
+# users/views.py (append)
+
+def _parse_iso_date(s: str):
+    try:
+        return datetime.fromisoformat(s).date()
+    except Exception:
+        return None
+
+class ExportDataView(APIView):
+    """
+    GET /api/export/?start=YYYY-MM-DD&end=YYYY-MM-DD&tz=America/Chicago
+
+    Exports the signed-in user's data (nutrition, workouts, sleep, weight) as CSV.
+    Dates are ISO (YYYY-MM-DD). 'tz' is accepted for future use; we currently rely
+    on model dates already saved using localdate() to respect TIME_ZONE.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        start = _parse_iso_date(request.query_params.get("start", ""))
+        end   = _parse_iso_date(request.query_params.get("end", ""))
+        tzname = request.query_params.get("tz") or timezone.get_current_timezone_name()
+
+        if not start or not end or start > end:
+            return Response({"detail": "Provide valid 'start' and 'end' ISO dates."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        rows = []
+
+        # --- Nutrition (required; snapshots represent daily targets) ---
+        from .models import NutritionSnapshot
+        qs_nut = NutritionSnapshot.objects.filter(user=user, date__gte=start, date__lte=end).order_by("date")
+        for s in qs_nut:
+            rows.append({
+                "date": s.date.isoformat(),
+                "type": "nutrition",
+                "kcal": round(s.target_calories or 0),
+                "protein_g": round(s.protein_g or 0),
+                "fat_g": round(s.fat_g or 0),
+                "carbs_g": round(s.carbs_g or 0),
+                "duration_min": "",
+                "hours": "",
+                "quality": "",
+                "kg": "",
+                "meta": s.meta or {},
+            })
+
+        # --- Optional: Workouts ---
+        try:
+            from exercises.models import UserWorkout  # adjust if your app path differs
+            qs_w = UserWorkout.objects.filter(user=user, date__gte=start, date__lte=end).order_by("date")
+            for w in qs_w:
+                rows.append({
+                    "date": getattr(w, "date", None).isoformat() if getattr(w, "date", None) else "",
+                    "type": "workout",
+                    "kcal": getattr(w, "calories", ""),
+                    "protein_g": "",
+                    "fat_g": "",
+                    "carbs_g": "",
+                    "duration_min": getattr(w, "duration_min", ""),
+                    "hours": "",
+                    "quality": "",
+                    "kg": "",
+                    "meta": {},
+                })
+        except Exception:
+            pass
+
+        # --- Optional: Sleep ---
+        try:
+            from sleep.models import SleepSession
+            qs_s = SleepSession.objects.filter(user=user, date__gte=start, date__lte=end).order_by("date")
+            for sl in qs_s:
+                rows.append({
+                    "date": getattr(sl, "date", None).isoformat() if getattr(sl, "date", None) else "",
+                    "type": "sleep",
+                    "kcal": "",
+                    "protein_g": "",
+                    "fat_g": "",
+                    "carbs_g": "",
+                    "duration_min": "",
+                    "hours": getattr(sl, "hours", ""),
+                    "quality": getattr(sl, "quality", ""),
+                    "kg": "",
+                    "meta": {},
+                })
+        except Exception:
+            pass
+
+        # --- Optional: Weight ---
+        try:
+            from weight.models import BodyWeight
+            qs_bw = BodyWeight.objects.filter(user=user, date__gte=start, date__lte=end).order_by("date")
+            for bw in qs_bw:
+                rows.append({
+                    "date": getattr(bw, "date", None).isoformat() if getattr(bw, "date", None) else "",
+                    "type": "weight",
+                    "kcal": "",
+                    "protein_g": "",
+                    "fat_g": "",
+                    "carbs_g": "",
+                    "duration_min": "",
+                    "hours": "",
+                    "quality": "",
+                    "kg": getattr(bw, "weight_kg", ""),
+                    "meta": {},
+                })
+        except Exception:
+            pass
+
+        # Sort by date asc, then type for stability
+        rows.sort(key=lambda r: (r["date"], r["type"]))
+
+        # CSV headers (consistent across all record types)
+        headers = [
+            "date", "type", "kcal", "protein_g", "fat_g", "carbs_g",
+            "duration_min", "hours", "quality", "kg", "meta"
+        ]
+
+        buf = StringIO()
+        writer = csv.DictWriter(buf, fieldnames=headers)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow(r)
+
+        resp = HttpResponse(buf.getvalue(), content_type="text/csv")
+        filename = f"export_{start.isoformat()}_{end.isoformat()}.csv"
+        resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return resp

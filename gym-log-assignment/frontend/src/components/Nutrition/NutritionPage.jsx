@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import NutritionTrends from './NutritionTrends';
-import { getNutritionTargets, getProfile, getNutritionSnapshots, createNutritionSnapshot } from '../../services/api';
+import { getNutritionTargets, getProfile, getNutritionSnapshots, createNutritionSnapshot,  exportUserDataCsv } from '../../services/api';
 
 export default function NutritionPage() {
   const { getAccessToken } = useAuth();
@@ -15,6 +15,10 @@ export default function NutritionPage() {
   const [savingSnap, setSavingSnap] = useState(false);
   const [tab, setTab] = useState('current'); // 'current' | 'progress'
   const [range, setRange] = useState(7); // 7 or 30
+  const [exportStart, setExportStart] = useState('');
+  const [exportEnd, setExportEnd] = useState('');
+
+  const normalizeDateInput = (value) => (value ? value.split('T')[0] : '');
 
   useEffect(() => {
     let mounted = true;
@@ -59,13 +63,57 @@ export default function NutritionPage() {
     return () => { mounted = false; };
   }, [getAccessToken]);
 
+    const handleExport = async () => {
+    const startDate = normalizeDateInput(exportStart);
+    const endDate = normalizeDateInput(exportEnd);
+
+    if (!startDate || !endDate) {
+      toast.error('Please select both start and end dates.');
+      return;
+    }
+
+    if (startDate > endDate) {
+      toast.error('Start date must be before end date.');
+      return;
+    }
+
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        toast.error('Please log in again.');
+        return;
+      }
+
+      const response = await exportUserDataCsv(token, {
+        start: startDate,
+        end: endDate,
+      });
+
+      // Turn the response into a real downloadable file
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `shakti-export-${startDate}-to-${endDate}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success('Download started. Check your Downloads folder.');
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not export data. Please try again.');
+    }
+  };
   useEffect(() => {
     const loadSnaps = async () => {
       try {
         const token = getAccessToken();
         if (!token) return;
         const data = await getNutritionSnapshots(token);
-        // ✅ store full history; we'll slice by selected range when rendering
+        //  store full history; we'll slice by selected range when rendering
         setSnapshots(data || []);
       } catch {
         /* optional: toast.error('Could not load history'); */
@@ -228,6 +276,53 @@ export default function NutritionPage() {
                   </div>
                 </>
               )}
+            </div>
+            <div style={{ marginTop: 24, padding: 16, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f9fafb' }}>
+              <h3 style={{ margin: 0, marginBottom: 8 }}>Export Your Data</h3>
+              <p style={{ margin: 0, marginBottom: 12, fontSize: 14, color: '#64748b' }}>
+                Choose a date range and download your data as a CSV file.
+              </p>
+
+              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                    Start date
+                  </label>
+                  <input
+                    type="date"
+                    value={exportStart}
+                    onChange={(e) => setExportStart(e.target.value)}
+                    style={{ padding: 6, borderRadius: 8, border: '1px solid #cbd5e1' }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                    End date
+                  </label>
+                  <input
+                    type="date"
+                    value={exportEnd}
+                    onChange={(e) => setExportEnd(e.target.value)}
+                    style={{ padding: 6, borderRadius: 8, border: '1px solid #cbd5e1' }}
+                  />
+                </div>
+
+                <button
+                  onClick={handleExport}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: '#4f46e5',
+                    color: 'white',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Download CSV
+                </button>
+              </div>
             </div>
 
             {/* ------- Progress Section (Charts + List) ------- */}

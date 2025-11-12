@@ -103,3 +103,13 @@ export const sendChatMessage = async (message, userInfo = {}, token = null) => {
 
   return res.data;
 };
+
+export function exportUserDataCsv(token, { start, end, tz = 'America/Chicago' }) {
+  return apiClient.get('/api/export/', {
+    params: { start, end, tz },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    responseType: 'blob', // important so we get file data, not JSON
+  });
+}

@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator
+from .utils import calculate_simple_calories, calculate_advanced_calories
 
 class Exercise(models.Model):
     CATEGORY_CHOICES = [
@@ -58,7 +60,8 @@ class UserWorkout(models.Model):
     duration_minutes = models.IntegerField(
         blank=True, 
         null=True,
-        help_text="Workout duration in minutes"
+        validators=[MinValueValidator(1, message="Duration must be at least 1 minute")],
+        help_text="Workout duration in minutes (minimum 1 minute)"
     )
     calories_burned = models.FloatField(
         blank=True,
@@ -77,45 +80,58 @@ class UserWorkout(models.Model):
         """Check if workout is completed"""
         return self.completed_date is not None
     
-    def calculate_calories_advanced(self):
-        """
-        Advanced calorie calculation using BMR formula
-        Uses Harris-Benedict equation with age, sex, weight, height
-        More accurate and personalized
-        """
+    def calculate_calories(self):
+    
         if not self.duration_minutes:
             return None
-        
+    
         try:
+            if not hasattr(self.user, 'profile'):
+                print("Warning: User has no profile")
+                return None
+        
+            # Use utility function for calculation
+            return calculate_simple_calories(
+                    met_value=self.exercise.met_value,
+                    weight_kg=self.user.profile.weight,
+                    duration_minutes=self.duration_minutes
+            )
+        
+        except Exception as e:
+            print(f"Error in simple calculation: {e}")
+            return None
+    
+    def calculate_calories_advanced(self):
+    
+        if not self.duration_minutes:
+            return None
+    
+        try:
+            if not hasattr(self.user, 'profile'):
+                print("Warning: User has no profile")
+                return None
+        
             profile = self.user.profile
-            
+        
             # Check if we have complete profile data
             if not all([profile.weight, profile.age, profile.sex, profile.height]):
                 # Fallback to simple calculation if data missing
                 return self.calculate_calories()
-            
-            # Calculate BMR (Basal Metabolic Rate) using Harris-Benedict equation
-            if profile.sex.lower() == 'male':
-                # Men: BMR = 10 × weight(kg) + 6.25 × height(cm) - 5 × age(years) + 5
-                bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) + 5
-            else:  # female
-                # Women: BMR = 10 × weight(kg) + 6.25 × height(cm) - 5 × age(years) - 161
-                bmr = (10 * profile.weight) + (6.25 * profile.height) - (5 * profile.age) - 161
-            
-            # Calculate calories using MET and BMR
-            # Formula: (MET × BMR / 24) × duration(hours)
-            met_value = self.exercise.met_value
-            duration_hours = self.duration_minutes / 60
-            
-            calories_per_hour = (met_value * bmr) / 24
-            calories = calories_per_hour * duration_hours
-            
-            return round(calories, 1)
-            
+        
+                # Use utility function for calculation
+            return calculate_advanced_calories(
+                        met_value=self.exercise.met_value,
+                        weight_kg=profile.weight,
+                        height_cm=profile.height,
+                        age=profile.age,
+                        sex=profile.sex,
+                        duration_minutes=self.duration_minutes
+                )
+        
         except Exception as e:
-            print(f"Error in advanced calculation: {e}, using simple method")
-            # Fallback to simple calculation
+            print(f"Error in advanced calculation: {e}")
             return self.calculate_calories()
+
     
     def save(self, *args, **kwargs):
         """Auto-calculate calories before saving using advanced method"""

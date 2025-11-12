@@ -6,7 +6,6 @@ import Button from '../components/common/Button/Button';
 import { NotificationsBell, NotificationsDropdown } from '../components/Notifications/Index'
 
 // Importing sub-components for the dashboard
-import DailyOverview from '../components/DailyOverview/DailyOverview';
 import MealLogging from '../components/MealLogging/MealLogging';
 import WorkoutActivity from '../components/WorkoutActivity/WorkoutActivity';
 import AIPanel from '../components/AIPanel/AIPanel';
@@ -160,8 +159,40 @@ const handleDeleteAccount = async () => {
         background: '#f7f9fa',
         minHeight: '100vh'
       }}>
-        <div style={{ gridArea: 'overview', background: '#e3f6fc', borderRadius: '10px', padding: '20px' }}>
-          <DailyOverview />
+        <div
+          style={{
+            gridArea: 'overview',
+            background: '#e3f6fc',
+            borderRadius: '10px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            boxShadow: '0 10px 20px rgba(15, 23, 42, 0.08)'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <h3 style={{ margin: '6px 0 0', fontSize: '26px', color: '#0f172a' }}>See your daily overview</h3>
+            </div>
+            <span style={{ fontSize: '40px' }} role="img" aria-label="overview icon">📊</span>
+          </div>
+          <p style={{ color: '#475569', marginTop: '12px', lineHeight: 1.5 }}>
+            Dive into a dedicated page to view today&apos;s calories, workouts, and macro targets without the rest of the dashboard clutter.
+          </p>
+          <Button
+            onClick={() => navigate('/daily-overview')}
+            style={{
+              alignSelf: 'flex-start',
+              marginTop: 'auto',
+              backgroundColor: '#0ea5e9',
+              color: '#ffffff',
+              padding: '10px 20px',
+              borderRadius: '999px'
+            }}
+          >
+            View Daily Overview
+          </Button>
         </div>
         <div style={{ gridArea: 'meals', background: '#fff7e6', borderRadius: '10px', padding: '20px' }}>
           <MealLogging />

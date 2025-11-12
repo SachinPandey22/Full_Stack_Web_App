@@ -13,6 +13,7 @@ import ChatPopup from './components/ChatSupport/ChatPopup';
 import MyWorkouts from './components/WorkoutActivity/MyWorkouts';
 import MealLogging from './components/MealLogging/MealLogging';
 import WorkoutStats from './components/WorkoutActivity/WorkoutStats';
+import DailyOverviewPage from './pages/DailyOverviewPage';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/my-workouts" element={<MyWorkouts />} />
         <Route path="/workout-stats" element={<WorkoutStats />} />
         <Route path="/MealLogging" element={<MealLogging />} />
+        <Route path="/daily-overview" element={<DailyOverviewPage />} />
         {/* add more protected pages later */}
       </Route>
 
@@ -50,4 +52,3 @@ function App() {
 }
 
 export default App;
-

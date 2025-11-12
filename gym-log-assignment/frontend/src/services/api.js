@@ -87,6 +87,10 @@ export async function createNutritionSnapshot(token) {
   return res.data; // the created/updated snapshot for today
 }
 
+export async function getUserWorkouts() {
+  const res = await apiClient.get('/api/my-workouts/');
+  return res.data; // [{id, exercise, added_date, sets, reps, notes}, ...]
+}
 export const sendChatMessage = async (message, userInfo = {}, token = null) => {
   const config = {};
   if (token) {

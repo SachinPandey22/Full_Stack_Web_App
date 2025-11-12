@@ -1,262 +1,428 @@
-import { useState, useEffect, useCallback } from 'react';
-import { format, addDays, subDays } from 'date-fns';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { format, subDays, parseISO } from 'date-fns';
 import {
-  getMealsByDate,
-  createMeal,
+  fetchMeals,
+  fetchMealSummary,
+  fetchWeeklySummary,
+  createMeal as apiCreateMeal,
+  updateMeal as apiUpdateMeal,
   deleteMeal as apiDeleteMeal,
-  getMealTargets,
-  saveMealTargets
+  fetchNutritionTargets,
+  saveNutritionTargets,
+  fetchNutritionRecommendations,
+  fetchWaterIntake,
+  saveWaterIntake,
 } from '../../../services/MealLogging';
 
+const DEFAULT_GOALS = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+const DEFAULT_MEAL_FORM = {
+  type: 'breakfast',
+  name: '',
+  calories: '',
+  protein: '',
+  carbs: '',
+  fat: '',
+  notes: '',
+};
+const DEFAULT_WATER = {
+  id: null,
+  date: '',
+  glasses: 0,
+  glass_size: 500,
+  total_ml: 0,
+};
+
+const mapMeal = (meal, dateLabel) => ({
+  id: meal.id,
+  type: meal.meal_type,
+  name: meal.name,
+  calories: meal.calories,
+  protein: meal.protein,
+  carbs: meal.carbs,
+  fat: meal.fat,
+  time: meal.time,
+  date: dateLabel,
+  notes: meal.notes || '',
+});
+
+const toInt = (value) => {
+  const parsed = Number.parseInt(value, 10);
+  return Number.isNaN(parsed) ? 0 : parsed;
+};
+
 export const useMealLogging = () => {
-  const [showMealLog, setShowMealLog] = useState(false);
-  const [showModal, setShowModal] = useState(false);
-  const [goalsSet, setGoalsSet] = useState(false);
-  const [showGoalsModal, setShowGoalsModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState('');
-
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [meals, setMeals] = useState([]);
-
-  const [newMeal, setNewMeal] = useState({
-    type: 'breakfast',
-    name: '',
-    calories: '',
-    protein: '',
-    carbs: '',
-    fat: '',
-    notes: ''
-  });
-
-  const [dailyGoals, setDailyGoals] = useState({
-    calories: 2200,
-    protein: 165,
-    carbs: 220,
-    fat: 73
-  });
-
+  const [goalsSet, setGoalsSet] = useState(false);
+  const [dailyGoals, setDailyGoals] = useState(DEFAULT_GOALS);
   const [goalInput, setGoalInput] = useState({
     calories: '',
     protein: '',
     carbs: '',
-    fat: ''
+    fat: '',
   });
 
-  const showToast = (message) => {
+  const [meals, setMeals] = useState([]);
+  const [totals, setTotals] = useState(DEFAULT_GOALS);
+  const [remaining, setRemaining] = useState(DEFAULT_GOALS);
+  const [weeklyRaw, setWeeklyRaw] = useState([]);
+
+  const [water, setWater] = useState(DEFAULT_WATER);
+  const [waterLoading, setWaterLoading] = useState(false);
+  const [waterSaving, setWaterSaving] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState('');
+  const [error, setError] = useState(null);
+
+  const [showMealLog, setShowMealLog] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [showGoalsModal, setShowGoalsModal] = useState(false);
+
+  const [editingMeal, setEditingMeal] = useState(null);
+  const [formMeal, setFormMeal] = useState(DEFAULT_MEAL_FORM);
+
+  const showToast = useCallback((message) => {
     setToast(message);
-    setTimeout(() => setToast(''), 3000);
-  };
-
-  const loadMealTargets = async () => {
-    try {
-      const targets = await getMealTargets();
-      if (targets) {
-        setDailyGoals({
-          calories: targets.daily_calories,
-          protein: targets.daily_protein,
-          carbs: targets.daily_carbs,
-          fat: targets.daily_fat
-        });
-        setGoalsSet(true);
-      }
-    } catch (error) {
-      console.error('Failed to load meal targets:', error);
+    if (message) {
+      window.setTimeout(() => setToast(''), 3000);
     }
-  };
+  }, []);
 
-  const loadMealsForDate = useCallback(async (date) => {
+  const applyGoals = useCallback((targets) => {
+    if (!targets) return;
+    const nextGoals = {
+      calories: targets.target_calories ?? targets.calories ?? 0,
+      protein: targets.protein_g ?? targets.protein ?? 0,
+      carbs: targets.carbs_g ?? targets.carbs ?? 0,
+      fat: targets.fat_g ?? targets.fat ?? 0,
+    };
+    setDailyGoals(nextGoals);
+    setGoalInput({
+      calories: String(nextGoals.calories || ''),
+      protein: String(nextGoals.protein || ''),
+      carbs: String(nextGoals.carbs || ''),
+      fat: String(nextGoals.fat || ''),
+    });
+  }, []);
+
+  const loadNutritionTargets = useCallback(async () => {
     try {
-      setLoading(true);
-      const dateStr = format(date, 'yyyy-MM-dd');
-      const mealsData = await getMealsByDate(dateStr);
-      const transformedMeals = mealsData.map(meal => ({
-        id: meal.id,
-        type: meal.meal_type,
-        name: meal.name,
-        calories: meal.calories,
-        protein: meal.protein,
-        carbs: meal.carbs,
-        fat: meal.fat,
-        time: meal.time,
-        date: date.toDateString(),
-        notes: meal.notes || ''
-      }));
-      setMeals(transformedMeals);
-    } catch (error) {
-      console.error('Failed to load meals:', error);
+      const targets = await fetchNutritionTargets();
+      if (targets) {
+        applyGoals(targets);
+        setGoalsSet(true);
+      } else {
+        setGoalsSet(false);
+      }
+    } catch (err) {
+      console.error('Failed to load nutrition targets', err);
+      setGoalsSet(false);
+    }
+  }, [applyGoals]);
+
+  const hydrateSummary = useCallback((summary) => {
+    if (!summary) return;
+    if (summary.targets) {
+      applyGoals(summary.targets);
+      setGoalsSet(true);
+    }
+    setTotals(summary.totals || DEFAULT_GOALS);
+    setRemaining(summary.remaining || DEFAULT_GOALS);
+  }, [applyGoals]);
+
+  const formatDateForApi = useCallback(
+    (dateValue) => format(dateValue, 'yyyy-MM-dd'),
+    [],
+  );
+
+  const loadDataForDate = useCallback(async (target = currentDate) => {
+    const targetDate = target instanceof Date ? target : new Date(target);
+    const dateStr = formatDateForApi(targetDate);
+    const dateLabel = targetDate.toDateString();
+
+    setLoading(true);
+    try {
+      const [mealList, summary, weekly] = await Promise.all([
+        fetchMeals(dateStr),
+        fetchMealSummary(dateStr),
+        fetchWeeklySummary(dateStr),
+      ]);
+
+      setMeals(mealList.map((meal) => mapMeal(meal, dateLabel)));
+      hydrateSummary(summary);
+
+      const weeklyData = (weekly?.days || []).map((day) => {
+        const parsed = parseISO(day.date);
+        return {
+          date: day.date,
+          dayLabel: format(parsed, 'EEE'),
+          calories: day.calories || 0,
+          protein: day.protein || 0,
+          carbs: day.carbs || 0,
+          fat: day.fat || 0,
+        };
+      });
+      setWeeklyRaw(weeklyData);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load meals', err);
+      setError(err);
       showToast('Failed to load meals');
     } finally {
       setLoading(false);
     }
-  }, []);
+
+    setWaterLoading(true);
+    try {
+      const entry = await fetchWaterIntake(dateStr);
+      if (entry) {
+        setWater({
+          id: entry.id,
+          date: entry.date,
+          glasses: entry.glasses,
+          glass_size: entry.glass_size,
+          total_ml: entry.total_ml,
+        });
+      } else {
+        setWater({ ...DEFAULT_WATER, date: dateStr });
+      }
+    } catch (err) {
+      console.error('Failed to load water intake', err);
+      showToast('Failed to load water intake');
+    } finally {
+      setWaterLoading(false);
+    }
+  }, [currentDate, formatDateForApi, hydrateSummary, showToast]);
 
   useEffect(() => {
-    loadMealTargets();
-  }, []);
+    loadNutritionTargets();
+  }, [loadNutritionTargets]);
 
   useEffect(() => {
     if (goalsSet) {
-      loadMealsForDate(currentDate);
+      loadDataForDate(currentDate);
     }
-  }, [currentDate, goalsSet, loadMealsForDate]);
+  }, [currentDate, goalsSet, loadDataForDate]);
 
-  const currentDateMeals = meals.filter(meal => meal.date === currentDate.toDateString());
+  const resetMealForm = useCallback(() => {
+    setEditingMeal(null);
+    setFormMeal(DEFAULT_MEAL_FORM);
+  }, []);
 
-  const totals = currentDateMeals.reduce((acc, meal) => ({
-    calories: acc.calories + meal.calories,
-    protein: acc.protein + meal.protein,
-    carbs: acc.carbs + meal.carbs,
-    fat: acc.fat + meal.fat
-  }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
+  const saveMeal = useCallback(async () => {
+    const dateStr = formatDateForApi(currentDate);
+    const now = new Date();
+    const payload = {
+      meal_type: formMeal.type,
+      name: formMeal.name.trim(),
+      calories: toInt(formMeal.calories),
+      protein: toInt(formMeal.protein),
+      carbs: toInt(formMeal.carbs),
+      fat: toInt(formMeal.fat),
+      notes: formMeal.notes || '',
+      date: dateStr,
+      time: editingMeal?.time || format(now, 'HH:mm'),
+    };
 
-  const remaining = dailyGoals.calories - totals.calories;
-
-  const generateWeekData = () => {
-    const data = [];
-    for (let i = -6; i <= 0; i++) {
-      const date = addDays(currentDate, i);
-      const dayMeals = meals.filter(meal => meal.date === date.toDateString());
-      const dayCalories = dayMeals.reduce((sum, meal) => sum + meal.calories, 0);
-      data.push({ day: format(date, 'EEE'), calories: dayCalories, date });
+    if (!payload.name) {
+      showToast('Please provide a meal name');
+      return;
     }
-    return data;
-  };
 
-  const weekData = generateWeekData();
-
-  const saveGoals = async () => {
+    setLoading(true);
     try {
-      const newGoals = {
-        daily_calories: parseInt(goalInput.calories) || 2200,
-        daily_protein: parseInt(goalInput.protein) || 165,
-        daily_carbs: parseInt(goalInput.carbs) || 220,
-        daily_fat: parseInt(goalInput.fat) || 73
-      };
-
-      await saveMealTargets(newGoals);
-
-      setDailyGoals({
-        calories: newGoals.daily_calories,
-        protein: newGoals.daily_protein,
-        carbs: newGoals.daily_carbs,
-        fat: newGoals.daily_fat
-      });
-      setGoalsSet(true);
-      setShowGoalsModal(false);
-      setShowMealLog(true);
-      showToast('🎯 Goals saved successfully!');
-    } catch (error) {
-      console.error('Failed to save goals:', error);
-      showToast('❌ Failed to save goals');
-    }
-  };
-
-  const addMeal = async () => {
-    try {
-      setLoading(true);
-      const dateStr = format(currentDate, 'yyyy-MM-dd');
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      const mealData = {
-        meal_type: newMeal.type,
-        name: newMeal.name,
-        calories: parseInt(newMeal.calories) || 0,
-        protein: parseInt(newMeal.protein) || 0,
-        carbs: parseInt(newMeal.carbs) || 0,
-        fat: parseInt(newMeal.fat) || 0,
-        date: dateStr,
-        time: timeStr,
-        notes: newMeal.notes || ''
-      };
-
-      const createdMeal = await createMeal(mealData);
-
-      const transformedMeal = {
-        id: createdMeal.id,
-        type: createdMeal.meal_type,
-        name: createdMeal.name,
-        calories: createdMeal.calories,
-        protein: createdMeal.protein,
-        carbs: createdMeal.carbs,
-        fat: createdMeal.fat,
-        time: createdMeal.time,
-        date: currentDate.toDateString(),
-        notes: createdMeal.notes || ''
-      };
-
-      setMeals([...meals, transformedMeal]);
+      if (editingMeal) {
+        await apiUpdateMeal(editingMeal.id, payload);
+        showToast('Meal updated');
+      } else {
+        await apiCreateMeal(payload);
+        showToast('Meal added');
+      }
       setShowModal(false);
-      setNewMeal({ type: 'breakfast', name: '', calories: '', protein: '', carbs: '', fat: '', notes: '' });
-      showToast('✅ Meal added successfully!');
-    } catch (error) {
-      console.error('Failed to add meal:', error);
-      showToast('❌ Failed to add meal');
+      resetMealForm();
+      await loadDataForDate(currentDate);
+    } catch (err) {
+      console.error('Failed to save meal', err);
+      showToast('Failed to save meal');
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentDate, editingMeal, formMeal, formatDateForApi, loadDataForDate, resetMealForm, showToast]);
 
-  const deleteMeal = async (id) => {
+  const deleteMeal = useCallback(async (mealId) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      await apiDeleteMeal(id);
-      setMeals(meals.filter(meal => meal.id !== id));
-      showToast('🗑️ Meal deleted');
-    } catch (error) {
-      console.error('Failed to delete meal:', error);
-      showToast('❌ Failed to delete meal');
+      await apiDeleteMeal(mealId);
+      showToast('Meal deleted');
+      await loadDataForDate(currentDate);
+    } catch (err) {
+      console.error('Failed to delete meal', err);
+      showToast('Failed to delete meal');
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentDate, loadDataForDate, showToast]);
 
-  const copyYesterday = async () => {
+  const copyYesterday = useCallback(async () => {
+    setLoading(true);
+    const yesterday = subDays(currentDate, 1);
+    const yesterdayStr = formatDateForApi(yesterday);
+    const todayStr = formatDateForApi(currentDate);
     try {
-      setLoading(true);
-      const yesterday = subDays(currentDate, 1);
-      const yesterdayStr = format(yesterday, 'yyyy-MM-dd');
-      const yesterdayMeals = await getMealsByDate(yesterdayStr);
-
-      if (yesterdayMeals.length === 0) {
-        showToast('❌ No meals found from yesterday');
+      const mealsToCopy = await fetchMeals(yesterdayStr);
+      if (!mealsToCopy.length) {
+        showToast('No meals to copy from yesterday');
         return;
       }
 
-      const todayStr = format(currentDate, 'yyyy-MM-dd');
-      const now = new Date();
-      const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-      for (const meal of yesterdayMeals) {
-        const mealData = {
+      for (const meal of mealsToCopy) {
+        await apiCreateMeal({
           meal_type: meal.meal_type,
           name: meal.name,
           calories: meal.calories,
           protein: meal.protein,
           carbs: meal.carbs,
           fat: meal.fat,
+          notes: meal.notes || '',
           date: todayStr,
-          time: timeStr,
-          notes: meal.notes || ''
-        };
-        await createMeal(mealData);
+          time: meal.time,
+        });
       }
-
-      await loadMealsForDate(currentDate);
-      showToast(`📋 Copied ${yesterdayMeals.length} meals from yesterday!`);
-    } catch (error) {
-      console.error('Failed to copy meals:', error);
-      showToast('❌ Failed to copy meals');
+      showToast(`Copied ${mealsToCopy.length} meals from yesterday`);
+      await loadDataForDate(currentDate);
+    } catch (err) {
+      console.error('Failed to copy meals', err);
+      showToast('Failed to copy meals');
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentDate, formatDateForApi, loadDataForDate, showToast]);
+
+  const saveGoals = useCallback(async () => {
+    const calories = toInt(goalInput.calories);
+    const protein = toInt(goalInput.protein);
+    const carbs = toInt(goalInput.carbs);
+    const fat = toInt(goalInput.fat);
+
+    if (!calories || !protein || !carbs || !fat) {
+      showToast('Please provide calorie and macro goals');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const updated = await saveNutritionTargets({
+        calories,
+        protein,
+        carbs,
+        fat,
+      });
+      applyGoals(updated);
+      setGoalsSet(true);
+      setShowGoalsModal(false);
+      showToast('Daily goals saved');
+      await loadDataForDate(currentDate);
+    } catch (err) {
+      console.error('Failed to save goals', err);
+      showToast('Failed to save goals');
+    } finally {
+      setLoading(false);
+    }
+  }, [applyGoals, currentDate, goalInput, loadDataForDate, showToast]);
+
+  const useRecommendations = useCallback(async () => {
+    setLoading(true);
+    try {
+      const recommendation = await fetchNutritionRecommendations();
+      applyGoals(recommendation);
+      setGoalsSet(true);
+      setShowGoalsModal(false);
+      showToast('Recommended goals applied');
+      await loadDataForDate(currentDate);
+    } catch (err) {
+      console.error('Failed to load recommendations', err);
+      if (err.response?.data?.missing_fields) {
+        showToast('Complete your profile to get recommendations');
+      } else {
+        showToast('Failed to load recommendations');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [applyGoals, currentDate, loadDataForDate, showToast]);
+
+  const updateWater = useCallback(async (nextGlasses) => {
+    const safeGlasses = Math.max(0, nextGlasses);
+    const dateStr = formatDateForApi(currentDate);
+    const glassSize = water.glass_size || 500;
+    setWaterSaving(true);
+    try {
+      const updated = await saveWaterIntake({
+        date: dateStr,
+        glasses: safeGlasses,
+        glassSize,
+      });
+      setWater({
+        id: updated.id,
+        date: updated.date,
+        glasses: updated.glasses,
+        glass_size: updated.glass_size,
+        total_ml: updated.total_ml,
+      });
+    } catch (err) {
+      console.error('Failed to save water intake', err);
+      showToast('Failed to update water intake');
+    } finally {
+      setWaterSaving(false);
+    }
+  }, [currentDate, formatDateForApi, showToast, water.glass_size]);
+
+  const incrementWater = useCallback(() => {
+    updateWater(water.glasses + 1);
+  }, [updateWater, water.glasses]);
+
+  const decrementWater = useCallback(() => {
+    if (water.glasses === 0) return;
+    updateWater(water.glasses - 1);
+  }, [updateWater, water.glasses]);
+
+  const startEditMeal = useCallback((meal) => {
+    setEditingMeal(meal);
+    setFormMeal({
+      type: meal.type,
+      name: meal.name,
+      calories: String(meal.calories),
+      protein: String(meal.protein),
+      carbs: String(meal.carbs),
+      fat: String(meal.fat),
+      notes: meal.notes || '',
+    });
+    setShowModal(true);
+  }, []);
+
+  const startAddMeal = useCallback(() => {
+    resetMealForm();
+    setShowModal(true);
+  }, [resetMealForm]);
+
+  const weekData = useMemo(
+    () =>
+      weeklyRaw.map((day) => ({
+        day: day.dayLabel,
+        calories: day.calories,
+        protein: day.protein,
+        carbs: day.carbs,
+        fat: day.fat,
+      })),
+    [weeklyRaw],
+  );
 
   return {
     meals,
-    newMeal,
-    setNewMeal,
+    newMeal: formMeal,
+    setNewMeal: setFormMeal,
+    editingMeal,
+    setEditingMeal,
     goalInput,
     setGoalInput,
     dailyGoals,
@@ -265,24 +431,34 @@ export const useMealLogging = () => {
     totals,
     remaining,
     weekData,
-    currentDateMeals,
+    currentDateMeals: meals,
+    water,
+    waterLoading,
+    waterSaving,
     loading,
     toast,
+    error,
     showMealLog,
     setShowMealLog,
     showModal,
     setShowModal,
-    goalsSet,
-    setGoalsSet,
     showGoalsModal,
     setShowGoalsModal,
+    goalsSet,
     handlers: {
-      loadMealsForDate,
-      saveGoals,
-      addMeal,
+      loadMealsForDate: loadDataForDate,
+      addMeal: saveMeal,
       deleteMeal,
       copyYesterday,
-      showToast
-    }
+      saveGoals,
+      useRecommendations,
+      showToast,
+      startAddMeal,
+      startEditMeal,
+      resetMealForm,
+      incrementWater,
+      decrementWater,
+      updateWater,
+    },
   };
 };

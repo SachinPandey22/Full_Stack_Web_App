@@ -1,5 +1,6 @@
 // MealLogging Component - handles meal tracking, goals, and daily nutrition
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Utensils, Plus, Copy, Apple, Coffee, Sunset, Moon, ArrowLeft } from 'lucide-react';
 import { useSwipeable } from 'react-swipeable';
 import { addDays, subDays, format } from 'date-fns';
@@ -19,9 +20,11 @@ import ToastNotification from './ToastNotification';
 import { useMealLogging } from './hooks/useMealLogging';
 
 const MealLogging = () => {
+  const navigate = useNavigate();
   const {
     newMeal,
     setNewMeal,
+    editingMeal,
     goalInput,
     setGoalInput,
     dailyGoals,
@@ -31,6 +34,9 @@ const MealLogging = () => {
     remaining,
     weekData,
     currentDateMeals,
+    water,
+    waterLoading,
+    waterSaving,
     loading,
     toast,
     showMealLog,
@@ -40,10 +46,31 @@ const MealLogging = () => {
     goalsSet,
     showGoalsModal,
     setShowGoalsModal,
-    handlers
+    handlers,
   } = useMealLogging();
 
-  const { saveGoals, addMeal, deleteMeal, copyYesterday, showToast } = handlers;
+  const {
+    saveGoals,
+    useRecommendations,
+    addMeal,
+    deleteMeal,
+    copyYesterday,
+    showToast,
+    startAddMeal,
+    startEditMeal,
+    resetMealForm,
+    incrementWater,
+    decrementWater,
+    updateWater,
+  } = handlers;
+
+  const handleManualGoals = () => {
+    setShowGoalsModal(false);
+    if (showMealLog) {
+      setShowMealLog(false);
+    }
+    navigate('/nutrition');
+  };
 
   // meal type config (icons/colors)
   const mealTypeConfig = {
@@ -85,7 +112,7 @@ const MealLogging = () => {
   // handle date change
   const handleDateChange = (newDate) => {
     setCurrentDate(newDate);
-    showToast(`📅 Switched to ${format(newDate, 'MMM d, yyyy')}`);
+    showToast(`Switched to ${format(newDate, 'MMM d, yyyy')}`);
   };
 
   // handle opening meal tracker
@@ -105,8 +132,11 @@ const MealLogging = () => {
             goalInput={goalInput}
             setGoalInput={setGoalInput}
             loading={loading}
-            saveGoals={saveGoals}
-            setShowGoalsModal={setShowGoalsModal}
+            onSave={saveGoals}
+            onUseRecommendations={useRecommendations}
+            onManual={handleManualGoals}
+            onClose={() => setShowGoalsModal(false)}
+            allowDismiss={goalsSet}
             usePurpleBranding
           />
         )}
@@ -163,7 +193,16 @@ const MealLogging = () => {
         <ProgressSection totals={totals} dailyGoals={dailyGoals} remaining={remaining} />
 
         {/* Water Tracker */}
-        <WaterTracker currentDate={currentDate} />
+        <WaterTracker
+          glasses={water.glasses}
+          glassSize={water.glass_size}
+          totalMl={water.total_ml}
+          isLoading={waterLoading}
+          isSaving={waterSaving}
+          onAdd={incrementWater}
+          onRemove={decrementWater}
+          onSelect={updateWater}
+        />
 
         {/* Weekly Chart */}
         <WeeklyChart weekData={weekData} />
@@ -182,8 +221,9 @@ const MealLogging = () => {
                 Copy Yesterday
               </button>
               <button
-                onClick={() => setShowModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg font-medium"
+                onClick={startAddMeal}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg font-medium disabled:opacity-60"
               >
                 <Plus className="w-4 h-4" />
                 Add Meal
@@ -202,8 +242,9 @@ const MealLogging = () => {
                 Start tracking your nutrition by adding your first meal!
               </p>
               <button
-                onClick={() => setShowModal(true)}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg"
+                onClick={startAddMeal}
+                disabled={loading}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg disabled:opacity-60"
               >
                 Add Your First Meal
               </button>
@@ -227,6 +268,9 @@ const MealLogging = () => {
                           meal={meal}
                           deleteMeal={deleteMeal}
                           mealTypeConfig={mealTypeConfig}
+                          onEdit={() => {
+                            startEditMeal(meal);
+                          }}
                         />
                       ))}
                     </div>
@@ -241,11 +285,15 @@ const MealLogging = () => {
       {/* Add Meal Modal */}
       {showModal && (
         <AddMealModal
-          setShowModal={setShowModal}
-          newMeal={newMeal}
-          setNewMeal={setNewMeal}
-          addMeal={addMeal}
+          isEditing={!!editingMeal}
+          formValues={newMeal}
+          setFormValues={setNewMeal}
           loading={loading}
+          onSubmit={addMeal}
+          onClose={() => {
+            setShowModal(false);
+            resetMealForm();
+          }}
         />
       )}
 
@@ -256,8 +304,11 @@ const MealLogging = () => {
           goalInput={goalInput}
           setGoalInput={setGoalInput}
           loading={loading}
-          saveGoals={saveGoals}
-          setShowGoalsModal={setShowGoalsModal}
+          onSave={saveGoals}
+          onUseRecommendations={useRecommendations}
+          onManual={handleManualGoals}
+          onClose={() => setShowGoalsModal(false)}
+          allowDismiss={goalsSet}
         />
       )}
 
@@ -285,3 +336,5 @@ const MealLogging = () => {
 };
 
 export default MealLogging;
+
+

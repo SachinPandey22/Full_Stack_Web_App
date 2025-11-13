@@ -14,7 +14,7 @@ import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivat
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
 import NutritionCard from "../components/Nutrition/NutritionCard";
-import { getProfile } from '../services/api';
+import { getProfile, deleteAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 // for authenticated users
 export default function Dashboard() {
@@ -29,6 +29,7 @@ export default function Dashboard() {
 // Reading profile info from localStorage
 const { getAccessToken } = useAuth();
 const [profile, setProfile] = React.useState(null);
+const [deletingAccount, setDeletingAccount] = React.useState(false);
 
 React.useEffect(() => {
   const fetchUserProfile = async () => {
@@ -50,7 +51,47 @@ React.useEffect(() => {
     toast.success('Signed out');
     window.location.href = '/login';
   };
+  
+const handleDeleteAccount = async () => {
+  if (deletingAccount) return;
 
+  const confirmText = window.prompt(
+    'This will permanently delete your account and data.\n\nType DELETE to confirm.'
+  );
+
+  if (!confirmText) {
+    return; // user cancelled
+  }
+
+  if (confirmText.trim().toUpperCase() !== 'DELETE') {
+    toast.error('You must type DELETE exactly to confirm.');
+    return;
+  }
+
+  try {
+    setDeletingAccount(true);
+
+    const token = getAccessToken();
+    if (!token) {
+      toast.error('Please log in again.');
+      return;
+    }
+
+    await deleteAccount(token, confirmText.trim());
+    toast.success('Your account has been deleted.');
+
+    clearSession();
+    navigate('/login');
+  } catch (err) {
+    console.error('Delete account error:', err);
+    const detail =
+      err?.response?.data?.detail ||
+      (err?.response ? `Error ${err.response.status}` : 'Could not delete account.');
+    toast.error(detail);
+  } finally {
+    setDeletingAccount(false);
+  }
+};
   return (
     <div style={{ padding: '20px' }}>
       {/* Header with user info + logout */}
@@ -96,6 +137,13 @@ React.useEffect(() => {
 
 
         <Button onClick={onLogout}>Logout</Button>
+        <Button
+          onClick={handleDeleteAccount}
+          style={{ marginLeft: '8px', backgroundColor: '#dc2626' }}
+          disabled={deletingAccount}
+        >
+          {deletingAccount ? 'Deleting…' : 'Delete Account'}
+        </Button>
       </div>
 
       {/* Fitness Dashboard Layout */}

@@ -189,7 +189,60 @@ class NutritionSnapshotsView(APIView):
         serializer = NutritionSnapshotSerializer(snapshot)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+class DeleteAccountView(APIView):
+    """
+    POST /api/delete-account/
+    Body: {"confirm": "DELETE"}
 
+    Requires explicit confirmation. Deletes this user's data and account.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        confirm = (request.data.get("confirm") or "").strip().upper()
+        if confirm != "DELETE":
+            return Response(
+                {"detail": "Type DELETE to confirm account removal."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user = request.user
+
+        # Delete nutrition data explicitly (even though CASCADE will also handle it)
+        from .models import NutritionSnapshot, NutritionTargets
+
+        NutritionSnapshot.objects.filter(user=user).delete()
+        NutritionTargets.objects.filter(user=user).delete()
+
+        # Best-effort deletes for other apps that track user-owned data
+        try:
+            from exercises.models import UserWorkout
+            UserWorkout.objects.filter(user=user).delete()
+        except Exception:
+            pass
+
+        try:
+            from MealLogging.models import Meal, MealTarget
+            Meal.objects.filter(user=user).delete()
+            MealTarget.objects.filter(user=user).delete()
+        except Exception:
+            pass
+
+        try:
+            from notifications.models import Notification
+            Notification.objects.filter(user=user).delete()
+        except Exception:
+            pass
+
+        # Finally, delete the user.
+        # Profile and other OneToOne/ForeignKey with on_delete=CASCADE will follow.
+        user.delete()
+
+        return Response(
+            {"detail": "Your account and all associated data have been deleted."},
+            status=status.HTTP_200_OK
+        )
+        
 class RegisterView(APIView):
     permission_classes = [AllowAny]
 

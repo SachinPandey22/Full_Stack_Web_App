@@ -103,6 +103,18 @@ export const sendChatMessage = async (message, userInfo = {}, token = null) => {
 
   return res.data;
 };
+// Delete a nutrition snapshot by Iuser
+export function deleteAccount(token, confirmText) {
+  return apiClient.post(
+    '/api/delete-account/',
+    { confirm: confirmText },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
 
 export function exportUserDataCsv(token, { start, end, tz = 'America/Chicago' }) {
   return apiClient.get('/api/export/', {

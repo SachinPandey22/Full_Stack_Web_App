@@ -6,6 +6,7 @@ export default function NotificationsDropdownView({
   loading = false,
   notificationsEnabled = true,
   onToggleEnabled,
+  onDeleteNotification,
   
 }) 
 {
@@ -108,14 +109,38 @@ export default function NotificationsDropdownView({
                 justifyContent: 'space-between',
                 alignItems: 'center',
                 marginBottom: 6,
+                gap:8,
               }}
             >
-              <span style={{ fontSize: 14 }}>{n.message}</span>
-              <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>
-                {n.created_at
-                  ? new Date(n.created_at).toLocaleString()
-                  : ''}
-              </span>
+               <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                  <span style={{ fontSize: 14 }}>{n.message}</span>
+                  <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>
+                    {n.created_at
+                    ? new Date(n.created_at).toLocaleString()
+                    : ''}
+                  </span>
+                </div>
+
+                {onDeleteNotification && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteNotification(n.id);
+                  }}
+                  style={{
+                    border: 'none',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    padding: '2px 6px',
+                    borderRadius: 6,
+                  }}
+                  aria-label="Delete notification"
+                >
+                  ✕
+                </button>
+              )}
             </li>
           ))}
         </ul>

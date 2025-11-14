@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useNotificationsDropdownBehavior from './useNotificationsDropdownBehavior';
 import NotificationsDropdownView from './NotificationsDropdownView';
-import { getNotifications, markAllNotificationsRead } from '../../services/notifications';
+import { getNotifications, markAllNotificationsRead, deleteNotification } from '../../services/notifications';
 import { getNotifEnabled, setNotifEnabled } from '../../services/notify';
 
 /**
@@ -48,6 +48,17 @@ export default function NotificationsDropdown({
     return () => { alive = false; };
   }, [isOpenExternal, enabled]);
 
+    const handleDeleteNotification = async (id) => {
+      console.log('Deleting notification with id:', id);
+    try {
+      await deleteNotification(id);
+      setItems(prev => prev.filter(n => n.id !== id));
+    } catch (e) {
+      // optional: toast error
+      console.error('Failed to delete notification', e);
+    }
+  };
+
   if (!isOpenExternal) return null;
 
   // Wrapper div holds the ref for outside-click detection.
@@ -67,6 +78,7 @@ export default function NotificationsDropdown({
             // optional: toast.error('Failed to mark all read');
           }
         }}
+         onDeleteNotification={handleDeleteNotification}
         />
     </div>
   );

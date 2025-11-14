@@ -12,6 +12,7 @@ pytest
 pytest-django
 pytest-cov
 freezegun
+openai
 certifi>=2024.9.30
 
 django-filter

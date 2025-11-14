@@ -9,3 +9,7 @@ export async function markAllNotificationsRead() {
   const res = await apiClient.post('/api/notifications/mark-all-read/');
   return res.data;
 }
+
+export async function deleteNotification(id) {
+  await apiClient.delete(`api/notifications/${id}/`);
+}

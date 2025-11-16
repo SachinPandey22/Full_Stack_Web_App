@@ -16,3 +16,4 @@ openai
 certifi>=2024.9.30
 
 django-filter
+requests>=2.31.0

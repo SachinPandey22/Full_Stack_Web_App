@@ -4,6 +4,7 @@ from .views import (
     MealViewSet,
     MealTargetViewSet,
     WaterIntakeViewSet,
+    search_food,
 )
 
 
@@ -14,5 +15,6 @@ router.register(r'water', WaterIntakeViewSet, basename='water')
 
 
 urlpatterns = [
+    path('foods/search/', search_food, name='food-search'),
     path('', include(router.urls)),
 ]

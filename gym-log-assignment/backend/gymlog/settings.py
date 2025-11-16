@@ -40,8 +40,17 @@ SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 DATABASE_URL = config('DATABASE_URL', default='')
+USDA_API_KEY = os.getenv("USDA_API_KEY")
 
 ALLOWED_HOSTS = []
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "gymlog-data-cache",
+        "TIMEOUT": 300,
+    }
+}
 
 
 # Application definition

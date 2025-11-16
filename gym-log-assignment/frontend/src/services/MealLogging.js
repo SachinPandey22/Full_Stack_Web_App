@@ -41,6 +41,13 @@ export const deleteMeal = async (mealId) => {
   await apiClient.delete(`/api/meals/${mealId}/`);
 };
 
+export const searchFoods = async (query) => {
+  const response = await apiClient.get('/api/foods/search/', {
+    params: { q: query },
+  });
+  return response.data;
+};
+
 // ============= NUTRITION TARGETS =============
 
 export const fetchNutritionTargets = async () => {

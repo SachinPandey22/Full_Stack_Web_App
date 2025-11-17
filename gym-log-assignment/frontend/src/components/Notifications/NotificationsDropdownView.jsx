@@ -16,8 +16,8 @@ export default function NotificationsDropdownView({
       aria-label="Notifications"
       style={{
         position: 'absolute',
-        top: '90%',
-        right: '-200px',
+        top: '110%',
+        right: '0px',
         width: 320,
         background: 'white',
         border: '1px solid #e5e7eb',
@@ -28,7 +28,7 @@ export default function NotificationsDropdownView({
       }}
     >
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, color:'#2b2b2bff', }}>
         <strong>Notifications</strong>
 
         <button
@@ -113,7 +113,7 @@ export default function NotificationsDropdownView({
               }}
             >
                <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-                  <span style={{ fontSize: 14 }}>{n.message}</span>
+                  <span style={{ fontSize: 14, color: '#1d1d1eff' }}>{n.message}</span>
                   <span style={{ fontSize: 12, color: '#9ca3af', marginLeft: 8 }}>
                     {n.created_at
                     ? new Date(n.created_at).toLocaleString()
@@ -130,6 +130,7 @@ export default function NotificationsDropdownView({
                   }}
                   style={{
                     border: 'none',
+                    color: 'black',
                     background: 'transparent',
                     cursor: 'pointer',
                     fontSize: 12,

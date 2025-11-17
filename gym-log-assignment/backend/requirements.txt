@@ -14,6 +14,9 @@ pytest-cov
 freezegun
 openai
 certifi>=2024.9.30
-
+python-dotenv
 django-filter
-requests>=2.31.0
+requests
+Pillow
+openai
+gunicorn

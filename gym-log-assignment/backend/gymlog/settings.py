@@ -42,7 +42,7 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 DATABASE_URL = config('DATABASE_URL', default='')
 USDA_API_KEY = os.getenv("USDA_API_KEY")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 CACHES = {
     "default": {

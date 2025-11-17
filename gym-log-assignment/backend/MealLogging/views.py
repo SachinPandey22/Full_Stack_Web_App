@@ -20,6 +20,10 @@ from .serializers import (
 from .services import MealCalculatorService
 
 
+PAGE_SIZE = 15
+CACHE_TIMEOUT = 300
+
+
 class MealViewSet(viewsets.ModelViewSet):
     """
     API endpoints for meal CRUD operations.
@@ -161,7 +165,7 @@ def search_food(request):
     Proxy USDA FoodData Central search to provide simplified nutrition data.
     """
     query = request.query_params.get('q', '').strip()
-    if not query:
+    if len(query) < 2:
         return Response({'results': []})
 
     api_key = getattr(settings, 'USDA_API_KEY', None)
@@ -179,7 +183,7 @@ def search_food(request):
     params = {
         'query': query,
         'api_key': api_key,
-        'pageSize': 10,
+        'pageSize': PAGE_SIZE,
         'dataType': ['Survey (FNDDS)', 'Branded'],
     }
 
@@ -244,7 +248,7 @@ def search_food(request):
         })
 
     payload = {'results': simplified_results}
-    cache.set(cache_key, payload, timeout=300)
+    cache.set(cache_key, payload, timeout=CACHE_TIMEOUT)
     return Response(payload)
 
 

@@ -37,8 +37,9 @@ const AddMealModal = ({
     }
 
     const trimmed = searchTerm.trim();
+    const value = trimmed;
 
-    if (!trimmed) {
+    if (!value || value.length < 2) {
       setSearchResults([]);
       setDropdownOpen(false);
       setIsSearching(false);

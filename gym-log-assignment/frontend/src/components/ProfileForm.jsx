@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 //import axios from 'axios';  // for future API calls
 
 import { useAuth } from '../context/AuthContext'; // to get user info if needed/JWT token
-import { getProfile, updateProfile } from '../services/api';  // ✅ use API helpers
+import { updateProfile } from '../services/api';  // ✅ use API helpers
 import Button from '../components/common/Button/Button';
 import StatusIndicator from '../components/common/StatusIndicator/StatusIndicator';
 
@@ -28,7 +28,7 @@ const schema = z.object({
 
 export default function ProfileForm() {
   const navigate = useNavigate();
-  const { getAccessToken, user } = useAuth();
+  const { getAccessToken, profile, setProfile, isProfileLoading, refreshProfile, setProfileUpdatedAt } = useAuth();
 
   const { register, handleSubmit, formState, setFocus, setValue } = useForm({
     resolver: zodResolver(schema),
@@ -38,26 +38,39 @@ export default function ProfileForm() {
   useEffect(() => {
     const firstError = Object.keys(formState.errors)[0];
     if (firstError) setFocus(firstError);
+  }, [formState.errors, setFocus]);
 
-    // 👇 Fetch profile data to prefill form if it exists
-    async function fetchProfile() {
-      const token = getAccessToken();
-      if (!token) return;
-      try {
-        const data = await getProfile(token);
-        Object.keys(data).forEach((key) => {
-          if (data[key] !== null && data[key] !== "") {
-            setValue(key, data[key]);  // ✅ prefill form fields
-          }
-        });
-      } catch (err) {
-        console.error("Failed to load profile", err);
-      }
+  useEffect(() => {
+    if (profile) {
+      Object.keys(profile).forEach((key) => {
+        if (profile[key] !== null && profile[key] !== "") {
+          setValue(key, profile[key]);
+        }
+      });
+      return;
     }
-    fetchProfile();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState.errors, setFocus, getAccessToken,setValue]);
+    let ignore = false;
+    refreshProfile()
+      .then((data) => {
+        if (!ignore && data) {
+          Object.keys(data).forEach((key) => {
+            if (data[key] !== null && data[key] !== "") {
+              setValue(key, data[key]);
+            }
+          });
+        }
+      })
+      .catch((err) => {
+        if (!ignore) {
+          console.error("Failed to load profile", err);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [profile, refreshProfile, setValue]);
 
   const onSubmit = async (values) => {
   try {
@@ -65,7 +78,9 @@ export default function ProfileForm() {
     console.log('Submitting profile:', values);
     console.log('Access token:', token);
     
-    await updateProfile(values, token);
+    const updatedProfile = await updateProfile(values, token);
+    setProfile(updatedProfile);
+    setProfileUpdatedAt(new Date());
     toast.success('Profile saved to database!');
     navigate('/dashboard', { replace: true });
   } catch (err) {
@@ -101,6 +116,12 @@ export default function ProfileForm() {
     <div className="auth-card">
       <h2>Set up your Profile</h2>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
+        {isProfileLoading && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', color: '#475569', fontSize: '0.9rem' }}>
+            <span className="spinner" style={{ width: 14, height: 14 }} aria-hidden="true"></span>
+            <span>Syncing your latest profile…</span>
+          </div>
+        )}
         {/* Name */}
         <label>Name</label>
         <input type="text" {...register('name')} />

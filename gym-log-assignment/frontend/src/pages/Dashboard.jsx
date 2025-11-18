@@ -1,5 +1,5 @@
 //  for authenticated users
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button/Button';
@@ -13,36 +13,33 @@ import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivat
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
 import NutritionCard from "../components/Nutrition/NutritionCard";
-import { getProfile, deleteAccount } from '../services/api';
+import { deleteAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import { getDaysSince } from '../utils/dateUtils';
+import '../styles/profileUpdate.css';
 // for authenticated users
 export default function Dashboard() {
-  const { user, clearSession } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
-  const [unreadCount, setUnreadCount] = useState(2);
+  const { user, clearSession, getAccessToken, profile, isProfileLoading, profileUpdatedAt } = useAuth();
   const navigate = useNavigate();
   const [notifOpen, setNotifOpen] = useState(false);
   const anchorRef = useRef(null);
+  const reminderShownRef = useRef(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
 
+  const daysSinceUpdate = getDaysSince(profileUpdatedAt);
+  const needsProfileUpdate = typeof daysSinceUpdate === 'number' && daysSinceUpdate >= 14;
 
-// Reading profile info from localStorage
-const { getAccessToken } = useAuth();
-const [profile, setProfile] = React.useState(null);
-const [deletingAccount, setDeletingAccount] = React.useState(false);
-
-React.useEffect(() => {
-  const fetchUserProfile = async () => {
-    const token = getAccessToken();
-    if (!token) return;
-    try {
-      const data = await getProfile(token);  // ✅ Same function you use in ProfileForm
-      setProfile(data);
-    } catch (err) {
-      console.error("Failed to load profile", err);
+  useEffect(() => {
+    if (needsProfileUpdate && !reminderShownRef.current) {
+      toast(
+        `It’s been ${daysSinceUpdate} days since your last profile update — want updated suggestions?`,
+        { icon: '⏰' }
+      );
+      reminderShownRef.current = true;
+    } else if (!needsProfileUpdate) {
+      reminderShownRef.current = false;
     }
-  };
-  fetchUserProfile();
-}, [user, getAccessToken]); 
+  }, [needsProfileUpdate, daysSinceUpdate]);
 
   const onLogout = () => {
     clearSession();
@@ -96,7 +93,35 @@ const handleDeleteAccount = async () => {
       {/* Header with user info + logout */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <h2>Welcome {profile?.name || user?.email || 'athlete'}!</h2>
+          <div>
+            <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 4 }}>
+              Welcome {profile?.name || user?.email || 'athlete'}!
+              {isProfileLoading && (
+                <span
+                  className="spinner"
+                  style={{ width: 14, height: 14 }}
+                  aria-label="Syncing profile"
+                />
+              )}
+              {needsProfileUpdate && (
+                <span className="needs-update-badge">
+                  Needs Update
+                  <button
+                    type="button"
+                    className="update-btn"
+                    onClick={() => navigate('/profile')}
+                  >
+                    Update Now
+                  </button>
+                </span>
+              )}
+            </h2>
+            {profileUpdatedAt && (
+              <p className="text-xs text-gray-500">
+                Profile synced at {profileUpdatedAt.toLocaleTimeString()}
+              </p>
+            )}
+          </div>
           <button
             onClick={() => navigate('/profile')}
             style={{

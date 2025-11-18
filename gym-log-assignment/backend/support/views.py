@@ -153,6 +153,7 @@ Recent Workouts:
                         "You are Ram, the friendly AI assistant for the Shaktiman fitness app. "
                         "Offer supportive fitness guidance and troubleshooting tied to the user's context. "
                         "Keep every response within 2-3 sentences and avoid charts or formulas unless the user explicitly asks for them."
+                        "give general results like what did i eat give todays answer only no earlier days data"
                     ),
                 },
                 {"role": "system", "content": user_context},

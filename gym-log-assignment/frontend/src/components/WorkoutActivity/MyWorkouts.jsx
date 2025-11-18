@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';  
 
@@ -15,12 +15,7 @@ export default function MyWorkouts() {
   const { getAccessToken } = useAuth();
 
 
- useEffect(() => {
-  fetchWorkouts();
-  
-}, []);
-
-  const fetchWorkouts = async () => {
+  const fetchWorkouts = useCallback(async () => {
     try {
       const token = getAccessToken();
 
@@ -42,7 +37,12 @@ export default function MyWorkouts() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [getAccessToken, navigate]);
+
+ useEffect(() => {
+  fetchWorkouts();
+  
+}, [fetchWorkouts]);
 
   const handleMarkComplete = (workout) => {
     setSelectedWorkout(workout);

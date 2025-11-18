@@ -7,6 +7,18 @@ function WorkoutLibrary() {
   const [selectedMuscle, setSelectedMuscle] = useState(null);
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
+  const dayToMuscle = {
+  0: { name: "rest", displayName: "Rest Day", emoji: "😴" },      // Sunday
+  1: { name: "chest", displayName: "Chest", emoji: "💪" },        // Monday
+  2: { name: "back", displayName: "Back", emoji: "🦾" },          // Tuesday
+  3: { name: "legs", displayName: "Legs", emoji: "🦵" },          // Wednesday
+  4: { name: "shoulders", displayName: "Shoulders", emoji: "🏋️" }, // Thursday
+  5: { name: "arms", displayName: "Arms", emoji: "💪" },          // Friday
+  6: { name: "core", displayName: "Core", emoji: "🧘" }           // Saturday
+};
+
+const todayDay = new Date().getDay();
+const suggestion = dayToMuscle[todayDay];
 
   
   const muscleGroups = [
@@ -154,7 +166,7 @@ function WorkoutLibrary() {
     onMouseOver={(e) => e.target.style.background = '#7e22ce'}
     onMouseOut={(e) => e.target.style.background = '#9333ea'}
   >
-    🏠 Back to Dashboard
+    Back to Dashboard
   </button>
 </div>
         </div>
@@ -163,7 +175,60 @@ function WorkoutLibrary() {
       {/* Main Content */}
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px' }}>
         {!selectedMuscle ? (
-          /* Muscle Group Grid */
+          <>
+           <div style={{ 
+              marginBottom: 32, 
+              padding: 20, 
+              background: 'linear-gradient(135deg, #312e81 0%, #1e1b4b 100%)', 
+              borderRadius: 12, 
+              border: '2px solid #6366f1', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'space-between',
+              boxShadow: '0 10px 25px rgba(99, 102, 241, 0.2)'
+            }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <span style={{ fontSize: 48 }}>{suggestion.emoji}</span>
+                <div>
+                  <div style={{ fontWeight: 'bold', fontSize: 20, marginBottom: 4 }}>
+                    💡 Recommended for {["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"][todayDay]}
+                  </div>
+                  <div style={{ fontSize: 15, color: '#c7d2fe' }}>
+                    {todayDay === 0
+                      ? "Rest day! Recovery is important, or catch up on any muscle group you missed."
+                      : `Time for ${suggestion.displayName} day! Build your ${suggestion.displayName.toLowerCase()} strength.`}
+                  </div>
+                </div>
+              </div>
+              {todayDay !== 0 && (
+                <button
+                  onClick={() => handleMuscleClick(suggestion.name)}
+                  style={{
+                    background: '#6366f1', 
+                    color: 'white',
+                    padding: '12px 24px', 
+                    borderRadius: 8, 
+                    border: 'none',
+                    fontWeight: 'bold', 
+                    fontSize: 15, 
+                    cursor: 'pointer',
+                    transition: 'all 0.3s',
+                    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.3)'
+                  }}
+                  onMouseOver={(e) => {
+                    e.target.style.background = '#4f46e5';
+                    e.target.style.transform = 'scale(1.05)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.target.style.background = '#6366f1';
+                    e.target.style.transform = 'scale(1)';
+                  }}
+                >
+                  View {suggestion.displayName} Exercises →
+                </button>
+              )}
+            </div>
+          {/* Muscle Group Grid */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
@@ -243,6 +308,7 @@ function WorkoutLibrary() {
 ))}
 
           </div>
+          </>
         ) : (
           /* Exercise List View */
           <div>

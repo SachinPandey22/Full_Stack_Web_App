@@ -74,7 +74,7 @@ export const useMealLogging = () => {
   const [toast, setToast] = useState('');
   const [error, setError] = useState(null);
 
-  const [showMealLog, setShowMealLog] = useState(false);
+  const [showMealLog, setShowMealLog] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [showGoalsModal, setShowGoalsModal] = useState(false);
 

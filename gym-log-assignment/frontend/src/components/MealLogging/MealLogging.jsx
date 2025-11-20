@@ -12,10 +12,10 @@ import WaterTracker from './WaterTracker';
 import ProgressSection from './ProgressSection';
 import WeeklyChart from './WeeklyChart';
 import MealCard from './MealCard';
-import DashboardCard from './DashboardCard';
 import GoalsModal from './GoalsModal';
 import AddMealModal from './AddMealModal';
 import ToastNotification from './ToastNotification';
+import ChatPopup from '../ChatSupport/ChatPopup';
 
 import { useMealLogging } from './hooks/useMealLogging';
 
@@ -39,8 +39,6 @@ const MealLogging = () => {
     waterSaving,
     loading,
     toast,
-    showMealLog,
-    setShowMealLog,
     showModal,
     setShowModal,
     goalsSet,
@@ -66,9 +64,6 @@ const MealLogging = () => {
 
   const handleManualGoals = () => {
     setShowGoalsModal(false);
-    if (showMealLog) {
-      setShowMealLog(false);
-    }
     navigate('/nutrition');
   };
 
@@ -116,34 +111,6 @@ const MealLogging = () => {
   };
 
   // handle opening meal tracker
-  const handleOpenMealTracker = () => {
-    if (!goalsSet) setShowGoalsModal(true);
-    else setShowMealLog(true);
-  };
-
-  // IF TRACKER IS CLOSED (dashboard)
-  if (!showMealLog) {
-    return (
-      <>
-        <DashboardCard handleOpenMealTracker={handleOpenMealTracker} />
-        {showGoalsModal && (
-          <GoalsModal
-            goalsSet={goalsSet}
-            goalInput={goalInput}
-            setGoalInput={setGoalInput}
-            loading={loading}
-            onSave={saveGoals}
-            onUseRecommendations={useRecommendations}
-            onManual={handleManualGoals}
-            onClose={() => setShowGoalsModal(false)}
-            allowDismiss={goalsSet}
-            usePurpleBranding
-          />
-        )}
-      </>
-    );
-  }
-
   // FULL TRACKER VIEW
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 z-[9999] overflow-auto">
@@ -161,7 +128,7 @@ const MealLogging = () => {
       <div className="bg-white shadow-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <button
-            onClick={() => setShowMealLog(false)}
+            onClick={() => navigate('/dashboard')}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -314,6 +281,7 @@ const MealLogging = () => {
 
       {/* Toast Notification */}
       {toast && <ToastNotification toast={toast} />}
+      <ChatPopup />
 
       {/* Fade animation */}
       <style>{`

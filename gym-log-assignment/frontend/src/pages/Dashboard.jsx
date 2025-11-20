@@ -6,14 +6,14 @@ import Button from '../components/common/Button/Button';
 import { NotificationsBell, NotificationsDropdown } from '../components/Notifications/Index'
 
 // Importing sub-components for the dashboard
-import MealLogging from '../components/MealLogging/MealLogging';
 import WorkoutActivity from '../components/WorkoutActivity/WorkoutActivity';
 import AIPanel from '../components/AIPanel/AIPanel';
 import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivation';
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
 import NutritionCard from "../components/Nutrition/NutritionCard";
-import { deleteAccount } from '../services/api';
+import DashboardCard from '../components/MealLogging/DashboardCard';
+import { getProfile, deleteAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { getDaysSince } from '../utils/dateUtils';
 import '../styles/profileUpdate.css';
@@ -219,8 +219,20 @@ const handleDeleteAccount = async () => {
             View Daily Overview
           </Button>
         </div>
-        <div style={{ gridArea: 'meals', background: '#fff7e6', borderRadius: '10px', padding: '20px' }}>
-          <MealLogging />
+        <div
+          style={{
+            gridArea: 'meals',
+            background: '#fff7e6',
+            borderRadius: '10px',
+            padding: '20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100%',
+            width: '100%',
+          }}
+        >
+          <DashboardCard handleOpenMealTracker={() => navigate('/meal-logging')} />
         </div>
         <div style={{ gridArea: 'workout', background: '#eeeafc', borderRadius: '20px', padding: '20px' }}>
           <WorkoutActivity />

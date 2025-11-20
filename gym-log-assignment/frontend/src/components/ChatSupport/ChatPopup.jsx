@@ -140,7 +140,7 @@ const ChatPopup = () => {
                   className="link"
                   onClick={() => {
                     setOpen(false);
-                    navigate('/MealLogging');
+                    navigate('/meal-logging');
                   }}
                   style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
                 >

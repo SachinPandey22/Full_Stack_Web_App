@@ -14,7 +14,6 @@ import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
 import NutritionCard from "../components/Nutrition/NutritionCard";
 import DashboardCard from '../components/MealLogging/DashboardCard';
 import { getProfile, deleteAccount } from '../services/api';
-import { deleteAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import { getDaysSince } from '../utils/dateUtils';
 import '../styles/profileUpdate.css';

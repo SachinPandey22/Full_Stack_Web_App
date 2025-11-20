@@ -39,7 +39,7 @@ function App() {
         <Route path="/nutrition" element={<NutritionPage />} />
         <Route path="/my-workouts" element={<MyWorkouts />} />
         <Route path="/workout-stats" element={<WorkoutStats />} />
-        <Route path="/MealLogging" element={<MealLogging />} />
+        <Route path="/meal-logging" element={<MealLogging />} />
         <Route path="/daily-overview" element={<DailyOverviewPage />} />
         {/* add more protected pages later */}
       </Route>

@@ -16,6 +16,7 @@ import GoalsModal from './GoalsModal';
 import AddMealModal from './AddMealModal';
 import ToastNotification from './ToastNotification';
 import ChatPopup from '../ChatSupport/ChatPopup';
+import AppNavBar from '../layout/AppNavBar';
 
 import { useMealLogging } from './hooks/useMealLogging';
 
@@ -113,6 +114,7 @@ const MealLogging = () => {
   // handle opening meal tracker
   // FULL TRACKER VIEW
   return (
+    <>
     <div className="fixed inset-0 bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 z-[9999] overflow-auto">
       {/* Loading Spinner */}
       {loading && (
@@ -125,6 +127,7 @@ const MealLogging = () => {
       )}
 
       {/* Top Navigation Bar */}
+      <AppNavBar/>
       <div className="bg-white shadow-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <button
@@ -300,6 +303,7 @@ const MealLogging = () => {
         }
       `}</style>
     </div>
+    </>
   );
 };
 

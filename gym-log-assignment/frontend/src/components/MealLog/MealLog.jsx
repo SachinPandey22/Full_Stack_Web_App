@@ -124,7 +124,7 @@ export default function MealLog() {
         height: '100%',
         width: '100%',
         borderRadius: 12,
-        background: '#b4ecfeff', // matches your meal-log card background
+        background: '#daf5feff', // matches your meal-log card background
         padding: 6,
         boxSizing: 'border-box',
         display: 'flex',

@@ -1,7 +1,8 @@
 // src/components/WorkoutActivity/WorkoutActivity.jsx
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import Button from '../common/Button/Button';
 
 
 const DarkPrimaryBlue = "#0337c8ff";
@@ -33,8 +34,18 @@ const previewMuscles = [
 function WorkoutActivity() {
   const navigate = useNavigate();
 
-  const openWorkoutLibrary = () => {
-    navigate('/workout-library');
+    const goToWorkoutLibrary = () => {
+      navigate('/workout-library');
+    };
+
+
+  const openWorkoutLibrary = (muscleId) => {
+    if (muscleId) {
+      navigate(`/workout-library?muscle=${encodeURIComponent(muscleId)}`);
+    } else {
+      navigate('/workout-library');
+    }
+
   };
 
   const pillButtonStyle = {
@@ -78,7 +89,7 @@ function WorkoutActivity() {
         </h3>
 
         <button
-          onClick={openWorkoutLibrary}
+          onClick={goToWorkoutLibrary}
           style={pillButtonStyle}
         >
           View all
@@ -129,7 +140,7 @@ function WorkoutActivity() {
               }}
             >
               <button
-                onClick={openWorkoutLibrary}
+                onClick={() => openWorkoutLibrary(muscle.id)}
                 style={pillButtonStyle}
               >
                 {muscle.name}

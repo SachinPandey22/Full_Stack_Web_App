@@ -2,7 +2,7 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 
-const LightPrimaryBlue = "#007bff";
+const green = "#0eb54bff";
 
 // --- SVG ICONS -------------------------------------------------
 
@@ -225,7 +225,7 @@ export default function QuickActions() {
                 width: 48,
                 height: 48,
                 borderRadius: "999px",
-                background: LightPrimaryBlue,
+                background: green,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -240,7 +240,7 @@ export default function QuickActions() {
               style={{
                 fontSize: 16,
                 fontWeight: 700,
-                color: LightPrimaryBlue,
+                color: green,
                 marginBottom: 2,
               }}
             >

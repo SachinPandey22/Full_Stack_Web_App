@@ -55,7 +55,9 @@ export default function Dashboard() {
     toast.success('Signed out');
     window.location.href = '/login';
   };
-  
+
+  const cardColor = '#daf5feff';
+
 const handleDeleteAccount = async () => {
   if (deletingAccount) return;
 
@@ -158,7 +160,7 @@ const handleDeleteAccount = async () => {
         <div
           style={{
             gridArea: 'overview',
-            background: '#b4ecfeff',
+            background: cardColor,
             borderRadius: '10px',
             padding: '20px',
             display: 'flex',
@@ -192,29 +194,29 @@ const handleDeleteAccount = async () => {
         >
           <DashboardCard handleOpenMealTracker={() => navigate('/meal-logging')} />
         </div>*/}
-        <div style={{ gridArea: 'workout', background: '#eeeafc', borderRadius: '20px', padding: '20px' }}>
+        <div style={{ gridArea: 'workout', background: cardColor, borderRadius: '20px', padding: '20px' }}>
           <WorkoutActivity />
         </div>
-        <div style={{ gridArea: 'nuttarget', background: '#d0f5ea', borderRadius: '10px', padding: '20px' }}>
+        <div style={{ gridArea: 'nuttarget', background: cardColor, borderRadius: '10px', padding: '20px' }}>
           <NutritionTarget
             bmr={profile?.bmr}
             tdee={profile?.tdee}
             targetCalories={profile?.target_calories}
           />
         </div>
-        <div style={{ gridArea: 'macros', background: '#d0f5ea', borderRadius: '10px', padding: '20px', }}>
+        <div style={{ gridArea: 'macros', background: cardColor, borderRadius: '10px', padding: '20px', }}>
           <Macros />
         </div>
-        <div style={{ gridArea: 'progress', background: '#eeeafc', borderRadius: '10px', padding: '20px' }}>
+        <div style={{ gridArea: 'progress', background: cardColor, borderRadius: '10px', padding: '20px' }}>
           <ProgressMotivation />
         </div>
-        <div style={{ gridArea: 'meallog', background: '#b4ecfeff', borderRadius: '10px', padding: '20px' }}>
+        <div style={{ gridArea: 'meallog', background: cardColor, borderRadius: '10px', padding: '20px' }}>
           <MealLog />
         </div>
-        <div style={{ gridArea: 'actions', background: '#e8e6ff', borderRadius: '10px', padding: '20px' }}>
+        <div style={{ gridArea: 'actions', background: cardColor, borderRadius: '10px', padding: '20px' }}>
           <QuickActions />
         </div>
-        <div style={{ gridArea: 'nutritions', background: '#eef5ff', borderRadius: '20px', padding: '20px' }}>
+        <div style={{ gridArea: 'nutritions', background: cardColor, borderRadius: '20px', padding: '20px' }}>
           <NutritionCard /> 
         </div>        
       </div>

@@ -1,10 +1,11 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AppNavBar from '../layout/AppNavBar';
 
 function WorkoutLibrary() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedMuscle, setSelectedMuscle] = useState(null);
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -91,6 +92,15 @@ const suggestion = dayToMuscle[todayDay];
     setSelectedMuscle(muscleId);
     fetchExercises(muscleId);
   };
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const muscleFromQuery = params.get('muscle');
+
+    if (muscleFromQuery) {
+      handleMuscleClick(muscleFromQuery);
+    }
+  }, [location.search]);
 
   const handleBack = () => {
     setSelectedMuscle(null);
@@ -293,7 +303,7 @@ const suggestion = dayToMuscle[todayDay];
               ← Back to Muscle Groups
             </button>
 
-            <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '24px', textTransform: 'capitalize' }}>
+            <h2 style={{ fontSize: '32px', fontWeight: 'bold', marginBottom: '24px', textTransform: 'capitalize', color: 'black' }}>
               {selectedMuscle} Exercises
             </h2>
 

@@ -2,11 +2,14 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { getNutritionTargets } from "../../services/api";
+import { useNavigate } from 'react-router-dom';
+
 
 export default function NutritionTarget() {
   const { getAccessToken } = useAuth();
   const [targets, setTargets] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();  
 
   useEffect(() => {
     let mounted = true;
@@ -80,6 +83,25 @@ export default function NutritionTarget() {
         >
           Nutrition Targets
         </h3>
+
+        <button
+          type="button"
+          onClick={() => navigate('/nutrition')}
+          style={{
+            padding: "4px 10px",
+            borderRadius: 999,
+            border: "none",
+            background: '#007bff',
+            color: "#ffffff",
+            fontSize: 11,
+            fontWeight: 600,
+            cursor: "pointer",
+            boxShadow: "0 3px 8px rgba(37,99,235,0.35)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          View details
+        </button>
       </div>
 
       {/* thin divider */}

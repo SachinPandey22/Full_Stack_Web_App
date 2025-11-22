@@ -131,7 +131,7 @@ const suggestion = dayToMuscle[todayDay];
     <div
       style={{
         minHeight: '100vh',
-        background: 'url("/workout_background.png")',
+        background: 'linear-gradient(135deg, #ffffffff 0%, #e6e6e6ff 100%)', 
         color: 'white',
       }}
     >

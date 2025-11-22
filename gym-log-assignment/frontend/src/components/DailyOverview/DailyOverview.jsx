@@ -220,9 +220,9 @@ function DailyOverview() {
           }}
         >
           <div>
-            <h3 style={{ margin: 0, fontSize: '22px', color: '#0f172a' }}>
+            {/*<h3 style={{ margin: 0, fontSize: '22px', color: '#0f172a' }}>
               Today&apos;s Summary
-            </h3>
+            </h3>*/}
             <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>
               {dateLabel}
             </p>

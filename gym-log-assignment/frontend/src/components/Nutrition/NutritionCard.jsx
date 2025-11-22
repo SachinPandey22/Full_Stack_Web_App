@@ -1,63 +1,146 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import { getNutritionSnapshots } from "../../services/api";
 
-function NutritionCard() {
+export default function NutritionCard() {
+  const { getAccessToken } = useAuth();
   const navigate = useNavigate();
 
-  const openNutrition = () => {
-    navigate('/nutrition');
-  };
+  const [snapshots, setSnapshots] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch the same snapshot data used on the Nutrition page
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      try {
+        const token = getAccessToken();
+        if (!token) {
+          setLoading(false);
+          return;
+        }
+
+        const data = await getNutritionSnapshots(token);
+        if (mounted) {
+          setSnapshots(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error("Failed to load nutrition snapshots for dashboard:", err);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [getAccessToken]);
+
+  // Oldest → newest, short date for x-axis
+  const chronological = (snapshots || [])
+    .slice(0, 7)               // show last ~7 points
+    .reverse()
+    .map((d) => ({
+      ...d,
+      shortDate: (d.date || "").slice(5), // "MM-DD"
+    }));
+
+  const hasData = chronological.some((d) => d.target_calories);
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
-      alignItems: 'center', 
-      justifyContent: 'center', 
-      height: '100%',
-      textAlign: 'center'
-    }}>
-      <div style={{
-        width: '64px',
-        height: '64px',
-        background: '#16a34a', // green
-        borderRadius: '50%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '16px'
-      }}>
-        <span style={{ fontSize: '32px' }} role="img" aria-label="apple">🍎</span>
-      </div>
-      <h3 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
-        Nutrition
-      </h3>
-      <p style={{ color: '#666', marginBottom: '24px', padding: '0 16px' }}>
-        See your daily calorie target and macro split based on your profile
-      </p>
-      <button
-        onClick={openNutrition}
+    <div
+      onClick={() => navigate("/nutrition")}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",           // fill the dashboard card only
+        cursor: "pointer",
+      }}
+    >
+      {/* Header */}
+      <div
         style={{
-          background: '#16a34a',
-          color: 'white',
-          fontWeight: 'bold',
-          padding: '12px 32px',
-          borderRadius: '8px',
-          border: 'none',
-          cursor: 'pointer',
-          fontSize: '16px',
-          transition: 'all 0.3s',
-          boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: 8,
         }}
-        onMouseOver={(e) => e.currentTarget.style.background = '#15803d'}
-        onMouseOut={(e) => e.currentTarget.style.background = '#16a34a'}
-        aria-label="Open Nutrition"
-        title="Open Nutrition"
       >
-        Open Nutrition
-      </button>
+        <h3
+          style={{
+            margin: 0,
+            fontSize: 18,
+            fontWeight: 700,
+            color: "#0f172a",
+          }}
+        >
+          Target Calories
+        </h3>
+      </div>
+
+      {/* Chart or states */}
+      {loading ? (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 14,
+            color: "#64748b",
+          }}
+        >
+          Loading…
+        </div>
+      ) : !hasData ? (
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 14,
+            color: "#64748b",
+            textAlign: "center",
+          }}
+        >
+          No target history yet. Save a nutrition snapshot to see this chart.
+        </div>
+      ) : (
+        <div style={{ flex: 1, minHeight: 220 }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={chronological}
+              margin={{ top: 8, right: 16, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="shortDate" />
+              <YAxis />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="target_calories"
+                name="kcal"
+                stroke="#6366f1"
+                strokeWidth={2}
+                dot={{ r: 2 }}
+                activeDot={{ r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </div>
   );
 }
-
-export default NutritionCard;

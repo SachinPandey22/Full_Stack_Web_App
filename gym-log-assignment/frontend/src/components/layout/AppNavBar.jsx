@@ -18,6 +18,7 @@ export default function AppNavBar({ rightContent }) {
     { label: "My Workouts", to: "/my-workouts" },
     { label: "Nutrition", to: "/nutrition" },
     { label: "Workout Library", to: "/workout-library" },
+    {label: "Meal Logging", to: "/meal-logging"},
     { label: "Profile", to: "/profile" },
     // add more routes here if you want
     ];

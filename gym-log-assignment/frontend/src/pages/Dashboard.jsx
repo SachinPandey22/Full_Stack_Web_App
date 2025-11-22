@@ -8,17 +8,21 @@ import {ProfileIcon, ProfileDropdown } from '../components/Profile/Index'
 
 // Importing sub-components for the dashboard
 import WorkoutActivity from '../components/WorkoutActivity/WorkoutActivity';
-import AIPanel from '../components/AIPanel/AIPanel';
+import NutritionTarget from '../components/NutritionTarget/NutritionTarget';
 import ProgressMotivation from '../components/ProgressMotivation/ProgressMotivation';
 import QuickActions from '../components/QuickActions/QuickActions';
 import ConnectDevicePanel from "../components/Watch-to-app/ConnectDevicePanel";
 import NutritionCard from "../components/Nutrition/NutritionCard";
+import DailyOverview from '../components/DailyOverview/DailyOverview';
+import Macros from '../components/Macros/Macros';
 import DashboardCard from '../components/MealLogging/DashboardCard';
 import { getProfile, deleteAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
 import AppNavBar from '../components/layout/AppNavBar';
 import { getDaysSince } from '../utils/dateUtils';
 import '../styles/profileUpdate.css';
+import NutritionTrends from '../components/Nutrition/NutritionTrends';
+import MealLog from '../components/MealLog/MealLog';
 // for authenticated users
 export default function Dashboard() {
   const { user, clearSession, getAccessToken, profile, isProfileLoading, profileUpdatedAt } = useAuth();
@@ -135,12 +139,18 @@ const handleDeleteAccount = async () => {
       <div style={{
         display: 'grid',
         gridTemplateAreas: `
-          "overview overview actions"
-          "meals workout aipan"
-          "progress nutritions connect"
+          "overview overview actions actions "
+          "overview overview nuttarget macros"
+          "workout workout meallog progress"
+          "nutritions nutritions meallog progress"
         `,
-        gridTemplateColumns: '1fr 1fr 1fr',
-        gap: '5px',
+        gridTemplateColumns: '2fr 1.5fr 1fr 1.5fr',
+        gridTemplateRows: `
+          minmax(50px, auto) 
+          minmax(350px, 50px) 
+          minmax(300px, auto) 
+          minmax(220px, 1fr)`,
+        gap: '10px',
         padding: '10px',
         background: '#f7f9fa',
         minHeight: '100vh'
@@ -148,7 +158,7 @@ const handleDeleteAccount = async () => {
         <div
           style={{
             gridArea: 'overview',
-            background: '#e3f6fc',
+            background: '#b4ecfeff',
             borderRadius: '10px',
             padding: '20px',
             display: 'flex',
@@ -159,28 +169,15 @@ const handleDeleteAccount = async () => {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
-              <h3 style={{ margin: '6px 0 0', fontSize: '26px', color: '#0f172a' }}>See your daily overview</h3>
+              <h3 style={{ margin: '6px 0 0', fontFamily:'sans-serif', fontSize: '26px', color: '#0f172a', fontWeight: 900}}>Daily overview</h3>
             </div>
             <span style={{ fontSize: '40px' }} role="img" aria-label="overview icon">📊</span>
           </div>
-          <p style={{ color: '#475569', marginTop: '12px', lineHeight: 1.5 }}>
-            Dive into a dedicated page to view today&apos;s calories, workouts, and macro targets without the rest of the dashboard clutter.
-          </p>
-          <Button
-            onClick={() => navigate('/daily-overview')}
-            style={{
-              alignSelf: 'flex-start',
-              marginTop: 'auto',
-              backgroundColor: '#0ea5e9',
-              color: '#ffffff',
-              padding: '10px 20px',
-              borderRadius: '999px'
-            }}
-          >
-            View Daily Overview
-          </Button>
+          <div style={{ flex: 1, minHeight: 0 }}>
+        <DailyOverview />
         </div>
-        <div
+        </div>
+       {/* <div
           style={{
             gridArea: 'meals',
             background: '#fff7e6',
@@ -194,21 +191,28 @@ const handleDeleteAccount = async () => {
           }}
         >
           <DashboardCard handleOpenMealTracker={() => navigate('/meal-logging')} />
-        </div>
+        </div>*/}
         <div style={{ gridArea: 'workout', background: '#eeeafc', borderRadius: '20px', padding: '20px' }}>
           <WorkoutActivity />
         </div>
-        <div style={{ gridArea: 'aipan', background: '#d0f5ea', borderRadius: '10px', padding: '20px' }}>
-          <AIPanel />
+        <div style={{ gridArea: 'nuttarget', background: '#d0f5ea', borderRadius: '10px', padding: '20px' }}>
+          <NutritionTarget
+            bmr={profile?.bmr}
+            tdee={profile?.tdee}
+            targetCalories={profile?.target_calories}
+          />
         </div>
-        <div style={{ gridArea: 'progress', background: '#ffe3e3', borderRadius: '10px', padding: '20px' }}>
+        <div style={{ gridArea: 'macros', background: '#d0f5ea', borderRadius: '10px', padding: '20px', }}>
+          <Macros />
+        </div>
+        <div style={{ gridArea: 'progress', background: '#eeeafc', borderRadius: '10px', padding: '20px' }}>
           <ProgressMotivation />
+        </div>
+        <div style={{ gridArea: 'meallog', background: '#b4ecfeff', borderRadius: '10px', padding: '20px' }}>
+          <MealLog />
         </div>
         <div style={{ gridArea: 'actions', background: '#e8e6ff', borderRadius: '10px', padding: '20px' }}>
           <QuickActions />
-        </div>
-        <div style={{ gridArea: 'connect', background: '#eef5ff', borderRadius: '10px', padding: '20px' }}>
-          <ConnectDevicePanel /> 
         </div>
         <div style={{ gridArea: 'nutritions', background: '#eef5ff', borderRadius: '20px', padding: '20px' }}>
           <NutritionCard /> 

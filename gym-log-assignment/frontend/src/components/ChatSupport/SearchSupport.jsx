@@ -7,6 +7,21 @@ import { useNavigate } from "react-router-dom";
 import { getDaysSince } from "../../utils/dateUtils";
 import "../../styles/profileUpdate.css";
 
+const APP_OVERVIEW = `Product: A full-stack AI fitness tracker (“Shaktiman”) built with a Django REST backend and React frontend.
+
+Core flows:
+- Users authenticate, create/update profiles (name, goals, activity level) via /api/profile/; data is cached in AuthContext for instant UI updates.
+- The dashboard highlights meals, workouts, nutrition targets, notifications, and profile freshness indicators (sync timestamps, “Needs Update” badge when 14+ days old).
+- The floating ChatPopup (“Ram”) reuses the same profile data to tailor workout and nutrition suggestions. When the profile changes, chat shows a “suggestions updated” toast and warns if data is stale.
+
+Key APIs: /api/profile/, /api/nutrition/targets/, /api/chat_with_ai/, /api/my-workouts/, /api/water/, plus device/nutrition export endpoints.
+
+UX cues: inline spinners during profile sync, timestamp + warning banners, “Update Now” shortcuts back to /profile.
+
+Tech stack: React (react-router, react-hook-form, zod), axios with JWT bearer tokens, Django backend.
+
+Testing focus: ensure all API calls include JWT headers, profile updates propagate instantly, stale-profile reminders trigger once, and chat suggestions mirror the latest profile data.`;
+
 const SearchSupport = () => {
   const [messages, setMessages] = useState([
     {
@@ -118,7 +133,12 @@ const SearchSupport = () => {
         }
       }
 
-      const res = await sendChatMessage(trimmed, profilePayload || {}, token);
+      const res = await sendChatMessage(
+        trimmed,
+        profilePayload || {},
+        token,
+        APP_OVERVIEW
+      );
       setMessages((prev) => [...prev, { sender: "bot", text: res.reply }]);
     } catch (err) {
       const status = err?.response?.status;

@@ -91,7 +91,7 @@ export async function getUserWorkouts() {
   const res = await apiClient.get('/api/my-workouts/');
   return res.data; // [{id, exercise, added_date, sets, reps, notes}, ...]
 }
-export const sendChatMessage = async (message, userInfo = {}, token = null) => {
+export const sendChatMessage = async (message, userInfo = {}, token = null, appContext) => {
   const config = {};
   if (token) {
     config.headers = {
@@ -99,9 +99,18 @@ export const sendChatMessage = async (message, userInfo = {}, token = null) => {
     };
   }
 
+  const payload = {
+    message,
+    user: userInfo,
+  };
+
+  if (appContext) {
+    payload.appContext = appContext;
+  }
+
   const res = await apiClient.post(
     "/api/chat_with_ai/",
-    { message, user: userInfo },
+    payload,
     config,
   );
 

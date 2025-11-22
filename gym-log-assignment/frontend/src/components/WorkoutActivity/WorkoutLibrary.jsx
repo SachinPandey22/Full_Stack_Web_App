@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AppNavBar from '../layout/AppNavBar';
 
 function WorkoutLibrary() {
   const navigate = useNavigate();
@@ -101,76 +102,39 @@ const suggestion = dayToMuscle[todayDay];
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)',
-      color: 'white'
-    }}>
-      {/* Header */}
-      <div style={{
-        background: 'rgba(0,0,0,0.5)',
-        borderBottom: '1px solid #374151',
-        padding: '24px'
-      }}>
-        <div style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
-        }}>
-          <div>
-            <h1 style={{
-              fontSize: '32px',
-              fontWeight: 'bold',
-              background: 'linear-gradient(to right, #60a5fa, #a78bfa)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              marginBottom: '8px'
-            }}>
-              SHAKTIMAN - Workout Library
-            </h1>
-            <p style={{ color: '#9ca3af' }}>Select a muscle group to view exercises</p>
-          </div>
-          <div style={{ display: 'flex', gap: '12px' }}>
-  <button
-    onClick={() => navigate('/my-workouts')}
-    style={{
-      background: '#3b82f6',
-      color: 'white',
-      padding: '10px 20px',
-      borderRadius: '8px',
-      border: 'none',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      transition: 'background 0.3s'
-    }}
-    onMouseOver={(e) => e.target.style.background = '#2563eb'}
-    onMouseOut={(e) => e.target.style.background = '#3b82f6'}
-  >
-    📋 My Workouts
-  </button>
-  
-  <button
-    onClick={goToDashboard}
-    style={{
-      background: '#9333ea',
-      color: 'white',
-      padding: '10px 20px',
-      borderRadius: '8px',
-      border: 'none',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      transition: 'background 0.3s'
-    }}
-    onMouseOver={(e) => e.target.style.background = '#7e22ce'}
-    onMouseOut={(e) => e.target.style.background = '#9333ea'}
-  >
-    Back to Dashboard
-  </button>
-</div>
-        </div>
-      </div>
+    <>
+    {/* Global nav bar at the top */}
+    <AppNavBar
+      rightContent={
+        <button
+          onClick={() => navigate('/my-workouts')}
+          style={{
+            background: '#3b82f6',
+            color: 'white',
+            padding: '10px 20px',
+            borderRadius: '8px',
+            border: 'none',
+            cursor: 'pointer',
+            fontWeight: 'bold',
+            transition: 'background 0.3s'
+          }}
+          onMouseOver={(e) => e.target.style.background = '#2563eb'}
+          onMouseOut={(e) => e.target.style.background = '#3b82f6'}
+        >
+          📋 My Workouts
+        </button>
+
+      }
+    />
+
+    {/* Workout Library page content */}
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'url("/workout_background.png")',
+        color: 'white',
+      }}
+    >
 
       {/* Main Content */}
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px' }}>
@@ -241,7 +205,7 @@ const suggestion = dayToMuscle[todayDay];
     key={muscle.id}
     onClick={() => handleMuscleClick(muscle.id)}
     style={{
-      background: `linear-gradient(135deg, ${muscle.color}dd, ${muscle.color}aa)`,
+      background: `linear-gradient(135deg, ${muscle.color}, ${muscle.color})`,
       border: 'none',
       borderRadius: '16px',
       padding: '0',
@@ -423,6 +387,7 @@ const suggestion = dayToMuscle[todayDay];
         )}
       </div>
     </div>
+    </>
   );
 }
 

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import Button from '../components/common/Button/Button';
 import { NotificationsBell, NotificationsDropdown } from '../components/Notifications/Index'
+import {ProfileIcon, ProfileDropdown } from '../components/Profile/Index'
 
 // Importing sub-components for the dashboard
 import WorkoutActivity from '../components/WorkoutActivity/WorkoutActivity';
@@ -15,6 +16,7 @@ import NutritionCard from "../components/Nutrition/NutritionCard";
 import DashboardCard from '../components/MealLogging/DashboardCard';
 import { getProfile, deleteAccount } from '../services/api';
 import { useNavigate } from 'react-router-dom';
+import AppNavBar from '../components/layout/AppNavBar';
 import { getDaysSince } from '../utils/dateUtils';
 import '../styles/profileUpdate.css';
 // for authenticated users
@@ -25,6 +27,8 @@ export default function Dashboard() {
   const anchorRef = useRef(null);
   const reminderShownRef = useRef(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
+  const notifAnchorRef = useRef(null);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const daysSinceUpdate = getDaysSince(profileUpdatedAt);
   const needsProfileUpdate = typeof daysSinceUpdate === 'number' && daysSinceUpdate >= 14;
@@ -89,86 +93,43 @@ const handleDeleteAccount = async () => {
   }
 };
   return (
-    <div style={{ padding: '20px' }}>
-      {/* Header with user info + logout */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div>
-            <h2 style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: 4 }}>
-              Welcome {profile?.name || user?.email || 'athlete'}!
-              {isProfileLoading && (
-                <span
-                  className="spinner"
-                  style={{ width: 14, height: 14 }}
-                  aria-label="Syncing profile"
-                />
-              )}
-              {needsProfileUpdate && (
-                <span className="needs-update-badge">
-                  Needs Update
-                  <button
-                    type="button"
-                    className="update-btn"
-                    onClick={() => navigate('/profile')}
-                  >
-                    Update Now
-                  </button>
-                </span>
-              )}
-            </h2>
-            {profileUpdatedAt && (
-              <p className="text-xs text-gray-500">
-                Profile synced at {profileUpdatedAt.toLocaleTimeString()}
-              </p>
-            )}
+    <>
+      <AppNavBar
+        rightContent={
+          <div style={{ display: 'flex', alignItems: 'center', gap: 56 }}>
+
+            {/* Anchor: bell + controlled dropdown */}
+            <div ref={anchorRef} style={{ position: 'relative' }}>
+              <NotificationsBell onClick={() => setNotifOpen(v => !v)} hasUnread={false} />
+              <NotificationsDropdown
+              isOpenExternal={notifOpen}
+                onOpenChange={setNotifOpen}
+                anchorRef={anchorRef}   
+              />
+            </div>
+
+            {/* Profile Button */}
+                <div ref={notifAnchorRef} style={{ position: 'relative' }}>
+      <ProfileIcon onClick={() => setProfileMenuOpen(v => !v)} fullName={profile?.name} />
+
+      <ProfileDropdown
+        isOpen={profileMenuOpen}
+        onClose={() => setProfileMenuOpen(false)}
+        onProfile={() => navigate('/profile')}
+        onLogout={onLogout}                 // optional
+        onDeleteAccount={handleDeleteAccount} // optional
+      />
+    </div>
           </div>
-          <button
-            onClick={() => navigate('/profile')}
-            style={{
-              background: '#ffffff',
-              border: '2px solid #007bff',
-              borderRadius: '50%',
-              width: '32px',
-              height: '32px',
-              cursor: 'pointer',
-              color: '#007bff',
-              fontSize: '16px',
-              transition: 'all 0.3s ease',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}
-            title="Edit Profile"
-          >
-            👤
-          </button>
-        </div>
-        {profile?.goal && (
-          <p style={{ marginLeft: '290px', color: '#555' }}>
-            Goal: {profile.goal}
-          </p>
-        )}
-
-        {/* Anchor: bell + controlled dropdown */}
-          <div ref={anchorRef} style={{ position: 'relative' }}>
-  <NotificationsBell onClick={() => setNotifOpen(v => !v)} hasUnread={false} />
-  <NotificationsDropdown
-    isOpenExternal={notifOpen}
-    onOpenChange={setNotifOpen}
-    logoSrc="/notification_image.jpg"
-    anchorRef={anchorRef}        // NEW
-  />
-</div>
+          }
+        />
 
 
 
-        <Button onClick={onLogout}>Logout</Button>
-        <Button
-          onClick={handleDeleteAccount}
-          style={{ marginLeft: '8px', backgroundColor: '#dc2626' }}
-          disabled={deletingAccount}
-        >
-          {deletingAccount ? 'Deleting…' : 'Delete Account'}
-        </Button>
-      </div>
+    
+
+
+      
 
       {/* Fitness Dashboard Layout */}
       <div style={{
@@ -253,6 +214,6 @@ const handleDeleteAccount = async () => {
           <NutritionCard /> 
         </div>        
       </div>
-    </div>
+    </>
   );
 }

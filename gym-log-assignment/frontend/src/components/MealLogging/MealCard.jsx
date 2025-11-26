@@ -57,7 +57,7 @@ const MealCard = ({ meal, deleteMeal, mealTypeConfig, onEdit }) => {
         }`}
       >
         <div className="flex items-start gap-4">
-          <div className="w-[100px] h-[100px] rounded-xl bg-white border border-gray-200 flex items-center justify-center overflow-hidden shrink-0">
+          <div className="w-24 h-24 rounded-lg border border-gray-200 bg-white flex items-center justify-center overflow-hidden shrink-0">
             {hasImage ? (
               <img
                 src={meal.image}

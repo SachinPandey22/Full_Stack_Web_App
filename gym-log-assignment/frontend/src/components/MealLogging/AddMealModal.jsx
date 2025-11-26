@@ -119,6 +119,16 @@ const AddMealModal = ({
     return fixed.endsWith('.0') ? fixed.slice(0, -2) : fixed;
   };
 
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0] || null;
+    const preview = file ? URL.createObjectURL(file) : '';
+    setFormValues({
+      ...formValues,
+      imageFile: file,
+      imagePreview: preview,
+    });
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-8 relative animate-fade-in max-h-[90vh] overflow-y-auto">
@@ -200,6 +210,42 @@ const AddMealModal = ({
               className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
               placeholder="e.g. Greek Yogurt Bowl"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Meal Photo</label>
+            <div className="flex items-center gap-4">
+              <div className="w-28 h-28 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden bg-gray-50">
+                {formValues.imagePreview ? (
+                  <img
+                    src={formValues.imagePreview}
+                    alt="Meal preview"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs text-gray-500 text-center px-2">No image selected</span>
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                />
+                {formValues.imagePreview && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormValues({ ...formValues, imageFile: null, imagePreview: '' })
+                    }
+                    className="text-xs text-red-500 hover:underline self-start"
+                  >
+                    Remove image
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
           <div>

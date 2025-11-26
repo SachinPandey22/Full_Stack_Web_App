@@ -5,6 +5,15 @@ import { apiClient } from './api';
  * Each helper returns the raw JSON payload from the Django REST backend.
  */
 
+const buildMealFormData = (payload = {}) => {
+  const formData = new FormData();
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    formData.append(key, value);
+  });
+  return formData;
+};
+
 // ============= MEALS =============
 
 export const fetchMeals = async (date) => {
@@ -28,12 +37,16 @@ export const fetchWeeklySummary = async (date) => {
 };
 
 export const createMeal = async (payload) => {
-  const response = await apiClient.post('/api/meals/', payload);
+  const response = await apiClient.post('/api/meals/', buildMealFormData(payload), {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 };
 
 export const updateMeal = async (mealId, payload) => {
-  const response = await apiClient.put(`/api/meals/${mealId}/`, payload);
+  const response = await apiClient.put(`/api/meals/${mealId}/`, buildMealFormData(payload), {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
   return response.data;
 };
 

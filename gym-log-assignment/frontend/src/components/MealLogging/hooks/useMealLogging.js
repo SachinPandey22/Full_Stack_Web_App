@@ -23,6 +23,8 @@ const DEFAULT_MEAL_FORM = {
   carbs: '',
   fat: '',
   notes: '',
+  imageFile: null,
+  imagePreview: '',
 };
 const DEFAULT_WATER = {
   id: null,
@@ -43,6 +45,7 @@ const mapMeal = (meal, dateLabel) => ({
   time: meal.time,
   date: dateLabel,
   notes: meal.notes || '',
+  image: meal.image || '',
 });
 
 const toInt = (value) => {
@@ -212,7 +215,7 @@ export const useMealLogging = () => {
   const saveMeal = useCallback(async () => {
     const dateStr = formatDateForApi(currentDate);
     const now = new Date();
-    const payload = {
+    const basePayload = {
       meal_type: formMeal.type,
       name: formMeal.name.trim(),
       calories: toInt(formMeal.calories),
@@ -223,6 +226,9 @@ export const useMealLogging = () => {
       date: dateStr,
       time: editingMeal?.time || format(now, 'HH:mm'),
     };
+    const payload = formMeal.imageFile
+      ? { ...basePayload, image: formMeal.imageFile }
+      : basePayload;
 
     if (!payload.name) {
       showToast('Please provide a meal name');
@@ -396,6 +402,8 @@ export const useMealLogging = () => {
       carbs: String(meal.carbs),
       fat: String(meal.fat),
       notes: meal.notes || '',
+      imageFile: null,
+      imagePreview: meal.image || '',
     });
     setShowModal(true);
   }, []);

@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
+from django.conf.urls.static import static
 from mobile import views as m
 from support import urls as support_urls
 from support.views import chat_with_ai
@@ -67,3 +69,6 @@ urlpatterns = [
     path("api/", include("users.urls")),
     path("api/", include("mobile.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

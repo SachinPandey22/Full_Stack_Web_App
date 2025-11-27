@@ -26,8 +26,11 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test:report": "react-scripts test --watchAll=false --runInBand --reporters=default --reporters=jest-html-reporters",
     "eject": "react-scripts eject"
+
+
+    
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +52,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^10.4.21",
+    "jest-html-reporters": "^3.1.7",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.18"
   }

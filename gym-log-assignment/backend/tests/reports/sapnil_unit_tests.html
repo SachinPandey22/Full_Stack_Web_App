@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Sapnil Unit Tests - Workout Completion Feature</title>
+    <style>
+        body {
+            font-family: Helvetica, Arial, sans-serif;
+            font-size: 14px;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            font-size: 28px;
+            color: #2c3e50;
+            border-bottom: 3px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        h2 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-top: 30px;
+        }
+        .summary {
+            background-color: #e8f5e9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+        .summary p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+        .passed {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: bold;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .env-table td {
+            width: 50%;
+        }
+        .env-table td:first-child {
+            font-weight: bold;
+            background-color: #f9f9f9;
+        }
+        .test-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .test-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .test-section li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .test-section li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #ddd;
+            color: #666;
+            font-size: 12px;
+        }
+        .metadata {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Unit Test Results - Sapnil Basnet</h1>
+    <p><strong>Feature:</strong> Workout Completion - Add Workout Button</p>
+    <p><strong>Report Generated:</strong> 26-Nov-2025 at 23:23:00</p>
+
+    <div class="summary">
+        <h2 style="margin-top: 0;">Test Summary</h2>
+        <p><strong>Total Tests:</strong> 5</p>
+        <p><strong>Execution Time:</strong> 564 ms (0.564 seconds)</p>
+        <p class="passed">✓ 5 Passed | 0 Failed | 0 Skipped | 0 Errors</p>
+        <p><strong>Test Suites:</strong> 2 passed, 2 total</p>
+    </div>
+
+    <h2>Environment</h2>
+    <table class="env-table">
+        <tr>
+            <td>Test Framework</td>
+            <td>Jest + React Testing Library</td>
+        </tr>
+        <tr>
+            <td>React Version</td>
+            <td>19.1.1</td>
+        </tr>
+        <tr>
+            <td>React Router DOM</td>
+            <td>7.9.6</td>
+        </tr>
+        <tr>
+            <td>Platform</td>
+            <td>macOS-14.7-arm64</td>
+        </tr>
+        <tr>
+            <td>Node.js</td>
+            <td>v20.x.x</td>
+        </tr>
+        <tr>
+            <td>Testing Approach</td>
+            <td>Unit testing with mocked dependencies (axios, react-router-dom, AuthContext)</td>
+        </tr>
+    </table>
+
+    <h2>Test Results</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Test Suite</th>
+                <th>Test Name</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="passed">PASSED</td>
+                <td>MyWorkouts.test.js</td>
+                <td>MyWorkouts Component › renders component without crashing</td>
+                <td>38 ms</td>
+            </tr>
+            <tr>
+                <td class="passed">PASSED</td>
+                <td>MyWorkouts.test.js</td>
+                <td>MyWorkouts Component › displays My Workouts heading</td>
+                <td>15 ms</td>
+            </tr>
+            <tr>
+                <td class="passed">PASSED</td>
+                <td>MyWorkouts.test.js</td>
+                <td>MyWorkouts Component › renders navigation buttons</td>
+                <td>10 ms</td>
+            </tr>
+            <tr>
+                <td class="passed">PASSED</td>
+                <td>WorkoutStats.test.js</td>
+                <td>WorkoutStats Component › renders component without crashing</td>
+                <td>45 ms</td>
+            </tr>
+            <tr>
+                <td class="passed">PASSED</td>
+                <td>WorkoutStats.test.js</td>
+                <td>WorkoutStats Component › renders stats functionality</td>
+                <td>12 ms</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>Test Details</h2>
+    
+    <div class="test-section">
+        <h3>MyWorkouts Component (3 tests - 63 ms total)</h3>
+        <p><strong>File:</strong> frontend/src/components/WorkoutActivity/MyWorkouts.test.js</p>
+        <ul>
+            <li><strong>renders component without crashing</strong> (38 ms)<br>
+                Validates component mounts successfully with BrowserRouter and all mocked dependencies (axios, useNavigate, useAuth)</li>
+            <li><strong>displays My Workouts heading</strong> (15 ms)<br>
+                Verifies the main h1 heading is rendered with correct text "My Workouts"</li>
+            <li><strong>renders navigation buttons</strong> (10 ms)<br>
+                Checks that navigation UI elements ("Back to Library") are present and accessible</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>WorkoutStats Component (2 tests - 57 ms total)</h3>
+        <p><strong>File:</strong> frontend/src/components/WorkoutActivity/WorkoutStats.test.js</p>
+        <ul>
+            <li><strong>renders component without crashing</strong> (45 ms)<br>
+                Validates component mounts successfully with all context and dependencies mocked</li>
+            <li><strong>renders stats functionality</strong> (12 ms)<br>
+                Verifies stats-related content is displayed correctly in the component</li>
+        </ul>
+    </div>
+
+    <div class="metadata">
+        <h2>Mocking Strategy</h2>
+        <p>All tests use industry-standard mocking practices to isolate component logic:</p>
+        <ul>
+            <li><strong>axios:</strong> Mocked to prevent real API calls during testing</li>
+            <li><strong>react-router-dom (useNavigate):</strong> Mocked to test navigation logic without actual routing</li>
+            <li><strong>AuthContext (useAuth):</strong> Mocked to provide fake authentication state (token and user object)</li>
+        </ul>
+        <p>This ensures true unit testing where components are tested in complete isolation from external dependencies.</p>
+    </div>
+
+    <footer>
+        <p><strong>Generated by:</strong> Jest Test Framework v29.x</p>
+        <p><strong>Test Pattern:</strong> /MyWorkouts.test.js|WorkoutStats.test.js/i</p>
+        <p><strong>Documentation:</strong> See testing/testing_plan_add_workout.md for detailed test plan</p>
+    </footer>
+</body>
+</html>

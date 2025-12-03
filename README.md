@@ -380,6 +380,68 @@ Integrate AI chatbot responses, add FAQ recommendations, and connect the “Cont
       * Next Step:
          Add functionality to log completed workouts and automatically calculate calories burned based on reps, sets, and weight.
 
+
+Bigyan – Sprint 3 Summary (Personalization, Profile Sync & AI Interaction)
+
+Implemented advanced personalization features, real-time profile syncing, and smarter AI behavior across Shaktiman. Enhanced the dashboard to dynamically reflect user goals and daily activity, improved chatbot responses using meal/workout data, and completed full testing to ensure all personalization features run without errors.
+
+1. SCRUM-70 Testing & Error-Free Integration
+
+Type: Testing / Quality Assurance
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-70
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-70-testing-error-free-integration
+
+Description:
+Completed full testing across Dashboard, ProfileForm, and the Chatbot to ensure all new personalization features worked correctly. Verified no stale data issues, UI delays, or API errors. Tested end-to-end flows including profile edits, suggestion updates, stale-profile checks, and chatbot personalization using updated user info.
+
+2. SCRUM-71 Personalized Dashboard Summary
+
+Type: Frontend / Dynamic UI
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-71
+
+Reference: (https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-71-real-pr-personalized-dashboard-)
+
+Description:
+Implemented dynamic dashboard updates to show each user’s daily summary, including:
+
+TDEE calculation
+
+Logged calories
+
+Workout totals
+
+Daily metrics and progress
+
+Ensured the dashboard automatically refreshes whenever the user updates their profile or logs new workouts/meals, improving engagement and clarity.
+
+3. Real-Time Profile Update Display
+
+Type: Frontend State Management
+Jira link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-69
+Reference: https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-69-real-time-profile-update-displa
+
+Description:
+Built real-time synchronization for user profile data using a global state system. Changes made in the Profile page instantly update the Dashboard, Summary panel, and chatbot suggestions. Added loading indicators and caching so the transition feels smooth and responsive.
+
+4. Chatbot Uses Meal & Workout Data for Responses
+
+Type: Full-Stack Personalization Upgrade
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-68
+
+References: https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-68-chatbot-uses-meal-workout-data-
+
+Description:
+Integrated meal logs and workout history into the chatbot logic so AI responses become more personalized and meaningful. The chatbot now:
+
+Reads user meals to give calorie-specific advice
+
+Uses workout history to suggest improvements
+
+Adjusts motivation or feedback based on activity levels
+
+This significantly improved interactive AI behavior and satisfied the user story requirement for personalized chatbot responses.
+
 <hr>## Features
 1. User Profiles
 

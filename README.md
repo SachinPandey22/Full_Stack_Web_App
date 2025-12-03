@@ -442,6 +442,35 @@ Adjusts motivation or feedback based on activity levels
 
 This significantly improved interactive AI behavior and satisfied the user story requirement for personalized chatbot responses.
 
+
+# Surendra (Sprint 3): Backend integration, routing cleanup, image upload, and nutrition auto-fill enhancements
+
+  1. SCRUM-81 Meal Tracker Backend Integration & Goal Prompt UX
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-81
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-81-integration-connect-backend-api
+   Description: Connected Meal Tracker fully to Django APIs with real-time totals and added first-run goal prompt UX.
+
+  2. SCRUM-82 Fix Meal Logging Route & Navigation Path
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-82
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-82-fix-meal-logging-route-navigati
+   Description: Gave Meal Logging its own /meal-logging path for clean navigation and proper deep-linking.
+
+  3. SCRUM-84 Add Meal Image Upload Feature
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-84
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-84-Add-Meal-Image-Upload
+   Description: Added image upload + preview to meal entries with backend storage and responsive display.
+
+  4. SCRUM-83 Food Search & Auto-Fill Nutrition Integration
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-83
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-83-add-food-search-auto-fill-nutri
+   Description: Integrated USDA search with dropdown results and auto-fill nutrition values with serving scaling.
+
+  *Next Steps: This sprint basically wrapped up our whole Meal Logging system into its final product — everything talks end-to-end, the UX is smooth, and all core features are complete. If any future ideas or add-ons pop up later (more analytics, better photo tools, deeper food database, etc.), we’re ready to build on top, but for now the project is fully functional and stable.
+  
 <hr>## Features
 1. User Profiles
 

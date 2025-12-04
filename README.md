@@ -380,6 +380,9 @@ Integrate AI chatbot responses, add FAQ recommendations, and connect the “Cont
       * Next Step:
          Add functionality to log completed workouts and automatically calculate calories burned based on reps, sets, and weight.
 
+<hr><br>
+
+# SPRINT 3 (11/10 - 11/26)
 
 Bigyan – Sprint 3 Summary (Personalization, Profile Sync & AI Interaction)
 
@@ -491,6 +494,23 @@ This significantly improved interactive AI behavior and satisfied the user story
         Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-67
         Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-67-unit-testing-for-automation-exp
 
+# MISAN: [SCRUM-34: Improve Notification System and Frontend Experience] Refactor dashboard and add frontend elements like navigartion bar and slides + Added workout-related notifications
+
+      1. SCRUM-76 : Workout Added Notification
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-76
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-76-workout-added-notification
+
+      2. SCRUM-78 : Frontend Refactor I: Component Visual Polish
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-78
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-78-frontend-refactor-I
+
+      3. SCRUM-77: Page Layout & Imagery Touch-ups
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-77
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-77-page-layout-imagery-touch-ups
+
+      4. SCRUM-79: UI and Navigation Bar consistency + testing
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-79
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-79-ui-and-navigation-bar-consisten
 
 <hr>## Features
 1. User Profiles

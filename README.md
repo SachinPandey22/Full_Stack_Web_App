@@ -471,6 +471,27 @@ This significantly improved interactive AI behavior and satisfied the user story
 
   *Next Steps: This sprint basically wrapped up our whole Meal Logging system into its final product — everything talks end-to-end, the UX is smooth, and all core features are complete. If any future ideas or add-ons pop up later (more analytics, better photo tools, deeper food database, etc.), we’re ready to build on top, but for now the project is fully functional and stable.
   
+
+
+# SACHIN(Sprint 3): Completed Auto Daily Snapshot, CSV Export System, and Delete Account Flow
+
+   1. SCRUM-64 Backend: Auto Daily Nutrition Snapshot (Signal + Model Update)
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-64
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-64-auto-snapshot-creation-backend-
+
+    2. SCRUM-65 Backend & Frontend: CSV Export Endpoint + Download Button
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-65
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-65-data-export-csv-endpoint
+
+    3. SCRUM-66 Backend & Frontend: Delete Account (“Danger Zone”) with Confirmation Gate
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-66
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-66-delete-my-account-data-removal-
+
+    4. SCRUM-67 Backend: Unit Testing (Snapshot Signal, BMR Calculator, Compute Targets)
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-67
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-67-unit-testing-for-automation-exp
+
+
 <hr>## Features
 1. User Profiles
 

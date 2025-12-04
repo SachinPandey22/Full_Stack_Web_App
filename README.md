@@ -512,6 +512,35 @@ This significantly improved interactive AI behavior and satisfied the user story
             Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-79
             Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-79-ui-and-navigation-bar-consisten
 
+# Sapnil (Sprint 3): Workout Tracker with Calorie tracking for every workouts
+
+  1. SCRUM-72 Workout Completion Backend
+   Type: Backend
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-72
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/80379d3eea07fd39bbe3846ff5cace9c7dd3b3b6/?at=feature%2FSCRUM-72-workout-completion-backend
+   Description: Added completed_date field to UserWorkout model and update serializer to support tracking when users complete their workouts.
+
+  2. SCRUM-73 Mark Complete Button and Calorie Tracker
+   Type: Backend + Frontend
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-73
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/b159ceea7539644f7117f12a3a91ed94ab011a73/?at=feature%2FSCRUM-73-mark-complete-button
+   Description: Add "Mark Complete" button to workout cards in MyWorkouts page that sends PATCH request to update completion date. Add stats page that shows the workouts done and calories.
+
+  3. SCRUM-74 Muscle group balance tracker
+   Type: Frontend + Backend
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-74
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/e52865180c4ff46b37a0f1be0665aa7cd6d027f7/?at=feature%2FSCRUM-74-muscle-group-balance
+   Description: Shows which muscle groups user is working and which they're neglecting. Recommends which workouts need to be done to fulfill the goal. Recommends the workout according to the day.
+
+  4. SCRUM-75 Unit tests for completion
+   Type: Testing
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-75
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/06563d11583e3e05db8f38d3cef5b5b7586c61cf/?at=feature%2FSCRUM-75-unit-tests-for-completion
+   Description: Unit Tests for Workout Completion Functionality. Implemented unit tests to verify workout completion features.
+
+  *Next Steps: Now we will be working on deploying our project.
+  
+
 <hr>## Features
 1. User Profiles
 

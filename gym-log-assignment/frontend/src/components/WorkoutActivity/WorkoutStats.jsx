@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { buildApiUrl } from '../../services/api';
 
 export default function WorkoutStats() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function WorkoutStats() {
   const fetchStats = async () => {
     try {
       const token = getAccessToken();
-      const response = await fetch(`http://127.0.0.1:8000/api/workout-stats/?filter=${filter}`, {
+      const response = await fetch(`${buildApiUrl('/api/workout-stats/')}?filter=${filter}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

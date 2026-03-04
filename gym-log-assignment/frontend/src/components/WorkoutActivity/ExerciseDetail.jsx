@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';  // Adjust path if needed
 import AppNavBar from '../layout/AppNavBar';
+import { buildApiUrl } from '../../services/api';
 
 
 export default function ExerciseDetail() {
@@ -16,7 +17,7 @@ export default function ExerciseDetail() {
 
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/exercises/${id}/`)
+    fetch(buildApiUrl(`/api/exercises/${id}/`))
       .then(r => r.json())
       .then(setExercise)
       .finally(() => setLoading(false));
@@ -27,7 +28,7 @@ export default function ExerciseDetail() {
     try {
       const token = getAccessToken();
 
-      const response = await fetch('http://127.0.0.1:8000/api/my-workouts/', {
+      const response = await fetch(buildApiUrl('/api/my-workouts/'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

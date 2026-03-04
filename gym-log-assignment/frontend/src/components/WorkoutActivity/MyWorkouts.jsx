@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';  
+import { buildApiUrl } from '../../services/api';
 
 
 export default function MyWorkouts() {
@@ -19,7 +20,7 @@ export default function MyWorkouts() {
     try {
       const token = getAccessToken();
 
-      const response = await fetch('http://127.0.0.1:8000/api/my-workouts/', {
+      const response = await fetch(buildApiUrl('/api/my-workouts/'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -59,7 +60,7 @@ export default function MyWorkouts() {
     setCompleting(true);
     try {
       const token = getAccessToken();
-      const response = await fetch(`http://127.0.0.1:8000/api/my-workouts/${selectedWorkout.id}/`, {
+      const response = await fetch(buildApiUrl(`/api/my-workouts/${selectedWorkout.id}/`), {
         method: 'PATCH',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -92,7 +93,7 @@ export default function MyWorkouts() {
     
     try {
       const token = getAccessToken();
-      const response = await fetch(`http://127.0.0.1:8000/api/my-workouts/${id}/`, {
+      const response = await fetch(buildApiUrl(`/api/my-workouts/${id}/`), {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`

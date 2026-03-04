@@ -3,6 +3,7 @@ import "./ChatPopup.css";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../context/AuthContext';
 import SearchSupport from "./SearchSupport";
+import { buildApiUrl } from "../../services/api";
 
 
 
@@ -28,7 +29,7 @@ const ChatPopup = () => {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/api/support/contact/", {
+    const response = await fetch(buildApiUrl('/api/support/contact/'), {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, message }),

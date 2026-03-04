@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import AppNavBar from '../layout/AppNavBar';
+import { buildApiUrl } from '../../services/api';
 
 function WorkoutLibrary() {
   const navigate = useNavigate();
@@ -72,8 +73,7 @@ const suggestion = dayToMuscle[todayDay];
   const fetchExercises = async (muscleGroup) => {
     setLoading(true);
     try {
-      // Replace with your Django backend URL
-      const response = await fetch(`http://127.0.0.1:8000/api/exercises/?muscle_group=${muscleGroup}`);
+      const response = await fetch(`${buildApiUrl('/api/exercises/')}?muscle_group=${muscleGroup}`);
       const data = await response.json();
       setExercises(data);
     } catch (error) {

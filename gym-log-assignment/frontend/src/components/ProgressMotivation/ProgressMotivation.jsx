@@ -3,8 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-
-const API_BASE = 'http://127.0.0.1:8000/api/my-workouts/';
+import { buildApiUrl } from '../../services/api';
 
 export default function ProgressMotivation() {
   const { getAccessToken } = useAuth();
@@ -22,7 +21,7 @@ export default function ProgressMotivation() {
         return;
       }
 
-      const resp = await fetch(API_BASE, {
+      const resp = await fetch(buildApiUrl('/api/my-workouts/'), {
         headers: {
           Authorization: `Bearer ${token}`,
         },

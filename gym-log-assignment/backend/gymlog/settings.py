@@ -20,6 +20,9 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 
 import dj_database_url
+import os
+from dotenv import load_dotenv
+load_dotenv()  # take environment variables from .env.
 from decouple import config
 from pathlib import Path
 
@@ -37,8 +40,17 @@ SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 DATABASE_URL = config('DATABASE_URL', default='')
+USDA_API_KEY = os.getenv("USDA_API_KEY")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "gymlog-data-cache",
+        "TIMEOUT": 300,
+    }
+}
 
 
 # Application definition
@@ -154,6 +166,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

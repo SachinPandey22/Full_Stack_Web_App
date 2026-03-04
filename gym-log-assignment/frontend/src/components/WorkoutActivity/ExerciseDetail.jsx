@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';  // Adjust path if needed
+import AppNavBar from '../layout/AppNavBar';
 
 
 export default function ExerciseDetail() {
@@ -71,6 +72,8 @@ export default function ExerciseDetail() {
   }
 
   return (
+    <>
+    <AppNavBar/>
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1f2937 0%, #111827 100%)', color: 'white' }}>
       {/* Header */}
       <div style={{ background: 'rgba(0,0,0,0.5)', borderBottom: '1px solid #374151', padding: '24px' }}>
@@ -207,5 +210,6 @@ export default function ExerciseDetail() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -9,8 +9,12 @@ import SearchSupport from "./SearchSupport";
 const ChatPopup = () => {
   const [open, setOpen] = useState(false);
   const [showMessageForm, setShowMessageForm] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
   const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const rawName = typeof profile?.name === "string" ? profile.name : "";
+  const trimmedName = rawName.trim();
+  const firstName = trimmedName ? trimmedName.split(/\s+/)[0] : "there";
 
 
 
@@ -24,7 +28,7 @@ const ChatPopup = () => {
   }
 
   try {
-    const response = await fetch("http://localhost:8000/api/contact/", {
+    const response = await fetch("http://localhost:8000/api/support/contact/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, message }),
@@ -57,106 +61,101 @@ const ChatPopup = () => {
               <img src="/logo192.png" alt="Shaktiman" className="brand-logo" />
               <span className="brand-name">Shaktiman</span>
             </div>
-            <button className="close-btn" onClick={() => setOpen(false)}>
+            <button
+              className="close-btn"
+              onClick={() => {
+                setShowAIChat(false);
+                setShowMessageForm(false);
+                setOpen(false);
+              }}
+            >
               ×
             </button>
           </div>
 
-          {!showMessageForm ? (
+          {showAIChat ? (
+            <div className="message-form">
+              <SearchSupport />
+              <div className="form-actions">
+                <button className="back-btn" onClick={() => setShowAIChat(false)}>
+                  ← Back
+                </button>
+              </div>
+            </div>
+          ) : showMessageForm ? (
+            <div className="message-form">
+              <h3>Send us a message 💬</h3>
+              <p>Ask us anything or share feedback. We'll get back to you soon!</p>
+              <input type="email" className="email-input" placeholder="email@example.com" />
+              <textarea className="message-input" placeholder="Message..."></textarea>
+              <div className="form-actions">
+                <button className="back-btn" onClick={() => setShowMessageForm(false)}>
+                  ← Back
+                </button>
+                <button className="send-btn" onClick={handleSendMessage}>
+                  ➤
+                </button>
+              </div>
+            </div>
+          ) : (
             <div className="chat-content">
-              <h2>Hi {(profile?.name?.split(' ')[0]) || 'there'},</h2>
+              <h2>Hi {firstName},</h2>
               <h3>How can we help?</h3>
-              <div
-                className="message-card"
-                onClick={() => setShowMessageForm(true)}
-              >
+              <div className="message-card" onClick={() => setShowMessageForm(true)}>
                 <div>
                   <strong>Send us a message</strong>
                   <p>We typically reply in a few hours</p>
                 </div>
                 <button className="message-arrow">➤</button>
               </div>
-              <SearchSupport />
+              <div className="message-card" onClick={() => setShowAIChat(true)}>
+                <div>
+                  <strong>Start a conversation</strong>
+                  <p>Chat with Ram, your virtual assistant</p>
+                </div>
+                <button className="message-arrow">💬</button>
+              </div>
               <div className="help-links">
                 <p
                   className="link"
                   onClick={() => {
-                    setOpen(false);  // Close chat popup
-                    navigate('/profile'); // Navigate to FAQ page
+                    setOpen(false);
+                    navigate('/profile');
                   }}
                   style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
-              
                 >
-                  
-                Update your profile ➜
+                  Update your profile ➜
                 </p>
                 <p
                   className="link"
                   onClick={() => {
-                    setOpen(false);  // Close chat popup
-                    navigate('/workout-library'); // Navigate to workout library page
+                    setOpen(false);
+                    navigate('/workout-library');
                   }}
                   style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
-              
                 >
-                  
-                Add a workout  ➜
+                  Add a workout ➜
                 </p>
                 <p
                   className="link"
                   onClick={() => {
-                    setOpen(false);  // Close chat popup
-                    navigate('/MealLogging'); // Navigate to Meal Logging page
+                    setOpen(false);
+                    navigate('/meal-logging');
                   }}
                   style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
                 >
                   Add a meal ➜
-
                 </p>
-
                 <p
                   className="link"
                   onClick={() => {
-                    setOpen(false);  // Close chat popup
-                    navigate('/nutrition'); // Navigate to Nutrition page
+                    setOpen(false);
+                    navigate('/nutrition');
                   }}
                   style={{ cursor: "pointer", color: "#007bff", textDecoration: "underline" }}
                 >
                   View nutrition tips ➜
-
-                </p>  
-
-              </div>
-            </div>
-              
-          ) : (
-            // Message form content
-            <div className="message-form">
-              <h3>Send us a message 💬</h3>
-              <p>
-                Ask us anything or share feedback. We'll get back to you soon!
-              </p>
-              <input
-                type="email"
-                className="email-input"
-                placeholder="email@example.com"
-              />
-              <textarea
-                className="message-input"
-                placeholder="Message..."
-              ></textarea>
-              <div className="form-actions">
-                <button
-                  className="back-btn"
-                  onClick={() => setShowMessageForm(false)}
-                >
-                  ← Back
-                </button>
-                <button className="send-btn"
-                  onClick={handleSendMessage}
-                >
-                  ➤
-                </button>
+                </p>
               </div>
             </div>
           )}

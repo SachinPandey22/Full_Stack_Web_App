@@ -86,3 +86,55 @@ export async function createNutritionSnapshot(token) {
   });
   return res.data; // the created/updated snapshot for today
 }
+
+export async function getUserWorkouts() {
+  const res = await apiClient.get('/api/my-workouts/');
+  return res.data; // [{id, exercise, added_date, sets, reps, notes}, ...]
+}
+export const sendChatMessage = async (message, userInfo = {}, token = null, appContext) => {
+  const config = {};
+  if (token) {
+    config.headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  const payload = {
+    message,
+    user: userInfo,
+  };
+
+  if (appContext) {
+    payload.appContext = appContext;
+  }
+
+  const res = await apiClient.post(
+    "/api/chat_with_ai/",
+    payload,
+    config,
+  );
+
+  return res.data;
+};
+// Delete a nutrition snapshot by Iuser
+export function deleteAccount(token, confirmText) {
+  return apiClient.post(
+    '/api/delete-account/',
+    { confirm: confirmText },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+}
+
+export function exportUserDataCsv(token, { start, end, tz = 'America/Chicago' }) {
+  return apiClient.get('/api/export/', {
+    params: { start, end, tz },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    responseType: 'blob', // important so we get file data, not JSON
+  });
+}

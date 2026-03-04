@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse, JsonResponse
+from django.conf import settings
+from django.conf.urls.static import static
 from mobile import views as m
 from support import urls as support_urls
+from support.views import chat_with_ai
 
 
 def hello_view(request):
@@ -47,7 +50,8 @@ urlpatterns = [
     path("api/", include("notifications.urls")),
 
     # for support app ie. sending support emails
-    path('api/', include(support_urls)),  # Support app URLs
+    path('api/support/', include(support_urls)),  # Support app URLs
+    path('api/chat_with_ai/', chat_with_ai, name='chat_with_ai'),
     
     # 🔐 Auth
     #path('api/auth/register/', RegisterView.as_view(), name='register'),
@@ -65,3 +69,6 @@ urlpatterns = [
     path("api/", include("users.urls")),
     path("api/", include("mobile.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3,7 +3,8 @@ import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import NutritionTrends from './NutritionTrends';
-import { getNutritionTargets, getProfile, getNutritionSnapshots, createNutritionSnapshot } from '../../services/api';
+import { getNutritionTargets, getProfile, getNutritionSnapshots, createNutritionSnapshot,  exportUserDataCsv } from '../../services/api';
+import AppNavBar from '../layout/AppNavBar';
 
 export default function NutritionPage() {
   const { getAccessToken } = useAuth();
@@ -15,6 +16,10 @@ export default function NutritionPage() {
   const [savingSnap, setSavingSnap] = useState(false);
   const [tab, setTab] = useState('current'); // 'current' | 'progress'
   const [range, setRange] = useState(7); // 7 or 30
+  const [exportStart, setExportStart] = useState('');
+  const [exportEnd, setExportEnd] = useState('');
+
+  const normalizeDateInput = (value) => (value ? value.split('T')[0] : '');
 
   useEffect(() => {
     let mounted = true;
@@ -59,13 +64,57 @@ export default function NutritionPage() {
     return () => { mounted = false; };
   }, [getAccessToken]);
 
+    const handleExport = async () => {
+    const startDate = normalizeDateInput(exportStart);
+    const endDate = normalizeDateInput(exportEnd);
+
+    if (!startDate || !endDate) {
+      toast.error('Please select both start and end dates.');
+      return;
+    }
+
+    if (startDate > endDate) {
+      toast.error('Start date must be before end date.');
+      return;
+    }
+
+    try {
+      const token = getAccessToken();
+      if (!token) {
+        toast.error('Please log in again.');
+        return;
+      }
+
+      const response = await exportUserDataCsv(token, {
+        start: startDate,
+        end: endDate,
+      });
+
+      // Turn the response into a real downloadable file
+      const blob = new Blob([response.data], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `shakti-export-${startDate}-to-${endDate}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success('Download started. Check your Downloads folder.');
+    } catch (err) {
+      console.error(err);
+      toast.error('Could not export data. Please try again.');
+    }
+  };
   useEffect(() => {
     const loadSnaps = async () => {
       try {
         const token = getAccessToken();
         if (!token) return;
         const data = await getNutritionSnapshots(token);
-        // ✅ store full history; we'll slice by selected range when rendering
+        //  store full history; we'll slice by selected range when rendering
         setSnapshots(data || []);
       } catch {
         /* optional: toast.error('Could not load history'); */
@@ -88,237 +137,287 @@ export default function NutritionPage() {
   }
 
   return (
-    <div style={styles.page}>
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <div>
-            <h1 style={styles.pageTitle}>Nutrition Dashboard</h1>
-            <p style={styles.pageSubtitle}>Track your daily nutrition targets and macro breakdown</p>
+     <>
+      <AppNavBar/>
+      <div style={styles.page}>
+        <div style={styles.container}>
+          <div style={styles.header}>
+            <div>
+              <h1 style={styles.pageTitle}>Nutrition Dashboard</h1>
+              <p style={styles.pageSubtitle}>Track your daily nutrition targets and macro breakdown</p>
+            </div>
+            <button onClick={() => navigate('/dashboard')} style={styles.backBtn}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{marginRight: 6}}>
+                <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Back to Dashboard
+            </button>
           </div>
-          <button onClick={() => navigate('/dashboard')} style={styles.backBtn}>
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{marginRight: 6}}>
-              <path d="M15 10H5M5 10L10 15M5 10L10 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Back to Dashboard
-          </button>
-        </div>
 
-        <div style={styles.grid}>
-          {/* Left: Profile card */}
-          <aside style={styles.leftCol}>
-            <div style={styles.card}>
-              <div style={styles.cardHeader}>
-                <div style={styles.iconWrapper}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <h2 style={styles.cardTitle}>Your Profile</h2>
-              </div>
-              
-              {!profile ? (
-                <div style={styles.emptyState}>
-                  <p style={styles.emptyText}>No profile found.</p>
-                </div>
-              ) : (
-                <div style={styles.profileGrid}>
-                  <ProfileItem icon="👤" label="Name" value={profile.name || '—'} />
-                  <ProfileItem icon="⚧" label="Sex" value={profile.sex || '—'} />
-                  <ProfileItem icon="🎂" label="Age" value={profile.age ?? '—'} />
-                  <ProfileItem icon="📏" label="Height" value={profile.height ? `${profile.height} cm` : '—'} />
-                  <ProfileItem icon="⚖️" label="Weight" value={profile.weight ? `${profile.weight} kg` : '—'} />
-                  <ProfileItem icon="🎯" label="Goal" value={profile.goal || '—'} />
-                  <ProfileItem icon="🏃" label="Activity" value={profile.activity_level || '—'} span2 />
-                </div>
-              )}
-              
-              <div style={styles.cardFooter}>
-                <Link to="/profile" style={styles.primaryBtn}>
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{marginRight: 6}}>
-                    <path d="M11.333 2.00004C11.5081 1.82494 11.716 1.68605 11.9447 1.59129C12.1735 1.49653 12.4187 1.44775 12.6663 1.44775C12.914 1.44775 13.1592 1.49653 13.3879 1.59129C13.6167 1.68605 13.8246 1.82494 13.9997 2.00004C14.1748 2.17513 14.3137 2.383 14.4084 2.61178C14.5032 2.84055 14.552 3.08575 14.552 3.33337C14.552 3.58099 14.5032 3.82619 14.4084 4.05497C14.3137 4.28374 14.1748 4.49161 13.9997 4.66671L5.33301 13.3334L1.33301 14.6667L2.66634 10.6667L11.333 2.00004Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  Edit Profile
-                </Link>
-              </div>
-            </div>
-          </aside>
-
-          {/* Right: Targets */}
-          <main style={styles.rightCol}>
-            <div style={styles.card}>
-              <div style={styles.cardHeader}>
-                <div style={styles.iconWrapper}>
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 11L12 14L22 4M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </div>
-                <h2 style={styles.cardTitle}>Nutrition Targets</h2>
-              </div>
-
-              {!targets ? (
-                <div style={styles.emptyState}>
-                  <p style={styles.emptyText}>Nothing to display. Check your profile information.</p>
-                  <Link to="/profile" style={styles.primaryBtn}>Go to Profile</Link>
-                </div>
-              ) : (
-                <>
-                  <div style={styles.statsGrid}>
-                    <StatCard 
-                      label="BMR" 
-                      value={Math.round(targets.bmr)} 
-                      unit="kcal/day" 
-                      color="#8b5cf6"
-                      icon="🔥"
-                    />
-                    <StatCard 
-                      label="TDEE" 
-                      value={Math.round(targets.tdee)} 
-                      unit="kcal/day" 
-                      color="#3b82f6"
-                      icon="⚡"
-                    />
-                    <StatCard 
-                      label="Target" 
-                      value={Math.round(targets.target_calories)} 
-                      unit="kcal/day" 
-                      color="#10b981"
-                      icon="🎯"
-                    />
+          <div style={styles.grid}>
+            {/* Left: Profile card */}
+            <aside style={styles.leftCol}>
+              <div style={styles.card}>
+                <div style={styles.cardHeader}>
+                  <div style={styles.iconWrapper}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="#6366f1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
-
-                  <div style={styles.assumptionsCard}>
-                    <h4 style={styles.assumptionsTitle}>Calculation Factors</h4>
-                    <div style={styles.assumptionsTags}>
-                      <span style={styles.tag}>
-                        Activity × {targets.assumptions?.activity_multiplier ?? '—'}
-                      </span>
-                      <span style={styles.tag}>
-                        Goal {Math.round((targets.assumptions?.goal_adjustment ?? 0) * 100)}%
-                      </span>
-                    </div>
+                  <h2 style={styles.cardTitle}>Your Profile</h2>
+                </div>
+                
+                {!profile ? (
+                  <div style={styles.emptyState}>
+                    <p style={styles.emptyText}>No profile found.</p>
                   </div>
+                ) : (
+                  <div style={styles.profileGrid}>
+                    <ProfileItem icon="👤" label="Name" value={profile.name || '—'} />
+                    <ProfileItem icon="⚧" label="Sex" value={profile.sex || '—'} />
+                    <ProfileItem icon="🎂" label="Age" value={profile.age ?? '—'} />
+                    <ProfileItem icon="📏" label="Height" value={profile.height ? `${profile.height} cm` : '—'} />
+                    <ProfileItem icon="⚖️" label="Weight" value={profile.weight ? `${profile.weight} kg` : '—'} />
+                    <ProfileItem icon="🎯" label="Goal" value={profile.goal || '—'} />
+                    <ProfileItem icon="🏃" label="Activity" value={profile.activity_level || '—'} span2 />
+                  </div>
+                )}
+                
+                <div style={styles.cardFooter}>
+                  <Link to="/profile" style={styles.primaryBtn}>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" style={{marginRight: 6}}>
+                      <path d="M11.333 2.00004C11.5081 1.82494 11.716 1.68605 11.9447 1.59129C12.1735 1.49653 12.4187 1.44775 12.6663 1.44775C12.914 1.44775 13.1592 1.49653 13.3879 1.59129C13.6167 1.68605 13.8246 1.82494 13.9997 2.00004C14.1748 2.17513 14.3137 2.383 14.4084 2.61178C14.5032 2.84055 14.552 3.08575 14.552 3.33337C14.552 3.58099 14.5032 3.82619 14.4084 4.05497C14.3137 4.28374 14.1748 4.49161 13.9997 4.66671L5.33301 13.3334L1.33301 14.6667L2.66634 10.6667L11.333 2.00004Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Edit Profile
+                  </Link>
+                </div>
+              </div>
+            </aside>
 
-                  <div style={styles.macroSection}>
-                    <h3 style={styles.sectionTitle}>Daily Macro Breakdown</h3>
-                    <p style={styles.sectionSubtitle}>Recommended macronutrient distribution</p>
-                    
-                    <div style={styles.macrosGrid}>
-                      <MacroCard 
-                        label="Protein" 
-                        grams={targets.macros?.protein_g ?? 0} 
-                        color="#6366f1"
-                        icon="🥩"
-                        gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            {/* Right: Targets */}
+            <main style={styles.rightCol}>
+              <div style={styles.card}>
+                <div style={styles.cardHeader}>
+                  <div style={styles.iconWrapper}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                      <path d="M9 11L12 14L22 4M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16" stroke="#10b981" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                  <h2 style={styles.cardTitle}>Nutrition Targets</h2>
+                </div>
+
+                {!targets ? (
+                  <div style={styles.emptyState}>
+                    <p style={styles.emptyText}>Nothing to display. Check your profile information.</p>
+                    <Link to="/profile" style={styles.primaryBtn}>Go to Profile</Link>
+                  </div>
+                ) : (
+                  <>
+                    <div style={styles.statsGrid}>
+                      <StatCard 
+                        label="BMR" 
+                        value={Math.round(targets.bmr)} 
+                        unit="kcal/day" 
+                        color="#8b5cf6"
+                        icon="🔥"
                       />
-                      <MacroCard 
-                        label="Fat" 
-                        grams={targets.macros?.fat_g ?? 0} 
-                        color="#f59e0b"
-                        icon="🥑"
-                        gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                      <StatCard 
+                        label="TDEE" 
+                        value={Math.round(targets.tdee)} 
+                        unit="kcal/day" 
+                        color="#3b82f6"
+                        icon="⚡"
                       />
-                      <MacroCard 
-                        label="Carbs" 
-                        grams={targets.macros?.carbs_g ?? 0} 
-                        color="#22c55e"
-                        icon="🍞"
-                        gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                      <StatCard 
+                        label="Target" 
+                        value={Math.round(targets.target_calories)} 
+                        unit="kcal/day" 
+                        color="#10b981"
+                        icon="🎯"
                       />
                     </div>
-                  </div>
-                </>
-              )}
-            </div>
 
-            {/* ------- Progress Section (Charts + List) ------- */}
-            <div style={{ marginTop: 24 }}>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
-                <h3 style={{ margin: 0 }}>Progress</h3>
-                <div style={{ display: 'flex', gap: 8, marginLeft: 12 }}>
-                  <button
-                    onClick={() => setRange(7)}
-                    style={{
-                      padding:'6px 10px',
-                      borderRadius:8,
-                      border: range===7 ? '1px solid #111827' : '1px solid #ddd',
-                      background: range===7 ? '#111827' : '#fff',
-                      color: range===7 ? '#fff' : '#111827',
-                      cursor:'pointer'
-                    }}
-                  >
-                    Last 7
-                  </button>
-                  <button
-                    onClick={() => setRange(30)}
-                    style={{
-                      padding:'6px 10px',
-                      borderRadius:8,
-                      border: range===30 ? '1px solid #111827' : '1px solid #ddd',
-                      background: range===30 ? '#111827' : '#fff',
-                      color: range===30 ? '#fff' : '#111827',
-                      cursor:'pointer'
-                    }}
-                  >
-                    Last 30
-                  </button>
-                </div>
-
-                <div style={{ flex: 1 }} />
-
-                <button
-                  disabled={savingSnap}
-                  onClick={async () => {
-                    try {
-                      setSavingSnap(true);
-                      const token = getAccessToken();
-                      await createNutritionSnapshot(token);
-                      const data = await getNutritionSnapshots(token);
-                      setSnapshots(data || []);
-                      toast.success("Today's snapshot saved.");
-                    } catch (e) {
-                      toast.error(e?.response?.data?.detail || 'Could not save snapshot.');
-                    } finally {
-                      setSavingSnap(false);
-                    }
-                  }}
-                  style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #ddd', cursor: 'pointer' }}
-                >
-                  {savingSnap ? 'Saving…' : 'Save Today’s Snapshot'}
-                </button>
-              </div>
-
-              {snapshots.length === 0 ? (
-                <p style={{ color: '#666' }}>No history yet. Save your first snapshot.</p>
-              ) : (
-                <>
-                  {/* ✅ Charts */}
-                  <div style={{ marginBottom: 16 }}>
-                    <NutritionTrends data={(snapshots || []).slice(0, range)} />
-                  </div>
-
-                  {/* Existing list, now using selected range */}
-                  <div style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
-                    <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', background: '#fafafa', fontWeight: 600 }}>
-                      <div>Date</div>
-                      <div>Target Calories</div>
-                      <div>Macros (P/F/C g)</div>
-                    </div>
-                    {(snapshots || []).slice(0, range).map((s, i) => (
-                      <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', borderTop: '1px solid #f0f0f0' }}>
-                        <div>{(s.date || '').slice(0, 10)}</div>
-                        <div>{Math.round(s.target_calories)} kcal</div>
-                        <div>{Math.round(s.protein_g)}/{Math.round(s.fat_g)}/{Math.round(s.carbs_g)}</div>
+                    <div style={styles.assumptionsCard}>
+                      <h4 style={styles.assumptionsTitle}>Calculation Factors</h4>
+                      <div style={styles.assumptionsTags}>
+                        <span style={styles.tag}>
+                          Activity × {targets.assumptions?.activity_multiplier ?? '—'}
+                        </span>
+                        <span style={styles.tag}>
+                          Goal {Math.round((targets.assumptions?.goal_adjustment ?? 0) * 100)}%
+                        </span>
                       </div>
-                    ))}
+                    </div>
+
+                    <div style={styles.macroSection}>
+                      <h3 style={styles.sectionTitle}>Daily Macro Breakdown</h3>
+                      <p style={styles.sectionSubtitle}>Recommended macronutrient distribution</p>
+                      
+                      <div style={styles.macrosGrid}>
+                        <MacroCard 
+                          label="Protein" 
+                          grams={targets.macros?.protein_g ?? 0} 
+                          color="#6366f1"
+                          icon="🥩"
+                          gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                        />
+                        <MacroCard 
+                          label="Fat" 
+                          grams={targets.macros?.fat_g ?? 0} 
+                          color="#f59e0b"
+                          icon="🥑"
+                          gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                        />
+                        <MacroCard 
+                          label="Carbs" 
+                          grams={targets.macros?.carbs_g ?? 0} 
+                          color="#22c55e"
+                          icon="🍞"
+                          gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+              <div style={{ marginTop: 24, padding: 16, borderRadius: 12, border: '1px solid #e2e8f0', background: '#f9fafb' }}>
+                <h3 style={{ margin: 0, marginBottom: 8 }}>Export Your Data</h3>
+                <p style={{ margin: 0, marginBottom: 12, fontSize: 14, color: '#64748b' }}>
+                  Choose a date range and download your data as a CSV file.
+                </p>
+
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                      Start date
+                    </label>
+                    <input
+                      type="date"
+                      value={exportStart}
+                      onChange={(e) => setExportStart(e.target.value)}
+                      style={{ padding: 6, borderRadius: 8, border: '1px solid #cbd5e1' }}
+                    />
                   </div>
-                </>
-              )}
-            </div>
-            {/* ------- /Progress Section ------- */}
-          </main>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                      End date
+                    </label>
+                    <input
+                      type="date"
+                      value={exportEnd}
+                      onChange={(e) => setExportEnd(e.target.value)}
+                      style={{ padding: 6, borderRadius: 8, border: '1px solid #cbd5e1' }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleExport}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      border: 'none',
+                      background: '#4f46e5',
+                      color: 'white',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Download CSV
+                  </button>
+                </div>
+              </div>
+
+              {/* ------- Progress Section (Charts + List) ------- */}
+              <div style={{ marginTop: 24 }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12 }}>
+                  <h3 style={{ margin: 0 }}>Progress</h3>
+                  <div style={{ display: 'flex', gap: 8, marginLeft: 12 }}>
+                    <button
+                      onClick={() => setRange(7)}
+                      style={{
+                        padding:'6px 10px',
+                        borderRadius:8,
+                        border: range===7 ? '1px solid #111827' : '1px solid #ddd',
+                        background: range===7 ? '#111827' : '#fff',
+                        color: range===7 ? '#fff' : '#111827',
+                        cursor:'pointer'
+                      }}
+                    >
+                      Last 7
+                    </button>
+                    <button
+                      onClick={() => setRange(30)}
+                      style={{
+                        padding:'6px 10px',
+                        borderRadius:8,
+                        border: range===30 ? '1px solid #111827' : '1px solid #ddd',
+                        background: range===30 ? '#111827' : '#fff',
+                        color: range===30 ? '#fff' : '#111827',
+                        cursor:'pointer'
+                      }}
+                    >
+                      Last 30
+                    </button>
+                  </div>
+
+                  <div style={{ flex: 1 }} />
+
+                  <button
+                    disabled={savingSnap}
+                    onClick={async () => {
+                      try {
+                        setSavingSnap(true);
+                        const token = getAccessToken();
+                        await createNutritionSnapshot(token);
+                        const data = await getNutritionSnapshots(token);
+                        setSnapshots(data || []);
+                        toast.success("Today's snapshot saved.");
+                      } catch (e) {
+                        toast.error(e?.response?.data?.detail || 'Could not save snapshot.');
+                      } finally {
+                        setSavingSnap(false);
+                      }
+                    }}
+                    style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #ddd', cursor: 'pointer' }}
+                  >
+                    {savingSnap ? 'Saving…' : 'Save Today’s Snapshot'}
+                  </button>
+                </div>
+
+                {snapshots.length === 0 ? (
+                  <p style={{ color: '#666' }}>No history yet. Save your first snapshot.</p>
+                ) : (
+                  <>
+                    {/* ✅ Charts */}
+                    <div style={{ marginBottom: 16 }}>
+                      <NutritionTrends data={(snapshots || []).slice(0, range)} />
+                    </div>
+
+                    {/* Existing list, now using selected range */}
+                    <div style={{ border: '1px solid #eee', borderRadius: 12, overflow: 'hidden' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', background: '#fafafa', fontWeight: 600 }}>
+                        <div>Date</div>
+                        <div>Target Calories</div>
+                        <div>Macros (P/F/C g)</div>
+                      </div>
+                      {(snapshots || []).slice(0, range).map((s, i) => (
+                        <div key={i} style={{ display: 'grid', gridTemplateColumns: '110px 1fr 1fr', padding: '8px 12px', borderTop: '1px solid #f0f0f0' }}>
+                          <div>{(s.date || '').slice(0, 10)}</div>
+                          <div>{Math.round(s.target_calories)} kcal</div>
+                          <div>{Math.round(s.protein_g)}/{Math.round(s.fat_g)}/{Math.round(s.carbs_g)}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
+              {/* ------- /Progress Section ------- */}
+            </main>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

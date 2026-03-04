@@ -33,6 +33,7 @@ class Meal(models.Model):
     fat = models.IntegerField(validators=[MinValueValidator(0)])
     date = models.DateField()
     time = models.TimeField()
+    image = models.ImageField(upload_to="meal_images/", blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

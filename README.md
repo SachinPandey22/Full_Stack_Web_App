@@ -380,6 +380,167 @@ Integrate AI chatbot responses, add FAQ recommendations, and connect the “Cont
       * Next Step:
          Add functionality to log completed workouts and automatically calculate calories burned based on reps, sets, and weight.
 
+<hr><br>
+
+# SPRINT 3 (11/10 - 11/26)
+
+Bigyan – Sprint 3 Summary (Personalization, Profile Sync & AI Interaction)
+
+Implemented advanced personalization features, real-time profile syncing, and smarter AI behavior across Shaktiman. Enhanced the dashboard to dynamically reflect user goals and daily activity, improved chatbot responses using meal/workout data, and completed full testing to ensure all personalization features run without errors.
+
+1. SCRUM-70 Testing & Error-Free Integration
+
+Type: Testing / Quality Assurance
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-70
+
+Reference: https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-70-testing-error-free-integration
+
+Description:
+Completed full testing across Dashboard, ProfileForm, and the Chatbot to ensure all new personalization features worked correctly. Verified no stale data issues, UI delays, or API errors. Tested end-to-end flows including profile edits, suggestion updates, stale-profile checks, and chatbot personalization using updated user info.
+
+2. SCRUM-71 Personalized Dashboard Summary
+
+Type: Frontend / Dynamic UI
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-71
+
+Reference: (https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-71-real-pr-personalized-dashboard-)
+
+Description:
+Implemented dynamic dashboard updates to show each user’s daily summary, including:
+
+TDEE calculation
+
+Logged calories
+
+Workout totals
+
+Daily metrics and progress
+
+Ensured the dashboard automatically refreshes whenever the user updates their profile or logs new workouts/meals, improving engagement and clarity.
+
+3. Real-Time Profile Update Display
+
+Type: Frontend State Management
+Jira link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-69
+Reference: https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-69-real-time-profile-update-displa
+
+Description:
+Built real-time synchronization for user profile data using a global state system. Changes made in the Profile page instantly update the Dashboard, Summary panel, and chatbot suggestions. Added loading indicators and caching so the transition feels smooth and responsive.
+
+4. Chatbot Uses Meal & Workout Data for Responses
+
+Type: Full-Stack Personalization Upgrade
+Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-68
+
+References: https://bitbucket.org/cs3398-wookies-f25/%7B7d2dded1-de9b-4ebf-b784-e324a2c6a7d2%7D/branch/feature/SCRUM-68-chatbot-uses-meal-workout-data-
+
+Description:
+Integrated meal logs and workout history into the chatbot logic so AI responses become more personalized and meaningful. The chatbot now:
+
+Reads user meals to give calorie-specific advice
+
+Uses workout history to suggest improvements
+
+Adjusts motivation or feedback based on activity levels
+
+This significantly improved interactive AI behavior and satisfied the user story requirement for personalized chatbot responses.
+
+
+# Surendra (Sprint 3): Backend integration, routing cleanup, image upload, and nutrition auto-fill enhancements
+
+  1. SCRUM-81 Meal Tracker Backend Integration & Goal Prompt UX
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-81
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-81-integration-connect-backend-api
+   Description: Connected Meal Tracker fully to Django APIs with real-time totals and added first-run goal prompt UX.
+
+  2. SCRUM-82 Fix Meal Logging Route & Navigation Path
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-82
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-82-fix-meal-logging-route-navigati
+   Description: Gave Meal Logging its own /meal-logging path for clean navigation and proper deep-linking.
+
+  3. SCRUM-84 Add Meal Image Upload Feature
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-84
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-84-Add-Meal-Image-Upload
+   Description: Added image upload + preview to meal entries with backend storage and responsive display.
+
+  4. SCRUM-83 Food Search & Auto-Fill Nutrition Integration
+   Type: Implementation
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-83
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-83-add-food-search-auto-fill-nutri
+   Description: Integrated USDA search with dropdown results and auto-fill nutrition values with serving scaling.
+
+  *Next Steps: This sprint basically wrapped up our whole Meal Logging system into its final product — everything talks end-to-end, the UX is smooth, and all core features are complete. If any future ideas or add-ons pop up later (more analytics, better photo tools, deeper food database, etc.), we’re ready to build on top, but for now the project is fully functional and stable.
+  
+
+
+# SACHIN(Sprint 3): Completed Auto Daily Snapshot, CSV Export System, and Delete Account Flow
+
+   1. SCRUM-64 Backend: Auto Daily Nutrition Snapshot (Signal + Model Update)
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-64
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-64-auto-snapshot-creation-backend-
+
+    2. SCRUM-65 Backend & Frontend: CSV Export Endpoint + Download Button
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-65
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/feature/SCRUM-65-data-export-csv-endpoint
+
+    3. SCRUM-66 Backend & Frontend: Delete Account (“Danger Zone”) with Confirmation Gate
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-66
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-66-delete-my-account-data-removal-
+
+    4. SCRUM-67 Backend: Unit Testing (Snapshot Signal, BMR Calculator, Compute Targets)
+        Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-67
+        Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-67-unit-testing-for-automation-exp
+
+# MISAN: [SCRUM-34: Improve Notification System and Frontend Experience] Refactor dashboard and add frontend elements like navigartion bar and slides + Added workout-related notifications
+
+      1. SCRUM-76 : Workout Added Notification
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-76
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-76-workout-added-notification
+
+      2. SCRUM-78 : Frontend Refactor I: Component Visual Polish
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-78
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-78-frontend-refactor-I
+
+      3. SCRUM-77: Page Layout & Imagery Touch-ups
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-77
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-77-page-layout-imagery-touch-ups
+
+      4. SCRUM-79: UI and Navigation Bar consistency + testing
+            Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-79
+            Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/branch/SCRUM-79-ui-and-navigation-bar-consisten
+
+# Sapnil (Sprint 3): Workout Tracker with Calorie tracking for every workouts
+
+  1. SCRUM-72 Workout Completion Backend
+   Type: Backend
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-72
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/80379d3eea07fd39bbe3846ff5cace9c7dd3b3b6/?at=feature%2FSCRUM-72-workout-completion-backend
+   Description: Added completed_date field to UserWorkout model and update serializer to support tracking when users complete their workouts.
+
+  2. SCRUM-73 Mark Complete Button and Calorie Tracker
+   Type: Backend + Frontend
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-73
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/b159ceea7539644f7117f12a3a91ed94ab011a73/?at=feature%2FSCRUM-73-mark-complete-button
+   Description: Add "Mark Complete" button to workout cards in MyWorkouts page that sends PATCH request to update completion date. Add stats page that shows the workouts done and calories.
+
+  3. SCRUM-74 Muscle group balance tracker
+   Type: Frontend + Backend
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-74
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/e52865180c4ff46b37a0f1be0665aa7cd6d027f7/?at=feature%2FSCRUM-74-muscle-group-balance
+   Description: Shows which muscle groups user is working and which they're neglecting. Recommends which workouts need to be done to fulfill the goal. Recommends the workout according to the day.
+
+  4. SCRUM-75 Unit tests for completion
+   Type: Testing
+   Jira Link: https://cs3398-wookies-fall.atlassian.net/browse/SCRUM-75
+   Reference: https://bitbucket.org/cs3398-wookies-f25/ai-fitness-tracker/src/06563d11583e3e05db8f38d3cef5b5b7586c61cf/?at=feature%2FSCRUM-75-unit-tests-for-completion
+   Description: Unit Tests for Workout Completion Functionality. Implemented unit tests to verify workout completion features.
+
+  *Next Steps: Now we will be working on deploying our project.
+  
+
 <hr>## Features
 1. User Profiles
 

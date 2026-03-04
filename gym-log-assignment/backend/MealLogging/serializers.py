@@ -8,8 +8,11 @@ class MealSerializer(serializers.ModelSerializer):
     class Meta:
         model = Meal
         fields = ['id', 'meal_type', 'name', 'calories', 'protein', 
-                  'carbs', 'fat', 'date', 'time', 'created_at', 'updated_at']
+                  'carbs', 'fat', 'date', 'time', 'image', 'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
+        extra_kwargs = {
+            'image': {'required': False, 'allow_null': True},
+        }
     
     def validate(self, data):
         """Validate that all nutrition values are non-negative"""
@@ -59,7 +62,3 @@ class WaterIntakeSerializer(serializers.ModelSerializer):
         read_only_fields = ['id', 'total_ml', 'created_at', 'updated_at']
 
 
-class WaterIntakeCreateUpdateSerializer(serializers.Serializer):
-    """Serializer for creating/updating water intake"""
-    date = serializers.DateField(required=True)
-    glasses = serializers.IntegerField(required=True, min_value=0)
